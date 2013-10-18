@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-import os
-import sys, ipdb
+import os, sys, ipdb
 
 import pprint
 pp = pprint.PrettyPrinter(indent=2).pprint
@@ -39,11 +38,12 @@ except FileNotFoundError:
 # finally:
 #   print("Done")
 
-for index, item in enumerate(todos.items):
-  print(index, item.strip())
-
-for index, item in enumerate(todos.all_contexts()):
-  print(index, repr(item))
+# for index, item in enumerate(todos.items):
+#   print(index, item.strip())
+# for index, item in enumerate(todos.all_contexts()):
+#   print(index, repr(item))
+pp(todos.items)
+pp(todos.all_contexts())
 
 # Other ways to read lines:
 # todotxt_file = open(todotxt_file_path, 'r') # open file
@@ -56,7 +56,5 @@ for index, item in enumerate(todos.all_contexts()):
 # todotxt_file.close()       # close the file
 
 # if __name__ == "__main__":
-#   import sys
 #   pass
-#   # fib(int(sys.argv[1]))
 
