@@ -1,20 +1,16 @@
 #!/usr/bin/env python3
-
 import os
 
 from terminal_operations import TerminalOperations
+from todo import Todo
 
 term = TerminalOperations()
 term.clear_screen()
-
-for i in range(256):
-  term.output(term.background_color(i) + "color " + str(i) + term.clear_formatting() + "\n")
-
-print("Screen Size:", term.columns, "x", term.rows)
-exit(0)
+# for i in range(256):
+#   term.output(term.background_color(i) + "color " + str(i) + term.clear_formatting() + "\n")
+# print("Screen Size:", term.columns, "x", term.rows)
 
 todotxt_file_path = os.path.expanduser("~/Dropbox/todo/todobackup.txt")
-# todotxt_file_path = os.path.expanduser("~/Dropbox/todo/todobackup.")
 
 # if os.path.exists(todotxt_file_path):
 #   print("FOUND: ", todotxt_file_path)
@@ -22,11 +18,9 @@ todotxt_file_path = os.path.expanduser("~/Dropbox/todo/todobackup.txt")
 #   print("WARNING: unable to open", repr(todotxt_file_path))
 #   exit(1)
 
-todo_items = []
-
 try:
   with open(todotxt_file_path, "r") as todotxt_file:
-    todo_items = todotxt_file.readlines()
+    todo = Todo(todotxt_file.readlines())
 except FileNotFoundError:
   print("WARNING: unable to open", repr(todotxt_file_path))
   exit(1)
@@ -38,8 +32,11 @@ except FileNotFoundError:
 # finally:
 #   print("Done")
 
-for index, item in enumerate(todo_items):
+for index, item in enumerate(todo.items):
   print(index, item.strip())
+
+for index, item in enumerate(todo.all_contexts()):
+  print(index, repr(item))
 
 # Other ways to read lines:
 # todotxt_file = open(todotxt_file_path, 'r') # open file
