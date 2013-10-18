@@ -12,7 +12,8 @@ class TestTodo(unittest.TestCase):
 
   def test_todo_init(self):
     todos = todo.Todo(self.todo_items)
-    self.assertEqual( todos.items , self.todo_items )
+    # self.assertEqual( todos.items , "garbage")#self.todo_items )
+    assert todos.items == self.todo_items
 
 if __name__ == '__main__':
-      unittest.main()
+  unittest.main()
