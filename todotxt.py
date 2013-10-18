@@ -1,11 +1,18 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import os
+import sys, ipdb
 
-from terminal_operations import TerminalOperations
-from todo import Todo
+import pprint
+pp = pprint.PrettyPrinter(indent=2).pprint
+# pp(sys.path)
 
-term = TerminalOperations()
+from todotxt import *
+# import todotxt.todo
+# import todotxt.terminal_operations
+
+term = terminal_operations.TerminalOperations()
 term.clear_screen()
+
 # for i in range(256):
 #   term.output(term.background_color(i) + "color " + str(i) + term.clear_formatting() + "\n")
 # print("Screen Size:", term.columns, "x", term.rows)
@@ -20,7 +27,7 @@ todotxt_file_path = os.path.expanduser("~/Dropbox/todo/todobackup.txt")
 
 try:
   with open(todotxt_file_path, "r") as todotxt_file:
-    todo = Todo(todotxt_file.readlines())
+    todos = todo.Todo(todotxt_file.readlines())
 except FileNotFoundError:
   print("WARNING: unable to open", repr(todotxt_file_path))
   exit(1)
@@ -32,10 +39,10 @@ except FileNotFoundError:
 # finally:
 #   print("Done")
 
-for index, item in enumerate(todo.items):
+for index, item in enumerate(todos.items):
   print(index, item.strip())
 
-for index, item in enumerate(todo.all_contexts()):
+for index, item in enumerate(todos.all_contexts()):
   print(index, repr(item))
 
 # Other ways to read lines:
