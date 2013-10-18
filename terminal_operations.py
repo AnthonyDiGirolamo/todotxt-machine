@@ -10,17 +10,21 @@ class TerminalOperations:
     sys.stdout.write(text)
 
   def foreground_color(self, index):
-    return "\033[38;5;{}m".format(index)
+    return "\x1B[38;5;{}m".format(index)
 
   def background_color(self, index):
-    return "\033[48;5;{}m".format(index)
+    return "\x1B[48;5;{}m".format(index)
 
   def clear_formatting(self):
-    return "\033[m"
+    return "\x1B[m"
 
   def clear_screen(self):
-    self.output("\033[2J")
+    self.output("\x1B[2J")
 
   def screen_size(self):
     return ( int(subprocess.check_output(["tput", "cols"])), int(subprocess.check_output(["tput", "lines"])) )
+
+# print("\x1B]0;THIS IS A TITLE BAR DEMO...\x07")
+# print("Wait for 5 seconds...")
+# print("\x1B]0;\x07")
 
