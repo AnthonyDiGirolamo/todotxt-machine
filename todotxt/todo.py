@@ -31,7 +31,7 @@ class Todos:
     self._project_regex       = re.compile(r'\s*(\+\S+)\s*')
     self._creation_date_regex = re.compile(r'^\(?\w?\)?\s*(\d\d\d\d-\d\d-\d\d)\s*')
     self._due_date_regex      = re.compile(r'\s*due:(\d\d\d\d-\d\d-\d\d)\s*')
-    self._priority_regex      = re.compile(r'\((\w)\)')
+    self._priority_regex      = re.compile(r'\((\w)\) ')
     self.parse_raw_entries()
 
   def __iter__(self):
