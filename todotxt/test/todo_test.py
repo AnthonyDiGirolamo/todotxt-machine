@@ -8,7 +8,7 @@ def todos():
     "(B) Schedule Goodwill pickup +GarageSale @phone",
     "Unpack the guest bedroom +Unpacking due:2013-10-20",
     "2013-10-19 Post signs around the neighborhood +GarageSale",
-    "@GroceryStore Eskimo pies" ])
+    "x 2013-10-01 @GroceryStore Eskimo pies" ])
 
 def test_todos_init(todos):
   assert len(todos.raw_items)  == 5
@@ -40,9 +40,10 @@ def test_todos_parse_entries(todos):
   assert todo.creation_date == "2013-10-19"
 
   todo = todos.todo_items[4]
-  assert todo.raw      == "@GroceryStore Eskimo pies"
-  assert todo.contexts == ["@GroceryStore"]
-  assert todo.projects == []
+  assert todo.raw            == "x 2013-10-01 @GroceryStore Eskimo pies"
+  assert todo.contexts       == ["@GroceryStore"]
+  assert todo.projects       == []
+  assert todo.completed_date == "2013-10-01"
 
 def test_todos_iterable(todos):
   for todo in todos:
@@ -83,4 +84,10 @@ def test_todos_priority(todos):
   assert todos.priority("No Priority (A)") == ""
   assert todos.priority("(A)No Priority") == ""
   assert todos.priority("(A)->No Priority") == ""
+
+def test_todos_completed(todos):
+  assert todos.completed("x 2011-03-03 Call Mom)")        == "2011-03-03"
+  assert todos.completed("xylophone lesson")              == False
+  assert todos.completed("X 2012-01-01 Make resolutions") == False
+  assert todos.completed("x (A) Find ticket prices")      == False
 

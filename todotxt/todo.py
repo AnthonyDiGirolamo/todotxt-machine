@@ -13,13 +13,14 @@ class Todo:
 
   def __init__(self, item,
       priority="", contexts=[], projects=[],
-      creation_date="", due_date=""):
-    self.raw           = item
-    self.priority      = priority
-    self.contexts      = contexts
-    self.projects      = projects
-    self.creation_date = creation_date
-    self.due_date      = due_date
+      creation_date="", due_date="", completed_date=""):
+    self.raw            = item
+    self.priority       = priority
+    self.contexts       = contexts
+    self.projects       = projects
+    self.creation_date  = creation_date
+    self.due_date       = due_date
+    self.completed_date = completed_date
 
 
 class Todos:
@@ -32,6 +33,7 @@ class Todos:
     self._creation_date_regex = re.compile(r'^\(?\w?\)?\s*(\d\d\d\d-\d\d-\d\d)\s*')
     self._due_date_regex      = re.compile(r'\s*due:(\d\d\d\d-\d\d-\d\d)\s*')
     self._priority_regex      = re.compile(r'\((\w)\) ')
+    self._completed_regex     = re.compile(r'^x (\d\d\d\d-\d\d-\d\d)')
     self.parse_raw_entries()
 
   def __iter__(self):
@@ -50,7 +52,8 @@ class Todos:
       projects=self.projects(todo),
       priority=self.priority(todo),
       creation_date=self.creation_date(todo),
-      due_date=self.due_date(todo)) for todo in self.raw_items]
+      due_date=self.due_date(todo),
+      completed_date=self.completed(todo)) for todo in self.raw_items]
 
   def contexts(self, item):
     return sorted( self._context_regex.findall(item) )
@@ -103,4 +106,12 @@ class Todos:
     else:
       # raise NoPriorityError
       return ""
+
+  def completed(self, item):
+    match = self._completed_regex.match(item)
+    if match and len(match.groups()) == 1:
+      return match.group(1)
+    else:
+      return False
+
 
