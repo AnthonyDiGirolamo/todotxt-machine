@@ -3,10 +3,8 @@ import re
 
 # class NoCreationDateError(Exception):
 #   pass
-
 # class NoDueDateError(Exception):
 #   pass
-
 # class NoPriorityError(Exception):
 #   pass
 
@@ -35,6 +33,16 @@ class Todos:
     self._due_date_regex      = re.compile(r'\s*due:(\d\d\d\d-\d\d-\d\d)\s*')
     self._priority_regex      = re.compile(r'\((\w)\)')
     self.parse_raw_entries()
+
+  def __iter__(self):
+    self.index = -1
+    return self
+
+  def __next__(self):
+    self.index = self.index + 1
+    if self.index == len(self.todo_items):
+      raise StopIteration
+    return self.todo_items[self.index]
 
   def parse_raw_entries(self):
     self.todo_items = [ Todo(todo,
