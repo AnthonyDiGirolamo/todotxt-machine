@@ -14,6 +14,7 @@ def test_todo_init(todos):
   assert len(todos.raw_items)  == 5
   assert len(todos.todo_items) == 5
 
+def test_todo_parse_entries(todos):
   todo = todos.todo_items[0]
   assert todo.raw      == "(A) Thank Mom for the dinner @phone"
   assert todo.contexts == ["@phone"]
@@ -66,6 +67,8 @@ def test_todo_creation_date(todos):
 def test_todo_due_date(todos):
   assert todos.due_date("2011-03-02 Document +TodoTxt task format due:2013-10-25") == "2013-10-25"
   assert todos.due_date("2011-03-02 due:2013-10-25 Document +TodoTxt task format") == "2013-10-25"
+  # with pytest.raises(todo.NoDueDateError):
+  assert todos.priority("2011-03-02 Document +TodoTxt task format") == ""
 
 def test_todo_priority(todos):
   assert todos.priority("(A) Priority A") == "A"
