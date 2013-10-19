@@ -36,3 +36,9 @@ def test_todo_creation_date(todos):
 def test_todo_due_date(todos):
   assert todos.due_date("2011-03-02 Document +TodoTxt task format due:2013-10-25") == "2013-10-25"
   assert todos.due_date("2011-03-02 due:2013-10-25 Document +TodoTxt task format") == "2013-10-25"
+
+def test_todo_priority(todos):
+  assert todos.priority("(A) Priority A") == "A"
+  assert todos.priority("(a) Priority A") == "a"
+  with pytest.raises(todo.NoPriorityError):
+    assert todos.priority("No Priority (A)")

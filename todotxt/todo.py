@@ -3,7 +3,11 @@ import re
 
 class NoCreationDateError(Exception):
   pass
+
 class NoDueDateError(Exception):
+  pass
+
+class NoPriorityError(Exception):
   pass
 
 class Todo:
@@ -15,6 +19,7 @@ class Todo:
     self._project_regex       = re.compile(r'\s*(\+\S+)\s*')
     self._creation_date_regex = re.compile(r'^\(?\w?\)?\s*(\d\d\d\d-\d\d-\d\d)\s*')
     self._due_date_regex      = re.compile(r'\s*due:(\d\d\d\d-\d\d-\d\d)\s*')
+    self._priority_regex      = re.compile(r'\((\w)\)')
 
   def contexts(self, item):
     return sorted( self._context_regex.findall(item) )
@@ -58,3 +63,9 @@ class Todo:
     else:
       raise NoDueDateError
 
+  def priority(self, item):
+    match = self._priority_regex.match(item)
+    if match and len(match.groups()) == 1:
+      return match.group(1)
+    else:
+      raise NoPriorityError
