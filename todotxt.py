@@ -12,6 +12,9 @@ from todotxt import *
 term = terminal_operations.TerminalOperations()
 term.clear_screen()
 
+# for i in range(0, 10):
+#   print(term.getch())
+
 # for i in range(256):
 #   term.output(term.background_color(i) + "color " + str(i) + term.clear_formatting() + "\n")
 # print("Screen Size:", term.columns, "x", term.rows)
@@ -26,7 +29,7 @@ todotxt_file_path = os.path.expanduser("~/Dropbox/todo/todobackup.txt")
 
 try:
   with open(todotxt_file_path, "r") as todotxt_file:
-    todos = todo.Todo(todotxt_file.readlines())
+    todos = todo.Todos(todotxt_file.readlines())
 except FileNotFoundError:
   print("WARNING: unable to open", repr(todotxt_file_path))
   exit(1)
@@ -42,7 +45,7 @@ except FileNotFoundError:
 #   print(index, item.strip())
 # for index, item in enumerate(todos.all_contexts()):
 #   print(index, repr(item))
-pp(todos.items)
+pp(todos.raw_items)
 pp(todos.all_contexts())
 
 # Other ways to read lines:
