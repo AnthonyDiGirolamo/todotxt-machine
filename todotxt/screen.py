@@ -10,6 +10,9 @@ class Screen:
     self.selected_row = 2
     self.terminal.clear_screen()
 
+  def update_items(self, items):
+    self.items = items
+
   def update(self):
     columns = self.terminal.columns
     rows    = self.terminal.rows

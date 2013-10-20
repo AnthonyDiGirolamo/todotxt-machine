@@ -104,4 +104,6 @@ class Todos:
     match = self._completed_regex.match(item)
     return match.group(1) if match else False
 
+  def sorted_raw(self):
+    self.todo_items.sort( key=lambda todo: todo.raw )
 
