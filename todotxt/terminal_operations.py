@@ -28,6 +28,35 @@ class TerminalOperations:
   def move_cursor(self, row, column):
     self.output("\x1B[{};{}H".format(row, column))
 
+# def get_char
+#   state = `stty -g`
+#   `stty raw -echo -icanon isig`
+#   STDIN.getc.chr
+# ensure
+#   `stty #{state}`
+# end
+
+  # another solution for single key press
+  def getch(self):
+    """getch() -> key character
+
+    Read a single keypress from stdin and return the resulting character.
+    Nothing is echoed to the console. This call will block if a keypress
+    is not already available, but will not wait for Enter to be pressed.
+
+    If the pressed key was a modifier key, nothing will be detected; if
+    it were a special function key, it may return the first character of
+    of an escape sequence, leaving additional characters in the buffer.
+    """
+    fd = sys.stdin.fileno()
+    old_settings = termios.tcgetattr(fd)
+    try:
+      tty.setraw(fd)
+      ch = sys.stdin.read(1)
+    finally:
+      termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+    return ch
+
 # one solution to get single key press
 # import termios, fcntl, sys, os, select
 # fd = sys.stdin.fileno()
@@ -48,39 +77,6 @@ class TerminalOperations:
 # finally:
 #   termios.tcsetattr(fd, termios.TCSAFLUSH, oldterm)
 #   fcntl.fcntl(fd, fcntl.F_SETFL, oldflags)
-
-# another solution for single key press
-# import sys
-# try:
-#   import tty, termios
-# except ImportError:
-#   # Probably Windows.
-#   try:
-#     import msvcrt
-#   except ImportError:
-#     # FIXME what to do on other platforms?
-#     # Just give up here.
-#     raise ImportError('getch not available')
-#   else:
-#     getch = msvcrt.getch
-# else:
-  def getch(self):
-    """getch() -> key character
-    Read a single keypress from stdin and return the resulting character.
-    Nothing is echoed to the console. This call will block if a keypress
-    is not already available, but will not wait for Enter to be pressed.
-    If the pressed key was a modifier key, nothing will be detected; if
-    it were a special function key, it may return the first character of
-    of an escape sequence, leaving additional characters in the buffer.
-    """
-    fd = sys.stdin.fileno()
-    old_settings = termios.tcgetattr(fd)
-    try:
-      tty.setraw(fd)
-      ch = sys.stdin.read(1)
-    finally:
-      termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-    return ch
 
 # print("\x1B]0;THIS IS A TITLE BAR DEMO...\x07")
 # print("Wait for 5 seconds...")
@@ -105,10 +101,3 @@ class TerminalOperations:
 #   `stty #{state}`
 # end
 
-# def get_char
-#   state = `stty -g`
-#   `stty raw -echo -icanon isig`
-#   STDIN.getc.chr
-# ensure
-#   `stty #{state}`
-# end
