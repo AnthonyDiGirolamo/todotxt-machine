@@ -93,7 +93,7 @@ def test_todos_completed(todos):
   assert todos.completed("X 2012-01-01 Make resolutions") == False
   assert todos.completed("x (A) Find ticket prices")      == False
 
-def test_todos_sorted_raw(todos):
+def test_todos_sorted(todos):
   todos.raw_items = [
     "(B) Schedule Goodwill pickup +GarageSale @phone",
     "(A) Thank Mom for the dinner @phone",
@@ -101,11 +101,22 @@ def test_todos_sorted_raw(todos):
     "2013-10-19 Post signs around the neighborhood +GarageSale",
     "x 2013-10-01 @GroceryStore Eskimo pies" ]
   todos.parse_raw_entries()
-  todos.sorted_raw()
-  # print(repr([item.raw for item in todos.todo_items]))
+  assert [todo.raw_index for todo in todos.todo_items] == [0, 1, 2, 3, 4]
+
+  todos.sorted()
   assert [todo.raw for todo in todos.todo_items] == [
     "(A) Thank Mom for the dinner @phone",
     "(B) Schedule Goodwill pickup +GarageSale @phone",
     "2013-10-19 Post signs around the neighborhood +GarageSale",
     "Unpack the guest bedroom +Unpacking due:2013-10-20",
     "x 2013-10-01 @GroceryStore Eskimo pies" ]
+  assert [todo.raw_index for todo in todos.todo_items] == [1, 0, 3, 2, 4]
+
+  todos.sorted_raw()
+  assert [todo.raw for todo in todos.todo_items] == [
+    "(B) Schedule Goodwill pickup +GarageSale @phone",
+    "(A) Thank Mom for the dinner @phone",
+    "Unpack the guest bedroom +Unpacking due:2013-10-20",
+    "2013-10-19 Post signs around the neighborhood +GarageSale",
+    "x 2013-10-01 @GroceryStore Eskimo pies" ]
+  assert [todo.raw_index for todo in todos.todo_items] == [0, 1, 2, 3, 4]

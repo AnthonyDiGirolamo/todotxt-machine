@@ -11,10 +11,11 @@ import re
 class Todo:
   """Single Todo item"""
 
-  def __init__(self, item,
+  def __init__(self, item, index,
       priority="", contexts=[], projects=[],
       creation_date="", due_date="", completed_date=""):
     self.raw            = item
+    self.raw_index      = index
     self.priority       = priority
     self.contexts       = contexts
     self.projects       = projects
@@ -52,13 +53,15 @@ class Todos:
     return self.todo_items[self.index]
 
   def parse_raw_entries(self):
-    self.todo_items = [ Todo(todo,
-      contexts=self.contexts(todo),
-      projects=self.projects(todo),
-      priority=self.priority(todo),
-      creation_date=self.creation_date(todo),
-      due_date=self.due_date(todo),
-      completed_date=self.completed(todo)) for todo in self.raw_items]
+    self.todo_items = [
+      Todo(todo, index,
+        contexts       = self.contexts(todo),
+        projects       = self.projects(todo),
+        priority       = self.priority(todo),
+        creation_date  = self.creation_date(todo),
+        due_date       = self.due_date(todo),
+        completed_date = self.completed(todo))
+      for index, todo in enumerate(self.raw_items) ]
 
   def contexts(self, item):
     return sorted( self._context_regex.findall(item) )
@@ -104,6 +107,9 @@ class Todos:
     match = self._completed_regex.match(item)
     return match.group(1) if match else False
 
-  def sorted_raw(self):
+  def sorted(self):
     self.todo_items.sort( key=lambda todo: todo.raw )
+
+  def sorted_raw(self):
+    self.todo_items.sort( key=lambda todo: todo.raw_index )
 
