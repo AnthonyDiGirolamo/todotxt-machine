@@ -25,6 +25,9 @@ class TerminalOperations:
   def screen_size(self):
     return ( int(subprocess.check_output(["tput", "cols"])), int(subprocess.check_output(["tput", "lines"])) )
 
+  def move_cursor(self, row, column):
+    self.output("\x1B[{};{}H".format(row, column))
+
 # print("\x1B]0;THIS IS A TITLE BAR DEMO...\x07")
 # print("Wait for 5 seconds...")
 # print("\x1B]0;\x07")
