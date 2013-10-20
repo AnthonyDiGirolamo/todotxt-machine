@@ -32,3 +32,29 @@ class TerminalOperations:
 # print("Wait for 5 seconds...")
 # print("\x1B]0;\x07")
 
+# def screen_size_using_escapes
+#   state = `stty -g`
+#   `stty raw -echo -icanon isig`
+#   STDOUT.write "\e[18t"
+#   response = c = ""
+#   while c != 't'
+#     c = STDIN.getbyte.chr #if STDIN.ready?
+#     response += c.to_s unless c == "\e"
+#   end
+#   if response =~ /\[8;(.*);(.*)t/
+#     rows = $1
+#     cols = $2
+#     return [cols, rows]
+#   end
+#   return []
+# ensure
+#   `stty #{state}`
+# end
+
+# def get_char
+#   state = `stty -g`
+#   `stty raw -echo -icanon isig`
+#   STDIN.getc.chr
+# ensure
+#   `stty #{state}`
+# end

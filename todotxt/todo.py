@@ -22,6 +22,11 @@ class Todo:
     self.due_date       = due_date
     self.completed_date = completed_date
 
+  # def is_complete(self):
+  #   if self.completed_date == "":
+  #     return False
+  #   else:
+  #     return True
 
 class Todos:
   """Todo items"""
