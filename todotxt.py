@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os, sys, ipdb
+import os, sys
 
 import pprint
 pp = pprint.PrettyPrinter(indent=2).pprint
@@ -9,8 +9,6 @@ from todotxt import *
 # import todotxt.todo
 # import todotxt.terminal_operations
 
-term = terminal_operations.TerminalOperations()
-term.clear_screen()
 
 # for i in range(0, 10):
 #   print(term.getch())
@@ -45,8 +43,13 @@ except FileNotFoundError:
 #   print(index, item.strip())
 # for index, item in enumerate(todos.all_contexts()):
 #   print(index, repr(item))
-pp(todos.raw_items)
-pp(todos.all_contexts())
+
+# pp(todos.raw_items)
+# pp(todos.all_contexts())
+
+view = screen.Screen(todos.raw_items)
+view.update()
+view.key_loop()
 
 # Other ways to read lines:
 # todotxt_file = open(todotxt_file_path, 'r') # open file

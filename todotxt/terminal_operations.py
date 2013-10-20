@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import sys, subprocess, tty, termios
 
 class TerminalOperations:
