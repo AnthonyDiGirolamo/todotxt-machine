@@ -67,6 +67,7 @@ def test_todos_all_projects(todos):
 
 def test_todos_creation_date(todos):
   assert todos.creation_date("2011-03-02 Document +TodoTxt task format") == "2011-03-02"
+  assert todos.creation_date("2011-03-03 2011-03-02 Document +TodoTxt task format") == "2011-03-03"
   assert todos.creation_date("(A) 2011-03-02 Call Mom") == "2011-03-02"
   # with pytest.raises(todo.NoCreationDateError):
   assert todos.creation_date("(A) Call Mom 2011-03-02") == ""
@@ -79,7 +80,8 @@ def test_todos_due_date(todos):
 
 def test_todos_priority(todos):
   assert todos.priority("(A) Priority A") == "A"
-  assert todos.priority("(a) Priority A") == "a"
+  assert todos.priority("(Z) Priority Z") == "Z"
+  assert todos.priority("(a) No Priority") == ""
   # with pytest.raises(todo.NoPriorityError):
   assert todos.priority("No Priority (A)") == ""
   assert todos.priority("(A)No Priority") == ""

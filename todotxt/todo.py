@@ -37,7 +37,7 @@ class Todos:
     self._project_regex       = re.compile(r'\s*(\+\S+)\s*')
     self._creation_date_regex = re.compile(r'^\(?\w?\)?\s*(\d\d\d\d-\d\d-\d\d)\s*')
     self._due_date_regex      = re.compile(r'\s*due:(\d\d\d\d-\d\d-\d\d)\s*')
-    self._priority_regex      = re.compile(r'\((\w)\) ')
+    self._priority_regex      = re.compile(r'\(([A-Z])\) ')
     self._completed_regex     = re.compile(r'^x (\d\d\d\d-\d\d-\d\d)')
     self.parse_raw_entries()
 
@@ -90,33 +90,18 @@ class Todos:
 
   def creation_date(self, item):
     match = self._creation_date_regex.search(item)
-    if match and len(match.groups()) == 1:
-      return match.group(1)
-    else:
-      # raise NoCreationDateError
-      return ""
+    return match.group(1) if match else ""
 
   def due_date(self, item):
     match = self._due_date_regex.search(item)
-    if match and len(match.groups()) == 1:
-      return match.group(1)
-    else:
-      # raise NoDueDateError
-      return ""
+    return match.group(1) if match else ""
 
   def priority(self, item):
     match = self._priority_regex.match(item)
-    if match and len(match.groups()) == 1:
-      return match.group(1)
-    else:
-      # raise NoPriorityError
-      return ""
+    return match.group(1) if match else ""
 
   def completed(self, item):
     match = self._completed_regex.match(item)
-    if match and len(match.groups()) == 1:
-      return match.group(1)
-    else:
-      return False
+    return match.group(1) if match else False
 
 
