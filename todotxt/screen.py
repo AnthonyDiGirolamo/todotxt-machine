@@ -42,8 +42,9 @@ class Screen:
         # Todo List
         current_item = self.starting_item
         for row in range(2, rows + 1):
-            if row > len(items):
+            if current_item >= len(items):
                 break
+            # term.move_cursor_next_line()
             term.move_cursor(row, 1)
 
             if self.selected_row == row:

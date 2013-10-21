@@ -35,6 +35,12 @@ class TerminalOperations:
     def move_cursor(self, row, column):
         self.output("\x1B[{};{}H".format(row, column))
 
+    def move_cursor_home(self):
+        self.output("\x1B[[H")
+
+    def move_cursor_next_line(self):
+        self.output("\x1B[E")
+
     # solution for single key press - blocking
     # def getch(self):
     #     """getch() -> key character
