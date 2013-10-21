@@ -1,9 +1,12 @@
 #!/usr/bin/env python
-import os, sys
-import pprint
-pp = pprint.PrettyPrinter(indent=2).pprint
+import os
+import sys
+import signal
 
 from todotxt import *
+
+# import pprint
+# pp = pprint.PrettyPrinter(indent=2).pprint
 
 # for i in range(0, 10):
 #   print(term.getch())
@@ -45,6 +48,11 @@ except FileNotFoundError:
 view = screen.Screen(todos.raw_items)
 view.update()
 view.key_loop()
+
+def resize_terminal(signum, frame):
+    view.update()
+
+signal.signal(signal.SIGWINCH, resize_terminal)
 
 # Other ways to read lines:
 # todotxt_file = open(todotxt_file_path, 'r') # open file

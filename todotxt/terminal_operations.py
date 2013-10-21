@@ -1,10 +1,16 @@
 #!/usr/bin/env python
-import sys, subprocess, tty, termios
+import sys
+import subprocess
+import tty
+import termios
 
 class TerminalOperations:
     """For interacting with the terminal"""
 
     def __init__(self):
+        self.update_screen_size()
+
+    def update_screen_size(self):
         self.columns, self.rows = self.screen_size()
 
     def output(self, text):
