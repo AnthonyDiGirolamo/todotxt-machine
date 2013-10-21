@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 import sys
+
+import tty
+import termios
+import select
+
 import todotxt.terminal_operations
 
 
@@ -7,11 +12,13 @@ class Screen:
     """Maintains the screen state"""
 
     def __init__(self, items):
-        self.terminal     = todotxt.terminal_operations.TerminalOperations()
-        self.items        = items
-        self.selected_row = 2
-        self.selected_item = 0
-        self.starting_item = 0
+        self.refresh_screen = False
+        self.terminal       = todotxt.terminal_operations.TerminalOperations()
+        self.items          = items
+        self.top_row        = 2
+        self.selected_row   = self.top_row
+        self.selected_item  = 0
+        self.starting_item  = 0
         self.terminal.clear_screen()
 
     def update_items(self, items):
@@ -34,7 +41,7 @@ class Screen:
 
         # Todo List
         current_item = self.starting_item
-        for row in range(2, rows+1):
+        for row in range(2, rows + 1):
             if row > len(items):
                 break
             term.move_cursor(row, 1)
@@ -51,31 +58,44 @@ class Screen:
         sys.stdout.flush()
 
     def move_selection_down(self):
-        if self.selected_row < self.terminal.rows:
-            self.selected_row += 1
-            self.selected_item += 1
-        elif self.selected_row == self.terminal.rows:
-            if (self.terminal.rows - 1 + self.starting_item) < len(self.items):
+        if self.selected_item < len(self.items) - 1:
+            if self.selected_row < self.terminal.rows:
+                self.selected_row += 1
+                self.selected_item += 1
+            elif self.selected_row == self.terminal.rows:
                 self.starting_item += 1
                 self.selected_item += 1
 
 
     def move_selection_up(self):
-        if self.selected_row > 2:
-            self.selected_row -= 1
-            self.selected_item -= 1
-        elif self.selected_row == 2:
-            if self.starting_item > 0:
-                self.starting_item -= 1
+        if self.selected_item > 0:
+            if self.selected_row > self.top_row:
+                self.selected_row -= 1
                 self.selected_item -= 1
+            elif self.selected_row == self.top_row:
+                if self.starting_item > 0:
+                    self.starting_item -= 1
+                    self.selected_item -= 1
 
-    def key_loop(self):
+    def main_loop(self):
+        self.update()
         c = ""
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        tty.setraw(fd)
         while c != "q":
             # c = self.terminal.getch()
-            if c == "j":
-                self.move_selection_down()
-            elif c == "k":
-                self.move_selection_up()
-            self.update()
+            if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
+                c = sys.stdin.read(1)
+                if c != "":
+                    if c == "j":
+                        self.move_selection_down()
+                    elif c == "k":
+                        self.move_selection_up()
+                    self.update()
+            elif self.refresh_screen == True:
+                self.refresh_screen = False
+                self.update()
+        # End while
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
 

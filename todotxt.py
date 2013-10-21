@@ -15,7 +15,8 @@ from todotxt import *
 #   term.output(term.background_color(i) + "color " + str(i) + term.clear_formatting() + "\n")
 # print("Screen Size:", term.columns, "x", term.rows)
 
-todotxt_file_path = os.path.expanduser("~/Dropbox/todo/todobackup.txt")
+# todotxt_file_path = os.path.expanduser("~/Dropbox/todo/todobackup.txt")
+todotxt_file_path = os.path.expanduser("~/Documents/Dropbox/todo/todobackup.txt")
 
 # if os.path.exists(todotxt_file_path):
 #   print("FOUND: ", todotxt_file_path)
@@ -46,13 +47,13 @@ except FileNotFoundError:
 # pp(todos.all_contexts())
 
 view = screen.Screen(todos.raw_items)
-view.update()
-view.key_loop()
 
 def resize_terminal(signum, frame):
-    view.update()
+    view.refresh_screen = True
 
 signal.signal(signal.SIGWINCH, resize_terminal)
+
+view.main_loop()
 
 # Other ways to read lines:
 # todotxt_file = open(todotxt_file_path, 'r') # open file
