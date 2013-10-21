@@ -51,7 +51,11 @@ view = screen.Screen(todos.raw_items)
 def resize_terminal(signum, frame):
     view.refresh_screen = True
 
+def handle_sigint(signum, frame):
+    view.sigint = True
+
 signal.signal(signal.SIGWINCH, resize_terminal)
+signal.signal(signal.SIGINT, handle_sigint)
 
 view.main_loop()
 

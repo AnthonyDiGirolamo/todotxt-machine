@@ -12,13 +12,16 @@ class Screen:
     """Maintains the screen state"""
 
     def __init__(self, items):
+        self.sigint         = False
         self.refresh_screen = False
+
         self.terminal       = todotxt.terminal_operations.TerminalOperations()
         self.items          = items
         self.top_row        = 2
         self.selected_row   = self.top_row
         self.selected_item  = 0
         self.starting_item  = 0
+        self.original_terminal_settings = termios.tcgetattr(sys.stdin.fileno())
         self.terminal.clear_screen()
 
     def update_items(self, items):
@@ -81,9 +84,7 @@ class Screen:
     def main_loop(self):
         self.update()
         c = ""
-        fd = sys.stdin.fileno()
-        old_settings = termios.tcgetattr(fd)
-        tty.setraw(fd)
+        tty.setraw(sys.stdin.fileno())
         while c != "q":
             # c = self.terminal.getch()
             if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
@@ -97,6 +98,11 @@ class Screen:
             elif self.refresh_screen == True:
                 self.refresh_screen = False
                 self.update()
+            elif self.sigint == True:
+                self.exit()
         # End while
-        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        self.exit()
+
+    def exit(self):
+        termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, self.original_terminal_settings)
 
