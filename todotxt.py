@@ -1,14 +1,9 @@
 #!/usr/bin/env python
 import os, sys
-
 import pprint
 pp = pprint.PrettyPrinter(indent=2).pprint
-# pp(sys.path)
 
 from todotxt import *
-# import todotxt.todo
-# import todotxt.terminal_operations
-
 
 # for i in range(0, 10):
 #   print(term.getch())
@@ -26,11 +21,11 @@ todotxt_file_path = os.path.expanduser("~/Dropbox/todo/todobackup.txt")
 #   exit(1)
 
 try:
-  with open(todotxt_file_path, "r") as todotxt_file:
-    todos = todo.Todos(todotxt_file.readlines())
+    with open(todotxt_file_path, "r") as todotxt_file:
+        todos = todo.Todos(todotxt_file.readlines())
 except FileNotFoundError:
-  print("WARNING: unable to open", repr(todotxt_file_path))
-  exit(1)
+    print("WARNING: unable to open", repr(todotxt_file_path))
+    exit(1)
 # except:
 #   print("Unexpected error:", sys.exc_info()[0])
 #   raise

@@ -9,107 +9,108 @@ import re
 #   pass
 
 class Todo:
-  """Single Todo item"""
+    """Single Todo item"""
 
-  def __init__(self, item, index,
-      priority="", contexts=[], projects=[],
-      creation_date="", due_date="", completed_date=""):
-    self.raw            = item
-    self.raw_index      = index
-    self.priority       = priority
-    self.contexts       = contexts
-    self.projects       = projects
-    self.creation_date  = creation_date
-    self.due_date       = due_date
-    self.completed_date = completed_date
+    def __init__(self, item, index,
+            priority="", contexts=[], projects=[],
+            creation_date="", due_date="", completed_date=""):
+        self.raw            = item
+        self.raw_index      = index
+        self.priority       = priority
+        self.contexts       = contexts
+        self.projects       = projects
+        self.creation_date  = creation_date
+        self.due_date       = due_date
+        self.completed_date = completed_date
 
-  # def is_complete(self):
-  #   if self.completed_date == "":
-  #     return False
-  #   else:
-  #     return True
+    # def is_complete(self):
+    #   if self.completed_date == "":
+    #     return False
+    #   else:
+    #     return True
+
 
 class Todos:
-  """Todo items"""
+    """Todo items"""
 
-  def __init__(self, todo_items):
-    self.raw_items = todo_items
-    self._context_regex       = re.compile(r'\s*(@\S+)\s*')
-    self._project_regex       = re.compile(r'\s*(\+\S+)\s*')
-    self._creation_date_regex = re.compile(r'^\(?\w?\)?\s*(\d\d\d\d-\d\d-\d\d)\s*')
-    self._due_date_regex      = re.compile(r'\s*due:(\d\d\d\d-\d\d-\d\d)\s*')
-    self._priority_regex      = re.compile(r'\(([A-Z])\) ')
-    self._completed_regex     = re.compile(r'^x (\d\d\d\d-\d\d-\d\d)')
-    self.parse_raw_entries()
+    def __init__(self, todo_items):
+        self.raw_items = todo_items
+        self._context_regex       = re.compile(r'\s*(@\S+)\s*')
+        self._project_regex       = re.compile(r'\s*(\+\S+)\s*')
+        self._creation_date_regex = re.compile(r'^\(?\w?\)?\s*(\d\d\d\d-\d\d-\d\d)\s*')
+        self._due_date_regex      = re.compile(r'\s*due:(\d\d\d\d-\d\d-\d\d)\s*')
+        self._priority_regex      = re.compile(r'\(([A-Z])\) ')
+        self._completed_regex     = re.compile(r'^x (\d\d\d\d-\d\d-\d\d)')
+        self.parse_raw_entries()
 
-  def __iter__(self):
-    self.index = -1
-    return self
+    def __iter__(self):
+        self.index = -1
+        return self
 
-  def __next__(self):
-    self.index = self.index + 1
-    if self.index == len(self.todo_items):
-      raise StopIteration
-    return self.todo_items[self.index]
+    def __next__(self):
+        self.index = self.index + 1
+        if self.index == len(self.todo_items):
+            raise StopIteration
+        return self.todo_items[self.index]
 
-  def parse_raw_entries(self):
-    self.todo_items = [
-      Todo(todo, index,
-        contexts       = self.contexts(todo),
-        projects       = self.projects(todo),
-        priority       = self.priority(todo),
-        creation_date  = self.creation_date(todo),
-        due_date       = self.due_date(todo),
-        completed_date = self.completed(todo))
-      for index, todo in enumerate(self.raw_items) ]
+    def parse_raw_entries(self):
+        self.todo_items = [
+            Todo(todo, index,
+                contexts       = self.contexts(todo),
+                projects       = self.projects(todo),
+                priority       = self.priority(todo),
+                creation_date  = self.creation_date(todo),
+                due_date       = self.due_date(todo),
+                completed_date = self.completed(todo))
+            for index, todo in enumerate(self.raw_items) ]
 
-  def contexts(self, item):
-    return sorted( self._context_regex.findall(item) )
+    def contexts(self, item):
+        return sorted( self._context_regex.findall(item) )
 
-  def projects(self, item):
-    return sorted( self._project_regex.findall(item) )
+    def projects(self, item):
+        return sorted( self._project_regex.findall(item) )
 
-  def all_contexts(self):
-    # Nested Loop
-    # all_contexts = []
-    # for item in self.raw_items:
-    #   for found_context in self.contexts(item):
-    #     if found_context not in all_contexts:
-    #       all_contexts.append(found_context)
-    # return all_contexts
+    def all_contexts(self):
+        # Nested Loop
+        # all_contexts = []
+        # for item in self.raw_items:
+        #   for found_context in self.contexts(item):
+        #     if found_context not in all_contexts:
+        #       all_contexts.append(found_context)
+        # return all_contexts
 
-    # List comprehension
-    # return sorted(set( [found_context for item in self.raw_items for found_context in self.contexts(item)] ))
+        # List comprehension
+        # return sorted(set( [found_context for item in self.raw_items for found_context in self.contexts(item)] ))
 
-    # Join all items and use one regex.findall
-    return sorted(set( self._context_regex.findall(" ".join(self.raw_items))))
+        # Join all items and use one regex.findall
+        return sorted(set( self._context_regex.findall(" ".join(self.raw_items))))
 
-  def all_projects(self):
-    # List comprehension
-    # return sorted(set( [project for item in self.raw_items for project in self.projects(item)] ))
+    def all_projects(self):
+        # List comprehension
+        # return sorted(set( [project for item in self.raw_items for project in self.projects(item)] ))
 
-    # Join all items and use one regex.findall
-    return sorted(set( self._project_regex.findall(" ".join(self.raw_items))))
+        # Join all items and use one regex.findall
+        return sorted(set( self._project_regex.findall(" ".join(self.raw_items))))
 
-  def creation_date(self, item):
-    match = self._creation_date_regex.search(item)
-    return match.group(1) if match else ""
+    def creation_date(self, item):
+        match = self._creation_date_regex.search(item)
+        return match.group(1) if match else ""
 
-  def due_date(self, item):
-    match = self._due_date_regex.search(item)
-    return match.group(1) if match else ""
+    def due_date(self, item):
+        match = self._due_date_regex.search(item)
+        return match.group(1) if match else ""
 
-  def priority(self, item):
-    match = self._priority_regex.match(item)
-    return match.group(1) if match else ""
+    def priority(self, item):
+        match = self._priority_regex.match(item)
+        return match.group(1) if match else ""
 
-  def completed(self, item):
-    match = self._completed_regex.match(item)
-    return match.group(1) if match else False
+    def completed(self, item):
+        match = self._completed_regex.match(item)
+        return match.group(1) if match else False
 
-  def sorted(self):
-    self.todo_items.sort( key=lambda todo: todo.raw )
+    def sorted(self):
+        self.todo_items.sort( key=lambda todo: todo.raw )
 
-  def sorted_raw(self):
-    self.todo_items.sort( key=lambda todo: todo.raw_index )
+    def sorted_raw(self):
+        self.todo_items.sort( key=lambda todo: todo.raw_index )
 
