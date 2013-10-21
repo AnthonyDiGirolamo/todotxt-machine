@@ -86,7 +86,6 @@ class Screen:
         c = ""
         tty.setraw(sys.stdin.fileno())
         while c != "q":
-            # c = self.terminal.getch()
             if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
                 c = sys.stdin.read(1)
                 if c != "":
@@ -97,6 +96,7 @@ class Screen:
                     self.update()
             elif self.refresh_screen == True:
                 self.refresh_screen = False
+                self.terminal.clear_screen()
                 self.update()
             elif self.sigint == True:
                 self.exit()

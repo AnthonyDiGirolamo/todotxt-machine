@@ -57,6 +57,8 @@ def handle_sigint(signum, frame):
 signal.signal(signal.SIGWINCH, resize_terminal)
 signal.signal(signal.SIGINT, handle_sigint)
 
+signal.siginterrupt(signal.SIGWINCH, False)
+
 view.main_loop()
 
 # Other ways to read lines:
