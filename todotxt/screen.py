@@ -86,6 +86,8 @@ class Screen:
         c = ""
         tty.setraw(sys.stdin.fileno())
         while c != "q":
+            # if timeout is 0 cpu is 100% pegged
+            # if 0.1 then SIGWINCH interrupts the system call
             if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
                 c = sys.stdin.read(1)
                 if c != "":

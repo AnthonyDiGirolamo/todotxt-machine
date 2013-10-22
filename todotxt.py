@@ -57,6 +57,7 @@ def handle_sigint(signum, frame):
 signal.signal(signal.SIGWINCH, resize_terminal)
 signal.signal(signal.SIGINT, handle_sigint)
 
+# this doesn't seem to work
 signal.siginterrupt(signal.SIGWINCH, False)
 
 view.main_loop()
