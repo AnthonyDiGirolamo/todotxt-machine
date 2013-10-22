@@ -1,6 +1,8 @@
 import pytest
 from .. import todo
 
+import pprint
+pp = pprint.PrettyPrinter(indent=2).pprint
 
 @pytest.fixture
 def todos():
@@ -121,6 +123,16 @@ def test_todos_sorted(todos):
         "2013-10-19 Post signs around the neighborhood +GarageSale",
         "x 2013-10-01 @GroceryStore Eskimo pies" ]
     assert [todo.raw_index for todo in todos.todo_items] == [0, 1, 2, 3, 4]
+
+def test_todos_sorted_reverese(todos):
+    todos.sorted_reverse()
+    assert [todo.raw for todo in todos.todo_items] == [
+        "x 2013-10-01 @GroceryStore Eskimo pies",
+        "Unpack the guest bedroom +Unpacking due:2013-10-20",
+        "2013-10-19 Post signs around the neighborhood +GarageSale",
+        "(B) Schedule Goodwill pickup +GarageSale @phone",
+        "(A) Thank Mom for the dinner @phone" ]
+    assert [todo.raw_index for todo in todos.todo_items] == [4, 2, 3, 1, 0]
 
 def test_todos_filter_context(todos):
     assert [t.raw for t in todos.filter_context("@phone")] == [

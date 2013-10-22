@@ -23,6 +23,16 @@ class Todo:
         self.due_date       = due_date
         self.completed_date = completed_date
 
+    def __repr__(self):
+        return repr({"raw": self.raw,
+                "raw_index": self.raw_index,
+                "priority": self.priority,
+                "contexts": self.contexts,
+                "projects": self.projects,
+                "creation_date": self.creation_date,
+                "due_date": self.due_date,
+                "completed_date": self.completed_date})
+
     # def is_complete(self):
     #   if self.completed_date == "":
     #     return False
@@ -52,6 +62,9 @@ class Todos:
         if self.index == len(self.todo_items):
             raise StopIteration
         return self.todo_items[self.index]
+
+    def __repr__(self):
+        return repr( [i for i in self.todo_items] )
 
     def parse_raw_entries(self):
         self.todo_items = [
@@ -108,8 +121,11 @@ class Todos:
         match = self._completed_regex.match(item)
         return match.group(1) if match else False
 
-    def sorted(self):
-        self.todo_items.sort( key=lambda todo: todo.raw )
+    def sorted(self, reversed_sort=False):
+        self.todo_items.sort( key=lambda todo: todo.raw, reverse=reversed_sort )
+
+    def sorted_reverse(self):
+        self.sorted(reversed_sort=True)
 
     def sorted_raw(self):
         self.todo_items.sort( key=lambda todo: todo.raw_index )
