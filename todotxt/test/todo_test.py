@@ -121,3 +121,18 @@ def test_todos_sorted(todos):
         "2013-10-19 Post signs around the neighborhood +GarageSale",
         "x 2013-10-01 @GroceryStore Eskimo pies" ]
     assert [todo.raw_index for todo in todos.todo_items] == [0, 1, 2, 3, 4]
+
+def test_todos_filter_context(todos):
+    assert [t.raw for t in todos.filter_context("@phone")] == [
+        "(A) Thank Mom for the dinner @phone",
+        "(B) Schedule Goodwill pickup +GarageSale @phone"]
+    assert [t.raw for t in todos.filter_context("@GroceryStore")] == [
+        "x 2013-10-01 @GroceryStore Eskimo pies" ]
+
+def test_todos_filter_project(todos):
+    assert [t.raw for t in todos.filter_project("+GarageSale")] == [
+        "(B) Schedule Goodwill pickup +GarageSale @phone",
+        "2013-10-19 Post signs around the neighborhood +GarageSale" ]
+    assert [t.raw for t in todos.filter_project("+Unpacking")] == [
+        "Unpack the guest bedroom +Unpacking due:2013-10-20" ]
+

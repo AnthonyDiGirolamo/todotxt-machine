@@ -114,3 +114,10 @@ class Todos:
     def sorted_raw(self):
         self.todo_items.sort( key=lambda todo: todo.raw_index )
 
+    def filter_context(self, context):
+        return [item for item in self.todo_items if context in item.contexts]
+
+    def filter_project(self, project):
+        return [item for item in self.todo_items if project in item.projects]
+
+
