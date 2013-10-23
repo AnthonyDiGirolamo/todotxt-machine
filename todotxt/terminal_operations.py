@@ -46,8 +46,8 @@ class TerminalOperations:
     def length_ignoring_escapes(self, line):
         return len(line) - sum([len(i) for i in self._escape_sequence_regex.findall(line)])
 
-    def ljust_with_escapes(self, line, columns):
-        length = self.length_ignoring_escapes(line)
+    def ljust_with_escapes(self, line, columns, string_length=0):
+        length = self.length_ignoring_escapes(line) if string_length == 0 else string_length
         if length < columns:
             line += " " * (columns - length)
         return line

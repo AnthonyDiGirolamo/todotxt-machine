@@ -2,16 +2,16 @@
 import os
 # import ipdb
 # import sys
-import signal
+# import signal
 # import urwid
 
 from todotxt import *
 
-import pprint
-pp = pprint.PrettyPrinter(indent=2).pprint
+# import pprint
+# pp = pprint.PrettyPrinter(indent=2).pprint
 
-# todotxt_file_path = os.path.expanduser("~/Dropbox/todo/todobackup.txt")
-todotxt_file_path = os.path.expanduser("~/Documents/Dropbox/todo/todobackup.txt")
+todotxt_file_path = os.path.expanduser("~/Dropbox/todo/todobackup.txt")
+# todotxt_file_path = os.path.expanduser("~/Documents/Dropbox/todo/todobackup.txt")
 
 # if os.path.exists(todotxt_file_path):
 #   print("FOUND: ", todotxt_file_path)
@@ -43,7 +43,7 @@ except FileNotFoundError:
 #   print("Done")
 
 view = screen.Screen(
-    ["{} {}".format(i, todo.colored) for i, todo in enumerate(todos.todo_items)]
+    [("{}".format(todo.colored), todo.colored_length) for i, todo in enumerate(todos.todo_items)]
 )
 # signal.siginterrupt(signal.SIGWINCH, False)
 # def resize_terminal(signum, frame):

@@ -68,7 +68,7 @@ class Screen:
 
             term.output(
                 # items[current_item][:].strip().ljust(columns)
-                term.ljust_with_escapes(items[current_item].strip(), columns)
+                term.ljust_with_escapes(items[current_item][0].strip(), columns, string_length=items[current_item][1])
             )
             term.output( term.clear_formatting() )
             current_item += 1

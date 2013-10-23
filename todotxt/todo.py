@@ -10,6 +10,8 @@ from todotxt.terminal_operations import TerminalOperations
 # class NoPriorityError(Exception):
 #   pass
 
+term = TerminalOperations()
+
 class Todo:
     """Single Todo item"""
 
@@ -25,6 +27,7 @@ class Todo:
         self.due_date       = due_date
         self.completed_date = completed_date
         self.colored        = self.highlight()
+        self.colored_length = term.length_ignoring_escapes(self.colored)
 
     def __repr__(self):
         return repr({"raw": self.raw,
@@ -42,22 +45,22 @@ class Todo:
 
         for context in self.contexts:
             colored = colored.replace(context, "{}{}{}".format(
-                TerminalOperations.foreground_color(None, 1),
+                term.foreground_color(1),
                 context,
-                TerminalOperations.foreground_color(None, 13),
+                term.foreground_color(13),
             ))
 
         for project in self.projects:
             colored = colored.replace(project, "{}{}{}".format(
-                TerminalOperations.foreground_color(None, 4),
+                term.foreground_color(4),
                 project,
-                TerminalOperations.foreground_color(None, 13),
+                term.foreground_color(13),
             ))
 
         colored = colored.replace(self.creation_date, "{}{}{}".format(
-            TerminalOperations.foreground_color(None, 2),
+            term.foreground_color(2),
             self.creation_date,
-            TerminalOperations.foreground_color(None, 13),
+            term.foreground_color(13),
         ), 1)
         return colored
 
