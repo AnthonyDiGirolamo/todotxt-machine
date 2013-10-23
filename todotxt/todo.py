@@ -17,7 +17,6 @@ class Todo:
             colored="", priority="", contexts=[], projects=[],
             creation_date="", due_date="", completed_date=""):
         self.raw            = item
-        self.colored        = colored
         self.raw_index      = index
         self.priority       = priority
         self.contexts       = contexts
@@ -25,6 +24,7 @@ class Todo:
         self.creation_date  = creation_date
         self.due_date       = due_date
         self.completed_date = completed_date
+        self.colored        = self.highlight()
 
     def __repr__(self):
         return repr({"raw": self.raw,
@@ -36,6 +36,30 @@ class Todo:
                 "creation_date": self.creation_date,
                 "due_date": self.due_date,
                 "completed_date": self.completed_date})
+
+    def highlight(self):
+        colored = self.raw
+
+        for context in self.contexts:
+            colored = colored.replace(context, "{}{}{}".format(
+                TerminalOperations.foreground_color(None, 1),
+                context,
+                TerminalOperations.foreground_color(None, 13),
+            ))
+
+        for project in self.projects:
+            colored = colored.replace(project, "{}{}{}".format(
+                TerminalOperations.foreground_color(None, 4),
+                project,
+                TerminalOperations.foreground_color(None, 13),
+            ))
+
+        colored = colored.replace(self.creation_date, "{}{}{}".format(
+            TerminalOperations.foreground_color(None, 2),
+            self.creation_date,
+            TerminalOperations.foreground_color(None, 13),
+        ), 1)
+        return colored
 
     # def is_complete(self):
     #   if self.completed_date == "":
@@ -75,7 +99,6 @@ class Todos:
     def parse_raw_entries(self):
         self.todo_items = [
             Todo(todo, index,
-                colored        = self.highlight(todo),
                 contexts       = self.contexts(todo),
                 projects       = self.projects(todo),
                 priority       = self.priority(todo),
@@ -142,20 +165,5 @@ class Todos:
 
     def filter_project(self, project):
         return [item for item in self.todo_items if project in item.projects]
-
-    def highlight(self, line):
-        colored = re.sub(self._context_regex_highlighing,
-                         "\g<1>{}\g<2>{}\g<3>".format(
-                             TerminalOperations.foreground_color(None, 1),
-                             TerminalOperations.foreground_color(None, 13),
-                         ),
-                         line)
-        colored = re.sub(self._project_regex_highlighing,
-                         "\g<1>{}\g<2>{}\g<3>".format(
-                             TerminalOperations.foreground_color(None, 4),
-                             TerminalOperations.foreground_color(None, 13),
-                         ),
-                         colored)
-        return colored
 
 

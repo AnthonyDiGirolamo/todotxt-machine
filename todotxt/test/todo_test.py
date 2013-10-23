@@ -148,3 +148,8 @@ def test_todos_filter_project(todos):
     assert [t.raw for t in todos.filter_project("+Unpacking")] == [
         "Unpack the guest bedroom +Unpacking due:2013-10-20" ]
 
+def test_todos_highlight(todos):
+    todos.raw_items = ["(A) 2013-10-25 This is a +Very @cool test"]
+    todos.parse_raw_entries()
+    assert "\x1b[m" + todos.todo_items[0].colored == "\x1b[m" + "(A) \x1b[38;5;2m2013-10-25\x1b[38;5;13m This is a \x1b[38;5;4m+Very\x1b[38;5;13m \x1b[38;5;1m@cool\x1b[38;5;13m test"
+
