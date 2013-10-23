@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 import os
+# import ipdb
 # import sys
 # import signal
 import urwid
 
 from todotxt import *
 
-# import pprint
-# pp = pprint.PrettyPrinter(indent=2).pprint
+import pprint
+pp = pprint.PrettyPrinter(indent=2).pprint
 
 todotxt_file_path = os.path.expanduser("~/Dropbox/todo/todobackup.txt")
 # todotxt_file_path = os.path.expanduser("~/Documents/Dropbox/todo/todobackup.txt")
@@ -52,18 +53,13 @@ except FileNotFoundError:
 # signal.siginterrupt(signal.SIGWINCH, False)
 # view.main_loop()
 
-import random
-
 class ItemWidget (urwid.WidgetWrap):
 
     def __init__ (self, id, description):
         self.id = id
-        self.content = 'item %s: %s...' % (str(id), description[:25])
-        self.item = [
-            ('fixed', 15, urwid.Padding(urwid.AttrWrap(
-                urwid.Text('item %s' % str(id)), 'body', 'focus'), left=2)),
-            urwid.AttrWrap(urwid.Text('%s' % description), 'body', 'focus'),
-        ]
+        self.content = description
+        self.item = urwid.AttrWrap(urwid.Text("{}: {}".format(self.id, description), wrap='clip'), 'body', 'selected'),
+
         w = urwid.Columns(self.item)
         self.__super.__init__(w)
 
@@ -76,15 +72,16 @@ class ItemWidget (urwid.WidgetWrap):
 def main ():
 
     palette = [
-        ('body','dark cyan', '', 'standout'),
-        ('focus','dark red', '', 'standout'),
-        ('head','light red', 'black'),
-        ]
-
-    lorem = [
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        'Sed sollicitudin, nulla id viverra pulvinar.',
-        'Cras a magna sit amet felis fringilla lobortis.',
+        # Name of the display attribute, typically a string
+        # Foreground color and settings for 16-color (normal) mode
+        # Background color for normal mode
+        # Settings for monochrome mode (optional)
+        # Foreground color and settings for 88 and 256-color modes (optional)
+        # Background color for 88 and 256-color modes (optional)
+        ('body'     , ''            , ''           ) ,
+        ('selected' , 'light green' , 'brown' )      ,
+        ('editing'  , 'dark cyan'   , 'light green' )      ,
+        ('head'     , 'light blue'  , 'light green') ,
     ]
 
     def keystroke (input):
@@ -92,18 +89,18 @@ def main ():
             raise urwid.ExitMainLoop()
 
         if input is 'enter':
-            focus = listbox.get_focus()[0].content
-            view.set_header(urwid.AttrWrap(urwid.Text(
-                'selected: %s' % str(focus)), 'head'))
+            focus = listbox.get_focus()[0]
+            view.set_header(urwid.AttrWrap(urwid.Text('selected: {}'.format(focus.content), wrap='clip'), 'head'))
 
     items = []
-    for i in range(100):
-        items.append(ItemWidget(i, random.choice(lorem)))
+    for i, todo in enumerate(todos.raw_items):
+        items.append( ItemWidget(i, todo.strip()) )
 
-    header = urwid.AttrMap(urwid.Text('selected:'), 'head')
+    header = urwid.AttrMap(urwid.Text('{} Todos '.format(len(todos.raw_items)), wrap='clip'), 'head')
     listbox = urwid.ListBox(urwid.SimpleListWalker(items))
     view = urwid.Frame(urwid.AttrWrap(listbox, 'body'), header=header)
     loop = urwid.MainLoop(view, palette, unhandled_input=keystroke)
+    # ipdb.set_trace()
     loop.run()
 
 if __name__ == '__main__':
