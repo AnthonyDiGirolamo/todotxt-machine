@@ -2,16 +2,16 @@
 import os
 # import ipdb
 # import sys
-# import signal
-import urwid
+import signal
+# import urwid
 
 from todotxt import *
 
 import pprint
 pp = pprint.PrettyPrinter(indent=2).pprint
 
-todotxt_file_path = os.path.expanduser("~/Dropbox/todo/todobackup.txt")
-# todotxt_file_path = os.path.expanduser("~/Documents/Dropbox/todo/todobackup.txt")
+# todotxt_file_path = os.path.expanduser("~/Dropbox/todo/todobackup.txt")
+todotxt_file_path = os.path.expanduser("~/Documents/Dropbox/todo/todobackup.txt")
 
 # if os.path.exists(todotxt_file_path):
 #   print("FOUND: ", todotxt_file_path)
@@ -42,67 +42,69 @@ except FileNotFoundError:
 # finally:
 #   print("Done")
 
-# view = screen.Screen(todos.raw_items)
+view = screen.Screen(["{} {}".format(i, todo) for i, todo in enumerate(todos.raw_items)])
+# signal.siginterrupt(signal.SIGWINCH, False)
 # def resize_terminal(signum, frame):
 #     view.refresh_screen = True
 # def handle_sigint(signum, frame):
 #     view.sigint = True
 # signal.signal(signal.SIGWINCH, resize_terminal)
 # signal.signal(signal.SIGINT, handle_sigint)
-# # this doesn't seem to work
+# this doesn't seem to work
 # signal.siginterrupt(signal.SIGWINCH, False)
-# view.main_loop()
+view.main_loop()
 
-class ItemWidget (urwid.WidgetWrap):
+# urwid
+# class ItemWidget (urwid.WidgetWrap):
 
-    def __init__ (self, id, description):
-        self.id = id
-        self.content = description
-        self.item = urwid.AttrWrap(urwid.Text("{}: {}".format(self.id, description), wrap='clip'), 'body', 'selected'),
+#     def __init__ (self, id, description):
+#         self.id = id
+#         self.content = description
+#         self.item = urwid.AttrWrap(urwid.Text("{}: {}".format(self.id, description), wrap='clip'), 'body', 'selected'),
 
-        w = urwid.Columns(self.item)
-        self.__super.__init__(w)
+#         w = urwid.Columns(self.item)
+#         self.__super.__init__(w)
 
-    def selectable (self):
-        return True
+#     def selectable (self):
+#         return True
 
-    def keypress(self, size, key):
-        return key
+#     def keypress(self, size, key):
+#         return key
 
-def main ():
+# def main ():
 
-    palette = [
-        # Name of the display attribute, typically a string
-        # Foreground color and settings for 16-color (normal) mode
-        # Background color for normal mode
-        # Settings for monochrome mode (optional)
-        # Foreground color and settings for 88 and 256-color modes (optional)
-        # Background color for 88 and 256-color modes (optional)
-        ('body'     , ''            , ''           ) ,
-        ('selected' , 'light green' , 'brown' )      ,
-        ('editing'  , 'dark cyan'   , 'light green' )      ,
-        ('head'     , 'light blue'  , 'light green') ,
-    ]
+#     palette = [
+#         # Name of the display attribute, typically a string
+#         # Foreground color and settings for 16-color (normal) mode
+#         # Background color for normal mode
+#         # Settings for monochrome mode (optional)
+#         # Foreground color and settings for 88 and 256-color modes (optional)
+#         # Background color for 88 and 256-color modes (optional)
+#         ('body'     , ''            , ''           ) ,
+#         ('selected' , 'light green' , 'brown' )      ,
+#         ('editing'  , 'dark cyan'   , 'light green' )      ,
+#         ('head'     , 'light blue'  , 'light green') ,
+#     ]
 
-    def keystroke (input):
-        if input in ('q', 'Q'):
-            raise urwid.ExitMainLoop()
+#     def keystroke (input):
+#         if input in ('q', 'Q'):
+#             raise urwid.ExitMainLoop()
 
-        if input is 'enter':
-            focus = listbox.get_focus()[0]
-            view.set_header(urwid.AttrWrap(urwid.Text('selected: {}'.format(focus.content), wrap='clip'), 'head'))
+#         if input is 'enter':
+#             focus = listbox.get_focus()[0]
+#             view.set_header(urwid.AttrWrap(urwid.Text('selected: {}'.format(focus.content), wrap='clip'), 'head'))
 
-    items = []
-    for i, todo in enumerate(todos.raw_items):
-        items.append( ItemWidget(i, todo.strip()) )
+#     items = []
+#     for i, todo in enumerate(todos.raw_items):
+#         items.append( ItemWidget(i, todo.strip()) )
 
-    header = urwid.AttrMap(urwid.Text('{} Todos '.format(len(todos.raw_items)), wrap='clip'), 'head')
-    listbox = urwid.ListBox(urwid.SimpleListWalker(items))
-    view = urwid.Frame(urwid.AttrWrap(listbox, 'body'), header=header)
-    loop = urwid.MainLoop(view, palette, unhandled_input=keystroke)
-    # ipdb.set_trace()
-    loop.run()
+#     header = urwid.AttrMap(urwid.Text('{} Todos '.format(len(todos.raw_items)), wrap='clip'), 'head')
+#     listbox = urwid.ListBox(urwid.SimpleListWalker(items))
+#     view = urwid.Frame(urwid.AttrWrap(listbox, 'body'), header=header)
+#     loop = urwid.MainLoop(view, palette, unhandled_input=keystroke)
+#     # ipdb.set_trace()
+#     loop.run()
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
 

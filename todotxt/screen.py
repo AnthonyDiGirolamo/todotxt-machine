@@ -4,6 +4,7 @@ import sys
 import tty
 import termios
 import select
+import time
 
 import todotxt.terminal_operations
 
@@ -28,18 +29,28 @@ class Screen:
         self.items = items
 
     def update(self):
-        self.terminal.update_screen_size()
+        term    = self.terminal
         columns = self.terminal.columns
         rows    = self.terminal.rows
-        term    = self.terminal
         items   = self.items
+
+        term.update_screen_size()
+        # if window resized
+        if self.terminal.columns != columns or self.terminal.rows != rows:
+            term.clear_screen()
+            columns = self.terminal.columns
+            rows    = self.terminal.rows
+
+            if self.selected_row > rows:
+                self.starting_item = self.selected_item - rows + 2
+                self.selected_row = rows
 
         # Titlebar
         term.output( term.clear_formatting() )
         term.move_cursor(1, 1)
         term.output( term.foreground_color(4) + term.background_color(10) )
-        term.output( " Todos:{}  Rows:{}  Columns:{}  SelectedRow:{} SelectedItem:{}".format(
-            len(items), rows, columns, self.selected_row, self.selected_item).ljust(columns) )
+        term.output( "Todos:{}  Rows:{}  Columns:{}  StartingItem:{} SelectedRow:{} SelectedItem:{}".format(
+            len(items), rows, columns, self.starting_item, self.selected_row, self.selected_item).ljust(columns) )
         term.output( term.clear_formatting() )
 
         # Todo List
@@ -88,7 +99,7 @@ class Screen:
         while c != "q":
             # if timeout is 0 cpu is 100% pegged
             # if 0.1 then SIGWINCH interrupts the system call
-            if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
+            if sys.stdin in select.select([sys.stdin], [], [], 0.1)[0]:
                 c = sys.stdin.read(1)
                 if c != "":
                     if c == "j":
@@ -96,12 +107,16 @@ class Screen:
                     elif c == "k":
                         self.move_selection_up()
                     self.update()
-            elif self.refresh_screen == True:
-                self.refresh_screen = False
-                self.terminal.clear_screen()
+            # refresh the screen every 2 seconds or so
+            # instead of trapping SIGWINCH
+            elif int(time.perf_counter()) % 2 == 0:
                 self.update()
-            elif self.sigint == True:
-                self.exit()
+            # elif self.refresh_screen == True:
+            #     self.refresh_screen = False
+            #     self.terminal.clear_screen()
+            #     self.update()
+            # elif self.sigint == True:
+            #     self.exit()
         # End while
         self.exit()
 
