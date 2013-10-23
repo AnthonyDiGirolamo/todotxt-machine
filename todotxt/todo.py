@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import re
 
+from todotxt.terminal_operations import TerminalOperations
+
 # class NoCreationDateError(Exception):
 #   pass
 # class NoDueDateError(Exception):
@@ -12,9 +14,10 @@ class Todo:
     """Single Todo item"""
 
     def __init__(self, item, index,
-            priority="", contexts=[], projects=[],
+            colored="", priority="", contexts=[], projects=[],
             creation_date="", due_date="", completed_date=""):
         self.raw            = item
+        self.colored        = colored
         self.raw_index      = index
         self.priority       = priority
         self.contexts       = contexts
@@ -25,6 +28,7 @@ class Todo:
 
     def __repr__(self):
         return repr({"raw": self.raw,
+                "colored": self.colored,
                 "raw_index": self.raw_index,
                 "priority": self.priority,
                 "contexts": self.contexts,
@@ -51,6 +55,8 @@ class Todos:
         self._due_date_regex      = re.compile(r'\s*due:(\d\d\d\d-\d\d-\d\d)\s*')
         self._priority_regex      = re.compile(r'\(([A-Z])\) ')
         self._completed_regex     = re.compile(r'^x (\d\d\d\d-\d\d-\d\d)')
+        self._context_regex_highlighing = re.compile(r'(\s*)(@\S+)(\s*)')
+        self._project_regex_highlighing = re.compile(r'(\s*)(\+\S+)(\s*)')
         self.parse_raw_entries()
 
     def __iter__(self):
@@ -69,6 +75,7 @@ class Todos:
     def parse_raw_entries(self):
         self.todo_items = [
             Todo(todo, index,
+                colored        = self.highlight(todo),
                 contexts       = self.contexts(todo),
                 projects       = self.projects(todo),
                 priority       = self.priority(todo),
@@ -135,5 +142,20 @@ class Todos:
 
     def filter_project(self, project):
         return [item for item in self.todo_items if project in item.projects]
+
+    def highlight(self, line):
+        colored = re.sub(self._context_regex_highlighing,
+                         "\g<1>{}\g<2>{}\g<3>".format(
+                             TerminalOperations.foreground_color(None, 1),
+                             TerminalOperations.foreground_color(None, 13),
+                         ),
+                         line)
+        colored = re.sub(self._project_regex_highlighing,
+                         "\g<1>{}\g<2>{}\g<3>".format(
+                             TerminalOperations.foreground_color(None, 4),
+                             TerminalOperations.foreground_color(None, 13),
+                         ),
+                         colored)
+        return colored
 
 

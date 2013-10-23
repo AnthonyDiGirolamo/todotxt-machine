@@ -42,7 +42,9 @@ except FileNotFoundError:
 # finally:
 #   print("Done")
 
-view = screen.Screen(["{} {}".format(i, todo) for i, todo in enumerate(todos.raw_items)])
+view = screen.Screen(
+    ["{} {}".format(i, todo.colored) for i, todo in enumerate(todos.todo_items)]
+)
 # signal.siginterrupt(signal.SIGWINCH, False)
 # def resize_terminal(signum, frame):
 #     view.refresh_screen = True

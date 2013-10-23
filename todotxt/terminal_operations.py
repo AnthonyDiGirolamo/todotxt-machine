@@ -4,11 +4,13 @@ import subprocess
 # import tty
 # import termios
 # import select
+import re
 
 class TerminalOperations:
     """For interacting with the terminal"""
 
     def __init__(self):
+        self._escape_sequence_regex = re.compile(r'\x1b\[[0-9;]*m')
         self.update_screen_size()
 
     def update_screen_size(self):
@@ -40,6 +42,15 @@ class TerminalOperations:
 
     def move_cursor_next_line(self):
         self.output("\x1B[E")
+
+    def length_ignoring_escapes(self, line):
+        return len(line) - sum([len(i) for i in self._escape_sequence_regex.findall(line)])
+
+    def ljust_with_escapes(self, line, columns):
+        length = self.length_ignoring_escapes(line)
+        if length < columns:
+            line += " " * (columns - length)
+        return line
 
     # solution for single key press - blocking
     # def getch(self):
