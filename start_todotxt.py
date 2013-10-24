@@ -42,9 +42,8 @@ except FileNotFoundError:
 # finally:
 #   print("Done")
 
-view = screen.Screen(
-    [("{}".format(todo.colored), todo.colored_length) for i, todo in enumerate(todos.todo_items)]
-)
+# ipdb.set_trace()
+view = screen.Screen( todos)
 # signal.siginterrupt(signal.SIGWINCH, False)
 # def resize_terminal(signum, frame):
 #     view.refresh_screen = True
@@ -104,7 +103,6 @@ view.main_loop()
 #     listbox = urwid.ListBox(urwid.SimpleListWalker(items))
 #     view = urwid.Frame(urwid.AttrWrap(listbox, 'body'), header=header)
 #     loop = urwid.MainLoop(view, palette, unhandled_input=keystroke)
-#     # ipdb.set_trace()
 #     loop.run()
 
 # if __name__ == '__main__':

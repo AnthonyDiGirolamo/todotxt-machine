@@ -17,7 +17,7 @@ class Screen:
         self.refresh_screen = False
 
         self.terminal       = todotxt.terminal_operations.TerminalOperations()
-        self.items          = items
+        self.items          = items.todo_items
         self.top_row        = 2
         self.selected_row   = self.top_row
         self.selected_item  = 0
@@ -50,7 +50,8 @@ class Screen:
         term.move_cursor(1, 1)
         term.output( term.foreground_color(4) + term.background_color(10) )
         term.output( "Todos:{}  Rows:{}  Columns:{}  StartingItem:{} SelectedRow:{} SelectedItem:{}".format(
-            len(items), rows, columns, self.starting_item, self.selected_row, self.selected_item).ljust(columns) )
+            len(items), rows, columns, self.starting_item, self.selected_row, self.selected_item).ljust(columns)[:columns]
+        )
         term.output( term.clear_formatting() )
 
         # Todo List
@@ -67,8 +68,9 @@ class Screen:
                 term.output( term.clear_formatting() )
 
             term.output(
-                # items[current_item][:].strip().ljust(columns)
-                term.ljust_with_escapes(items[current_item][0].strip(), columns, string_length=items[current_item][1])
+                items[current_item].highlight(
+                    items[current_item].raw.strip()[:columns].ljust(columns)
+                )
             )
             term.output( term.clear_formatting() )
             current_item += 1

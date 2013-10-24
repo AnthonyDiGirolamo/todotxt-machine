@@ -9,8 +9,21 @@ import re
 class TerminalOperations:
     """For interacting with the terminal"""
 
+    _escape_sequence_regex = re.compile(r'\x1b\[[0-9;]*m')
+
+    @staticmethod
+    def foreground_color(index):
+        return "\x1B[38;5;{}m".format(index)
+
+    @staticmethod
+    def background_color(index):
+        return "\x1B[48;5;{}m".format(index)
+
+    @staticmethod
+    def clear_formatting():
+        return "\x1B[m"
+
     def __init__(self):
-        self._escape_sequence_regex = re.compile(r'\x1b\[[0-9;]*m')
         self.update_screen_size()
 
     def update_screen_size(self):
@@ -18,15 +31,6 @@ class TerminalOperations:
 
     def output(self, text):
         sys.stdout.write(text)
-
-    def foreground_color(self, index):
-        return "\x1B[38;5;{}m".format(index)
-
-    def background_color(self, index):
-        return "\x1B[48;5;{}m".format(index)
-
-    def clear_formatting(self):
-        return "\x1B[m"
 
     def clear_screen(self):
         self.output("\x1B[2J")
@@ -43,11 +47,13 @@ class TerminalOperations:
     def move_cursor_next_line(self):
         self.output("\x1B[E")
 
-    def length_ignoring_escapes(self, line):
-        return len(line) - sum([len(i) for i in self._escape_sequence_regex.findall(line)])
+    @staticmethod
+    def length_ignoring_escapes(line):
+        return len(line) - sum([len(i) for i in TerminalOperations._escape_sequence_regex.findall(line)])
 
-    def ljust_with_escapes(self, line, columns, string_length=0):
-        length = self.length_ignoring_escapes(line) if string_length == 0 else string_length
+    @staticmethod
+    def ljust_with_escapes(line, columns, string_length=0):
+        length = TerminalOperations.length_ignoring_escapes(line) if string_length == 0 else string_length
         if length < columns:
             line += " " * (columns - length)
         return line
