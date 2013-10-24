@@ -12,7 +12,7 @@ import todotxt.terminal_operations
 class Screen:
     """Maintains the screen state"""
 
-    def __init__(self, items):
+    def __init__(self, todo):
         self.key            = ' '
         self.terminal       = todotxt.terminal_operations.TerminalOperations()
         self.columns        = self.terminal.columns
@@ -21,22 +21,36 @@ class Screen:
         self.selected_row   = self.top_row
         self.selected_item  = 0
         self.starting_item  = 0
-        self.update_items(items)
+        self.todo           = todo
+        self.update_todos(todo)
         self.original_terminal_settings = termios.tcgetattr(sys.stdin.fileno())
         self.terminal.clear_screen()
 
-    def update_items(self, items):
-        self.items = items
-        self.context_list = ["All"] + items.all_contexts()
-        self.project_list = ["All"] + items.all_projects()
+    def update_todos(self, todo):
+        self.todo           = todo
+        self.items          = self.todo.todo_items
+        self.context_list = ["All"] + todo.all_contexts()
+        self.project_list = ["All"] + todo.all_projects()
         self.selected_context = 0
+        self.last_context = 0
         self.selected_project = 0
+        self.last_project = 0
 
     def update(self):
-        term    = self.terminal
+        term = self.terminal
         columns = self.terminal.columns
-        rows    = self.terminal.rows
-        items   = self.items.todo_items
+        rows = self.terminal.rows
+
+        # load items
+        if self.selected_context == 0:
+            self.items = self.todo.todo_items
+        else:
+            # if context changed
+            if self.selected_context != self.last_context:
+                self.last_context = self.selected_context
+                self.move_selection_top()
+                term.clear_screen()
+            self.items = self.todo.filter_context(self.context_list[self.selected_context])
 
         term.update_screen_size()
 
@@ -57,7 +71,7 @@ class Screen:
         term.move_cursor(1, 1)
         term.output( term.foreground_color(4) + term.background_color(10) )
         term.output( "Todos:{}  Key:'{}'  Rows:{}  Columns:{}  StartingItem:{} SelectedRow:{} SelectedItem:{}".format(
-            len(items), ord(self.key), rows, columns, self.starting_item, self.selected_row, self.selected_item).ljust(columns)[:columns]
+            len(self.items), ord(self.key), rows, columns, self.starting_item, self.selected_row, self.selected_item).ljust(columns)[:columns]
         )
         term.output( term.clear_formatting() )
 
@@ -71,7 +85,7 @@ class Screen:
         # Todo List
         current_item = self.starting_item
         for row in range(self.top_row, rows + 1):
-            if current_item >= len(items):
+            if current_item >= len(self.items):
                 break
             # term.move_cursor_next_line()
             term.move_cursor(row, 1)
@@ -82,8 +96,8 @@ class Screen:
                 term.output( term.clear_formatting() )
 
             term.output(
-                items[current_item].highlight(
-                    items[current_item].raw.strip()[:columns].ljust(columns)
+                self.items[current_item].highlight(
+                    self.items[current_item].raw.strip()[:columns].ljust(columns)
                 )
             )
             term.output( term.clear_formatting() )
@@ -92,7 +106,7 @@ class Screen:
         sys.stdout.flush()
 
     def move_selection_down(self):
-        if self.selected_item < len(self.items.todo_items) - 1:
+        if self.selected_item < len(self.items) - 1:
             if self.selected_row < self.terminal.rows:
                 self.selected_row += 1
                 self.selected_item += 1
@@ -112,9 +126,11 @@ class Screen:
                     self.selected_item -= 1
 
     def move_selection_bottom(self):
-        self.selected_item = len(self.items.todo_items)-1
-        if len(self.items.todo_items) > self.terminal.rows:
+        item_count = len(self.items)
+        self.selected_item = item_count - 1
+        if item_count > self.terminal.rows:
             self.starting_item = self.selected_item - self.terminal.rows + self.top_row
+            self.selected_row = self.terminal.rows
         else:
             self.starting_item = 0
             self.selected_row = self.terminal.rows
@@ -126,11 +142,13 @@ class Screen:
         self.selected_row = self.top_row
 
     def select_previous_context(self):
+        self.last_context = self.selected_context
         self.selected_context -= 1
         if self.selected_context < 0:
             self.selected_context = len(self.context_list)-1
 
     def select_next_context(self):
+        self.last_context = self.selected_context
         self.selected_context += 1
         if self.selected_context == len(self.context_list):
             self.selected_context = 0
