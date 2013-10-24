@@ -17,16 +17,20 @@ class Screen:
         self.terminal       = todotxt.terminal_operations.TerminalOperations()
         self.columns        = self.terminal.columns
         self.rows           = self.terminal.rows
-        self.items          = items
-        self.top_row        = 2
+        self.top_row        = 3
         self.selected_row   = self.top_row
         self.selected_item  = 0
         self.starting_item  = 0
+        self.update_items(items)
         self.original_terminal_settings = termios.tcgetattr(sys.stdin.fileno())
         self.terminal.clear_screen()
 
     def update_items(self, items):
         self.items = items
+        self.context_list = ["All"] + items.all_contexts()
+        self.project_list = ["All"] + items.all_projects()
+        self.selected_context = 0
+        self.selected_project = 0
 
     def update(self):
         term    = self.terminal
@@ -56,6 +60,13 @@ class Screen:
             len(items), ord(self.key), rows, columns, self.starting_item, self.selected_row, self.selected_item).ljust(columns)[:columns]
         )
         term.output( term.clear_formatting() )
+
+        term.move_cursor_next_line()
+
+        # Contexts
+        term.output("Context: {}".format("".join(
+            ["{} {} {}".format(term.background_color(11), c, term.clear_formatting()) if c == self.context_list[self.selected_context] else " {} ".format(c) for c in self.context_list]
+        )))
 
         # Todo List
         current_item = self.starting_item
@@ -104,9 +115,9 @@ class Screen:
         self.selected_item = len(self.items.todo_items)-1
         if len(self.items.todo_items) > self.terminal.rows:
             self.starting_item = self.selected_item - self.terminal.rows + self.top_row
-            self.selected_row = self.terminal.rows
         else:
             self.starting_item = 0
+            self.selected_row = self.terminal.rows
             self.selected_row = self.selected_item + self.top_row
 
     def move_selection_top(self):
@@ -114,11 +125,21 @@ class Screen:
         self.starting_item = 0
         self.selected_row = self.top_row
 
+    def select_previous_context(self):
+        self.selected_context -= 1
+        if self.selected_context < 0:
+            self.selected_context = len(self.context_list)-1
+
+    def select_next_context(self):
+        self.selected_context += 1
+        if self.selected_context == len(self.context_list):
+            self.selected_context = 0
+
     def main_loop(self):
         self.update()
         c = ""
         tty.setraw(sys.stdin.fileno())
-        while c != "Q":
+        while c != "q":
             # if we have new input
             # if timeout is 0 cpu is 100% pegged
             # if 0.1 then SIGWINCH interrupts the system call
@@ -134,6 +155,10 @@ class Screen:
                         self.move_selection_top()
                     elif c == "G":
                         self.move_selection_bottom()
+                    elif c == "c":
+                        self.select_next_context()
+                    elif c == "C":
+                        self.select_previous_context()
                     elif ord(c) == 3: # ctrl-c
                         break
                     # elif ord(c) == 127: # backspace
