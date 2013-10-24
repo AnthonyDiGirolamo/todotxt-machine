@@ -28,38 +28,57 @@ class Todo:
         self.colored_length = TerminalOperations.length_ignoring_escapes(self.colored)
 
     def __repr__(self):
-        return repr({"raw": self.raw,
-                "colored": self.colored,
-                "raw_index": self.raw_index,
-                "priority": self.priority,
-                "contexts": self.contexts,
-                "projects": self.projects,
-                "creation_date": self.creation_date,
-                "due_date": self.due_date,
-                "completed_date": self.completed_date})
+        return repr({
+            "raw":            self.raw,
+            "colored":        self.colored,
+            "raw_index":      self.raw_index,
+            "priority":       self.priority,
+            "contexts":       self.contexts,
+            "projects":       self.projects,
+            "creation_date":  self.creation_date,
+            "due_date":       self.due_date,
+            "completed_date": self.completed_date
+        })
+
+    colors = {
+        "foreground":    TerminalOperations.foreground_color(13),
+        "completed":     TerminalOperations.foreground_color(12),
+        "context":       TerminalOperations.foreground_color(2),
+        "project":       TerminalOperations.foreground_color(1),
+        "creation_date": TerminalOperations.foreground_color(9),
+        "priority": {
+            "A": TerminalOperations.foreground_color(int("0xa7",16)),
+            "B": TerminalOperations.foreground_color(int("0xad",16)),
+            "C": TerminalOperations.foreground_color(int("0xb9",16)),
+            "D": TerminalOperations.foreground_color(int("0x4d",16)),
+            "E": TerminalOperations.foreground_color(int("0x50",16)),
+            "F": TerminalOperations.foreground_color(int("0x3e",16)),
+        }
+    }
 
     def highlight(self, line=""):
+        colors = Todo.colors
         colored = self.raw if line == "" else line
 
-        for context in self.contexts:
-            colored = colored.replace(context, "{}{}{}".format(
-                TerminalOperations.foreground_color(1),
-                context,
-                TerminalOperations.foreground_color(13),
-            ))
+        if colored[:2] == "x ":
+            colored = colors['completed'] + colored
+        else:
+            line_color = colors["foreground"]
+            if self.priority:
+                line_color = colors["priority"][self.priority] if self.priority in "ABCDEF" else colors["foreground"]
+                colored = line_color + colored
 
-        for project in self.projects:
-            colored = colored.replace(project, "{}{}{}".format(
-                TerminalOperations.foreground_color(4),
-                project,
-                TerminalOperations.foreground_color(13),
-            ))
+            for context in self.contexts:
+                colored = colored.replace(context, "{}{}{}".format(
+                    colors["context"], context, line_color ))
 
-        colored = colored.replace(self.creation_date, "{}{}{}".format(
-            TerminalOperations.foreground_color(2),
-            self.creation_date,
-            TerminalOperations.foreground_color(13),
-        ), 1)
+            for project in self.projects:
+                colored = colored.replace(project, "{}{}{}".format(
+                    colors["project"], project, line_color ))
+
+            colored = colored.replace(self.creation_date, "{}{}{}".format(
+                colors["creation_date"], self.creation_date, line_color), 1)
+
         return colored
 
     # def is_complete(self):
