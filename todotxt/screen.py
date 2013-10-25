@@ -154,6 +154,7 @@ class Screen:
             self.selected_context = 0
 
     def main_loop(self):
+        self.terminal.hide_cursor()
         self.update()
         c = ""
         tty.setraw(sys.stdin.fileno())
@@ -205,5 +206,6 @@ class Screen:
         self.exit()
 
     def exit(self):
+        self.terminal.show_cursor()
         termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, self.original_terminal_settings)
 

@@ -32,6 +32,14 @@ class TerminalOperations:
     def output(self, text):
         sys.stdout.write(text)
 
+    def hide_cursor(self):
+        # subprocess.check_output(["tput", "civis"])
+        self.output('\x1b[?25l')
+
+    def show_cursor(self):
+        # subprocess.check_output(["tput", "cnorm"])
+        self.output('\x1b[34h\x1b[?25h')
+
     def clear_screen(self):
         self.output("\x1B[2J")
 
