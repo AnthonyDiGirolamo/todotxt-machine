@@ -1,4 +1,5 @@
 import pytest
+from datetime import date
 from .. import todo
 
 import pprint
@@ -92,9 +93,9 @@ def test_todos_priority(todos):
 
 def test_todos_completed(todos):
     assert todos.completed("x 2011-03-03 Call Mom)")        == "2011-03-03"
-    assert todos.completed("xylophone lesson")              == False
-    assert todos.completed("X 2012-01-01 Make resolutions") == False
-    assert todos.completed("x (A) Find ticket prices")      == False
+    assert todos.completed("xylophone lesson")              == ""
+    assert todos.completed("X 2012-01-01 Make resolutions") == ""
+    assert todos.completed("x (A) Find ticket prices")      == ""
 
 def test_todos_sorted(todos):
     todos.raw_items = [
@@ -156,4 +157,23 @@ def test_todos_highlight(todos):
 def test_todos_filter_context_and_project(todos):
     assert [t.raw for t in todos.filter_context_and_project("@phone", "+GarageSale")] == [
         "(B) Schedule Goodwill pickup +GarageSale @phone" ]
+
+def test_todo_complete(todos):
+    today = date.today()
+    todos.complete(0)
+    todos.todo_items[1].complete()
+    assert [t.raw for t in todos.todo_items] == [
+        "x {} (A) Thank Mom for the dinner @phone".format(today),
+        "x {} (B) Schedule Goodwill pickup +GarageSale @phone".format(today),
+        "Unpack the guest bedroom +Unpacking due:2013-10-20",
+        "2013-10-19 Post signs around the neighborhood +GarageSale",
+        "x 2013-10-01 @GroceryStore Eskimo pies" ]
+    assert [t.completed_date for t in todos.todo_items] == [
+        "{}".format(today),
+        "{}".format(today),
+        "",
+        "",
+        "2013-10-01" ]
+    assert [t.is_complete() for t in todos.todo_items] == [ True, True, False, False, True ]
+
 

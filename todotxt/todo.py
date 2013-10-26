@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import re
+from datetime import date
 
 from todotxt.terminal_operations import TerminalOperations
 
@@ -81,11 +82,16 @@ class Todo:
 
         return colored
 
-    # def is_complete(self):
-    #   if self.completed_date == "":
-    #     return False
-    #   else:
-    #     return True
+    def is_complete(self):
+      if self.completed_date == "":
+        return False
+      else:
+        return True
+
+    def complete(self):
+        today = date.today()
+        self.raw = "x {} ".format(today) + self.raw
+        self.completed_date = "{}".format(today)
 
 
 class Todos:
@@ -169,7 +175,7 @@ class Todos:
 
     def completed(self, item):
         match = self._completed_regex.match(item)
-        return match.group(1) if match else False
+        return match.group(1) if match else ""
 
     def sorted(self, reversed_sort=False):
         self.todo_items.sort( key=lambda todo: todo.raw, reverse=reversed_sort )
@@ -188,4 +194,7 @@ class Todos:
 
     def filter_context_and_project(self, context, project):
         return [item for item in self.todo_items if project in item.projects and context in item.contexts]
+
+    def complete(self, index):
+        self.todo_items[index].complete()
 
