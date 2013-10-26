@@ -17,7 +17,7 @@ class Screen:
         self.terminal       = todotxt.terminal_operations.TerminalOperations()
         self.columns        = self.terminal.columns
         self.rows           = self.terminal.rows
-        self.top_row        = 3
+        self.top_row        = 4
         self.selected_row   = self.top_row
         self.selected_item  = 0
         self.starting_item  = 0
@@ -41,15 +41,24 @@ class Screen:
         columns = self.terminal.columns
         rows = self.terminal.rows
 
-        # load items
-        if self.selected_context == 0:
+        # if context changed
+        if self.selected_context != self.last_context:
+            self.last_context = self.selected_context
+            self.move_selection_top()
+            term.clear_screen()
+        # if project changed
+        if self.selected_project != self.last_project:
+            self.last_project = self.selected_project
+            self.move_selection_top()
+            term.clear_screen()
+
+        if self.selected_context == 0 and self.selected_project == 0:
             self.items = self.todo.todo_items
-        else:
-            # if context changed
-            if self.selected_context != self.last_context:
-                self.last_context = self.selected_context
-                self.move_selection_top()
-                term.clear_screen()
+        elif self.selected_project != 0 and self.selected_context != 0:
+            self.items = self.todo.filter_context_and_project(self.context_list[self.selected_context], self.project_list[self.selected_project])
+        elif self.selected_project != 0:
+            self.items = self.todo.filter_project(self.project_list[self.selected_project])
+        elif self.selected_context != 0:
             self.items = self.todo.filter_context(self.context_list[self.selected_context])
 
         term.update_screen_size()
@@ -73,35 +82,52 @@ class Screen:
         term.output( "Todos:{}  Key:'{}'  Rows:{}  Columns:{}  StartingItem:{} SelectedRow:{} SelectedItem:{}".format(
             len(self.items), ord(self.key), rows, columns, self.starting_item, self.selected_row, self.selected_item).ljust(columns)[:columns]
         )
-        term.output( term.clear_formatting() )
+        # term.output( term.clear_formatting() )
 
-        term.move_cursor_next_line()
+        term.move_cursor(2, 1)
+        term.output( term.foreground_color(4) + term.background_color(10) )
+        term.output(" "*columns)
+        term.move_cursor(2, 1)
 
         # Contexts
         term.output("Context: {}".format("".join(
-            ["{} {} {}".format(term.background_color(11), c, term.clear_formatting()) if c == self.context_list[self.selected_context] else " {} ".format(c) for c in self.context_list]
+            ["{} {} {}".format(
+                term.foreground_color(2)+term.background_color(11), c, term.foreground_color(4)+term.background_color(10)) if c == self.context_list[self.selected_context] else " {} ".format(c) for c in self.context_list]
+        )))
+
+        term.move_cursor(3, 1)
+        term.output( term.foreground_color(4) + term.background_color(10) )
+        term.output(" "*columns)
+        term.move_cursor(3, 1)
+
+        # Projects
+        term.output( term.foreground_color(4) + term.background_color(10) )
+        term.output("Project: {}".format("".join(
+            ["{} {} {}".format(
+                term.foreground_color(1)+term.background_color(11), p, term.foreground_color(4)+term.background_color(10)) if p == self.project_list[self.selected_project] else " {} ".format(p) for p in self.project_list]
         )))
 
         # Todo List
-        current_item = self.starting_item
-        for row in range(self.top_row, rows + 1):
-            if current_item >= len(self.items):
-                break
-            # term.move_cursor_next_line()
-            term.move_cursor(row, 1)
+        if len(self.items) > 0:
+            current_item = self.starting_item
+            for row in range(self.top_row, rows + 1):
+                if current_item >= len(self.items):
+                    break
+                # term.move_cursor_next_line()
+                term.move_cursor(row, 1)
 
-            if self.selected_row == row:
-                term.output( term.background_color(11) )
-            else:
-                term.output( term.clear_formatting() )
+                if self.selected_row == row:
+                    term.output( term.background_color(11) )
+                else:
+                    term.output( term.clear_formatting() )
 
-            term.output(
-                self.items[current_item].highlight(
-                    self.items[current_item].raw.strip()[:columns].ljust(columns)
+                term.output(
+                    self.items[current_item].highlight(
+                        self.items[current_item].raw.strip()[:columns].ljust(columns)
+                    )
                 )
-            )
-            term.output( term.clear_formatting() )
-            current_item += 1
+                term.output( term.clear_formatting() )
+                current_item += 1
 
         sys.stdout.flush()
 
@@ -153,6 +179,18 @@ class Screen:
         if self.selected_context == len(self.context_list):
             self.selected_context = 0
 
+    def select_previous_project(self):
+        self.last_project = self.selected_project
+        self.selected_project -= 1
+        if self.selected_project < 0:
+            self.selected_project = len(self.project_list)-1
+
+    def select_next_project(self):
+        self.last_project = self.selected_project
+        self.selected_project += 1
+        if self.selected_project == len(self.project_list):
+            self.selected_project = 0
+
     def main_loop(self):
         self.terminal.hide_cursor()
         self.update()
@@ -174,6 +212,10 @@ class Screen:
                         self.move_selection_top()
                     elif c == "G":
                         self.move_selection_bottom()
+                    elif c == "p":
+                        self.select_next_project()
+                    elif c == "P":
+                        self.select_previous_project()
                     elif c == "c":
                         self.select_next_context()
                     elif c == "C":

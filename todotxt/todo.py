@@ -186,4 +186,6 @@ class Todos:
     def filter_project(self, project):
         return [item for item in self.todo_items if project in item.projects]
 
+    def filter_context_and_project(self, context, project):
+        return [item for item in self.todo_items if project in item.projects and context in item.contexts]
 
