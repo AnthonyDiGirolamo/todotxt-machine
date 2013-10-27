@@ -241,7 +241,7 @@ class Screen:
                                 self.move_selection_bottom()
                     self.update()
             # check the screen size every 2 seconds or so instead of trapping SIGWINCH
-            elif int(time.perf_counter()) % 2 == 0:
+            elif int(time.clock()) % 2 == 0:
                 if (self.columns, self.rows) != self.terminal.screen_size():
                     self.update()
         # End while - exit app
