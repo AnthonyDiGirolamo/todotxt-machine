@@ -43,7 +43,7 @@ except FileNotFoundError:
 #   print("Done")
 
 # ipdb.set_trace()
-view = screen.Screen( todos)
+view = screen.Screen(todos)
 # signal.siginterrupt(signal.SIGWINCH, False)
 # def resize_terminal(signum, frame):
 #     view.refresh_screen = True
@@ -54,6 +54,11 @@ view = screen.Screen( todos)
 # this doesn't seem to work
 # signal.siginterrupt(signal.SIGWINCH, False)
 view.main_loop()
+
+print("writing...")
+with open(todotxt_file_path+"test", "w") as todotxt_file:
+    todotxt_file.write( "\n".join([t.raw for t in view.todo]) )
+print("done")
 
 # urwid
 # class ItemWidget (urwid.WidgetWrap):

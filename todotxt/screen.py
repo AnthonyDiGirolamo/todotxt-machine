@@ -220,6 +220,12 @@ class Screen:
                         self.select_next_context()
                     elif c == "C":
                         self.select_previous_context()
+                    elif c == "x":
+                        i = self.items[self.selected_item].raw_index
+                        if self.todo[i].is_complete():
+                            self.todo[i].incomplete()
+                        else:
+                            self.todo[i].complete()
                     elif ord(c) == 3: # ctrl-c
                         break
                     # elif ord(c) == 127: # backspace

@@ -17,7 +17,7 @@ class Todo:
     def __init__(self, item, index,
             colored="", priority="", contexts=[], projects=[],
             creation_date="", due_date="", completed_date=""):
-        self.raw            = item
+        self.raw            = item.strip()
         self.raw_index      = index
         self.priority       = priority
         self.contexts       = contexts
