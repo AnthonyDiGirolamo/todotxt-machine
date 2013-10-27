@@ -120,6 +120,12 @@ class Todos:
             raise StopIteration
         return self.todo_items[self.index]
 
+    def next(self):
+        self.index = self.index + 1
+        if self.index == len(self.todo_items):
+            raise StopIteration
+        return self.todo_items[self.index]
+
     def __len__(self):
         return len(self.todo_items)
 
