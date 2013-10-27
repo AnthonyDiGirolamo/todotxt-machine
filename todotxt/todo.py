@@ -93,20 +93,21 @@ class Todo:
         self.raw = "x {} ".format(today) + self.raw
         self.completed_date = "{}".format(today)
 
+    def incomplete(self):
+        self.raw = re.sub(Todos._completed_regex, "", self.raw)
+        self.completed_date = ""
 
 class Todos:
     """Todo items"""
+    _context_regex       = re.compile(r'\s*(@\S+)\s*')
+    _project_regex       = re.compile(r'\s*(\+\S+)\s*')
+    _creation_date_regex = re.compile(r'^\(?\w?\)?\s*(\d\d\d\d-\d\d-\d\d)\s*')
+    _due_date_regex      = re.compile(r'\s*due:(\d\d\d\d-\d\d-\d\d)\s*')
+    _priority_regex      = re.compile(r'\(([A-Z])\) ')
+    _completed_regex     = re.compile(r'^x (\d\d\d\d-\d\d-\d\d) ')
 
     def __init__(self, todo_items):
         self.raw_items = todo_items
-        self._context_regex       = re.compile(r'\s*(@\S+)\s*')
-        self._project_regex       = re.compile(r'\s*(\+\S+)\s*')
-        self._creation_date_regex = re.compile(r'^\(?\w?\)?\s*(\d\d\d\d-\d\d-\d\d)\s*')
-        self._due_date_regex      = re.compile(r'\s*due:(\d\d\d\d-\d\d-\d\d)\s*')
-        self._priority_regex      = re.compile(r'\(([A-Z])\) ')
-        self._completed_regex     = re.compile(r'^x (\d\d\d\d-\d\d-\d\d)')
-        self._context_regex_highlighing = re.compile(r'(\s*)(@\S+)(\s*)')
-        self._project_regex_highlighing = re.compile(r'(\s*)(\+\S+)(\s*)')
         self.parse_raw_entries()
 
     def __iter__(self):
@@ -118,6 +119,12 @@ class Todos:
         if self.index == len(self.todo_items):
             raise StopIteration
         return self.todo_items[self.index]
+
+    def __len__(self):
+        return len(self.todo_items)
+
+    def __getitem__(self, index):
+        return self.todo_items[index]
 
     def __repr__(self):
         return repr( [i for i in self.todo_items] )
@@ -134,10 +141,10 @@ class Todos:
             for index, todo in enumerate(self.raw_items) ]
 
     def contexts(self, item):
-        return sorted( self._context_regex.findall(item) )
+        return sorted( Todos._context_regex.findall(item) )
 
     def projects(self, item):
-        return sorted( self._project_regex.findall(item) )
+        return sorted( Todos._project_regex.findall(item) )
 
     def all_contexts(self):
         # Nested Loop
@@ -152,29 +159,29 @@ class Todos:
         # return sorted(set( [found_context for item in self.raw_items for found_context in self.contexts(item)] ))
 
         # Join all items and use one regex.findall
-        return sorted(set( self._context_regex.findall(" ".join(self.raw_items))))
+        return sorted(set( Todos._context_regex.findall(" ".join(self.raw_items))))
 
     def all_projects(self):
         # List comprehension
         # return sorted(set( [project for item in self.raw_items for project in self.projects(item)] ))
 
         # Join all items and use one regex.findall
-        return sorted(set( self._project_regex.findall(" ".join(self.raw_items))))
+        return sorted(set( Todos._project_regex.findall(" ".join(self.raw_items))))
 
     def creation_date(self, item):
-        match = self._creation_date_regex.search(item)
+        match = Todos._creation_date_regex.search(item)
         return match.group(1) if match else ""
 
     def due_date(self, item):
-        match = self._due_date_regex.search(item)
+        match = Todos._due_date_regex.search(item)
         return match.group(1) if match else ""
 
     def priority(self, item):
-        match = self._priority_regex.match(item)
+        match = Todos._priority_regex.match(item)
         return match.group(1) if match else ""
 
     def completed(self, item):
-        match = self._completed_regex.match(item)
+        match = Todos._completed_regex.match(item)
         return match.group(1) if match else ""
 
     def sorted(self, reversed_sort=False):
@@ -194,7 +201,4 @@ class Todos:
 
     def filter_context_and_project(self, context, project):
         return [item for item in self.todo_items if project in item.projects and context in item.contexts]
-
-    def complete(self, index):
-        self.todo_items[index].complete()
 

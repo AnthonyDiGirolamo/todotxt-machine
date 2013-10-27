@@ -160,20 +160,23 @@ def test_todos_filter_context_and_project(todos):
 
 def test_todo_complete(todos):
     today = date.today()
-    todos.complete(0)
-    todos.todo_items[1].complete()
-    assert [t.raw for t in todos.todo_items] == [
+    todos[0].complete()
+    todos[1].complete()
+    assert [t.raw for t in todos] == [
         "x {} (A) Thank Mom for the dinner @phone".format(today),
         "x {} (B) Schedule Goodwill pickup +GarageSale @phone".format(today),
         "Unpack the guest bedroom +Unpacking due:2013-10-20",
         "2013-10-19 Post signs around the neighborhood +GarageSale",
         "x 2013-10-01 @GroceryStore Eskimo pies" ]
-    assert [t.completed_date for t in todos.todo_items] == [
+    assert [t.completed_date for t in todos] == [
         "{}".format(today),
         "{}".format(today),
         "",
         "",
         "2013-10-01" ]
-    assert [t.is_complete() for t in todos.todo_items] == [ True, True, False, False, True ]
+    assert [t.is_complete() for t in todos] == [ True, True, False, False, True ]
+    todos[1].incomplete()
+    assert todos[1].raw == "(B) Schedule Goodwill pickup +GarageSale @phone"
+    assert todos[1].completed_date == ""
 
 
