@@ -4,15 +4,24 @@ from datetime import date
 
 from todotxt.terminal_operations import TerminalOperations
 
-# class NoCreationDateError(Exception):
-#   pass
-# class NoDueDateError(Exception):
-#   pass
-# class NoPriorityError(Exception):
-#   pass
-
 class Todo:
     """Single Todo item"""
+
+    colors = {
+        "foreground":    TerminalOperations.foreground_color(13),
+        "completed":     TerminalOperations.foreground_color(12),
+        "context":       TerminalOperations.foreground_color(115),
+        "project":       TerminalOperations.foreground_color(204),
+        "creation_date": TerminalOperations.foreground_color(9),
+        "priority": {
+            "A": TerminalOperations.foreground_color(int("0xa7",16)),
+            "B": TerminalOperations.foreground_color(int("0xad",16)),
+            "C": TerminalOperations.foreground_color(int("0xb9",16)),
+            "D": TerminalOperations.foreground_color(int("0x4d",16)),
+            "E": TerminalOperations.foreground_color(int("0x50",16)),
+            "F": TerminalOperations.foreground_color(int("0x3e",16)),
+        }
+    }
 
     def __init__(self, item, index,
             colored="", priority="", contexts=[], projects=[],
@@ -40,22 +49,6 @@ class Todo:
             "due_date":       self.due_date,
             "completed_date": self.completed_date
         })
-
-    colors = {
-        "foreground":    TerminalOperations.foreground_color(13),
-        "completed":     TerminalOperations.foreground_color(12),
-        "context":       TerminalOperations.foreground_color(2),
-        "project":       TerminalOperations.foreground_color(1),
-        "creation_date": TerminalOperations.foreground_color(9),
-        "priority": {
-            "A": TerminalOperations.foreground_color(int("0xa7",16)),
-            "B": TerminalOperations.foreground_color(int("0xad",16)),
-            "C": TerminalOperations.foreground_color(int("0xb9",16)),
-            "D": TerminalOperations.foreground_color(int("0x4d",16)),
-            "E": TerminalOperations.foreground_color(int("0x50",16)),
-            "F": TerminalOperations.foreground_color(int("0x3e",16)),
-        }
-    }
 
     def highlight(self, line=""):
         colors = Todo.colors

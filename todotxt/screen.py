@@ -6,15 +6,22 @@ import termios
 import select
 import time
 
-import todotxt.terminal_operations
-
+from todotxt.terminal_operations import TerminalOperations
 
 class Screen:
     """Maintains the screen state"""
 
+    colors = {
+        "header":   {
+            "fg": TerminalOperations.foreground_color(195),
+            "bg": TerminalOperations.background_color(237)},
+        "selected": {
+            "bg": TerminalOperations.background_color(241)},
+    }
+
     def __init__(self, todo):
         self.key            = ' '
-        self.terminal       = todotxt.terminal_operations.TerminalOperations()
+        self.terminal       = TerminalOperations()
         self.columns        = self.terminal.columns
         self.rows           = self.terminal.rows
         self.top_row        = 4
@@ -78,33 +85,32 @@ class Screen:
         # Titlebar
         term.output( term.clear_formatting() )
         term.move_cursor(1, 1)
-        term.output( term.foreground_color(4) + term.background_color(10) )
+        term.output( Screen.colors["header"]["fg"] + Screen.colors["header"]["bg"] )
         term.output( "Todos:{}  Key:'{}'  Rows:{}  Columns:{}  StartingItem:{} SelectedRow:{} SelectedItem:{}".format(
             len(self.items), ord(self.key), rows, columns, self.starting_item, self.selected_row, self.selected_item).ljust(columns)[:columns]
         )
-        # term.output( term.clear_formatting() )
 
         term.move_cursor(2, 1)
-        term.output( term.foreground_color(4) + term.background_color(10) )
+        term.output( Screen.colors["header"]["fg"] + Screen.colors["header"]["bg"] )
         term.output(" "*columns)
         term.move_cursor(2, 1)
 
         # Contexts
         term.output("Context: {}".format("".join(
             ["{} {} {}".format(
-                term.foreground_color(2)+term.background_color(11), c, term.foreground_color(4)+term.background_color(10)) if c == self.context_list[self.selected_context] else " {} ".format(c) for c in self.context_list]
+                term.foreground_color(115)+Screen.colors["selected"]["bg"], c, Screen.colors["header"]["fg"]+Screen.colors["header"]["bg"]) if c == self.context_list[self.selected_context] else " {} ".format(c) for c in self.context_list]
         )))
 
         term.move_cursor(3, 1)
-        term.output( term.foreground_color(4) + term.background_color(10) )
+        term.output( Screen.colors["header"]["fg"] + Screen.colors["header"]["bg"])
         term.output(" "*columns)
         term.move_cursor(3, 1)
 
         # Projects
-        term.output( term.foreground_color(4) + term.background_color(10) )
+        term.output( Screen.colors["header"]["fg"] + Screen.colors["header"]["bg"] )
         term.output("Project: {}".format("".join(
             ["{} {} {}".format(
-                term.foreground_color(1)+term.background_color(11), p, term.foreground_color(4)+term.background_color(10)) if p == self.project_list[self.selected_project] else " {} ".format(p) for p in self.project_list]
+                term.foreground_color(204)+Screen.colors["selected"]["bg"], p, Screen.colors["header"]["fg"]+Screen.colors["header"]["bg"]) if p == self.project_list[self.selected_project] else " {} ".format(p) for p in self.project_list]
         )))
 
         # Todo List
@@ -117,7 +123,7 @@ class Screen:
                 term.move_cursor(row, 1)
 
                 if self.selected_row == row:
-                    term.output( term.background_color(11) )
+                    term.output( Screen.colors["selected"]["bg"] )
                 else:
                     term.output( term.clear_formatting() )
 
