@@ -148,7 +148,7 @@ def test_todos_filter_project(todos):
     assert [t.raw for t in todos.filter_project("+Unpacking")] == [
         "Unpack the guest bedroom +Unpacking due:2013-10-20" ]
 
-def test_todos_highlight(todos):
+def test_todo_highlight(todos):
     todos.raw_items = ["2013-10-25 This is a +Very @cool test"]
     todos.parse_raw_entries()
     assert "\x1b[m" + todos.todo_items[0].colored == "\x1b[m" + "\x1b[38;5;135m2013-10-25\x1b[38;5;250m This is a \x1b[38;5;161m+Very\x1b[38;5;250m \x1b[38;5;118m@cool\x1b[38;5;250m test"
@@ -157,7 +157,7 @@ def test_todos_filter_context_and_project(todos):
     assert [t.raw for t in todos.filter_context_and_project("@phone", "+GarageSale")] == [
         "(B) Schedule Goodwill pickup +GarageSale @phone" ]
 
-def test_todo_update(todos):
+def test_todos_update(todos):
     todos.update([
         "(A) 1999-12-24 Thank Mom for the dinner @phone",
         "(B) Schedule Goodwill pickup +GarageSale @phone",
@@ -183,7 +183,7 @@ def test_todo_update(todos):
         "2013-10-19 Post signs around the neighborhood +GarageSale",
         "x 2013-10-01 @GroceryStore Eskimo pies" ]
 
-def test_todo_complete(todos):
+def test_todos_complete(todos):
     today = date.today()
     todos.update([
         "(A) 1999-12-24 Thank Mom for the dinner @phone",
@@ -222,7 +222,7 @@ def test_todo_complete(todos):
     assert todos[3].creation_date == "2013-10-19"
     assert todos[3].completed_date == "{}".format(today)
 
-def test_todos_incomplete(todos):
+def test_todo_incomplete(todos):
     todos.update([
         "x 1999-12-25 (A) 1999-12-24 Thank Mom for the dinner @phone",
         "x 1999-11-10 (B) Schedule Goodwill pickup +GarageSale @phone",
@@ -253,3 +253,43 @@ def test_todo_is_complete(todos):
         False,
         True ]
 
+def test_todo_update(todos):
+    t = todos[0]
+    t.update("(A) 2000-20-12 Thank Mom for the dinner @phone @home +GiveThanks")
+    assert t.raw            == "(A) 2000-20-12 Thank Mom for the dinner @phone @home +GiveThanks"
+    assert t.priority       == "A"
+    assert t.contexts       == ["@home", "@phone"]
+    assert t.projects       == ["+GiveThanks"]
+    assert t.creation_date  == "2000-20-12"
+    assert t.due_date       == ""
+    assert t.completed_date == ""
+    assert t.is_complete()  == False
+
+    t = todos[1]
+    assert t.raw      == "(B) Schedule Goodwill pickup +GarageSale @phone"
+    assert t.contexts == ["@phone"]
+    assert t.projects == ["+GarageSale"]
+    assert t.priority == "B"
+
+    t = todos[2]
+    t.update("x 2013-10-25 Unpack the guest bedroom +Unpacking due:2013-10-20")
+    assert t.raw            == "x 2013-10-25 Unpack the guest bedroom +Unpacking due:2013-10-20"
+    assert t.priority       == ""
+    assert t.contexts       == []
+    assert t.projects       == ["+Unpacking"]
+    assert t.creation_date  == ""
+    assert t.due_date       == "2013-10-20"
+    assert t.completed_date == "2013-10-25"
+    assert t.is_complete()  == True
+
+    t = todos[3]
+    assert t.raw           == "2013-10-19 Post signs around the neighborhood +GarageSale"
+    assert t.contexts      == []
+    assert t.projects      == ["+GarageSale"]
+    assert t.creation_date == "2013-10-19"
+
+    t = todos[4]
+    assert t.raw            == "x 2013-10-01 @GroceryStore Eskimo pies"
+    assert t.contexts       == ["@GroceryStore"]
+    assert t.projects       == []
+    assert t.completed_date == "2013-10-01"

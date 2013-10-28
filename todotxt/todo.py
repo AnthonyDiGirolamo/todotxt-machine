@@ -57,6 +57,17 @@ class Todo:
         self.colored        = self.highlight()
         self.colored_length = TerminalOperations.length_ignoring_escapes(self.colored)
 
+    def update(self, item):
+        self.raw            = item.strip()
+        self.priority       = Todos.priority(item)
+        self.contexts       = Todos.contexts(item)
+        self.projects       = Todos.projects(item)
+        self.creation_date  = Todos.creation_date(item)
+        self.due_date       = Todos.due_date(item)
+        self.completed_date = Todos.completed_date(item)
+        self.colored        = self.highlight()
+        self.colored_length = TerminalOperations.length_ignoring_escapes(self.colored)
+
     def __repr__(self):
         return repr({
             "raw":            self.raw,
@@ -159,18 +170,20 @@ class Todos:
     def parse_raw_entries(self):
         self.todo_items = [
             Todo(todo, index,
-                contexts       = self.contexts(todo),
-                projects       = self.projects(todo),
-                priority       = self.priority(todo),
-                creation_date  = self.creation_date(todo),
-                due_date       = self.due_date(todo),
-                completed_date = self.completed_date(todo))
+                contexts       = Todos.contexts(todo),
+                projects       = Todos.projects(todo),
+                priority       = Todos.priority(todo),
+                creation_date  = Todos.creation_date(todo),
+                due_date       = Todos.due_date(todo),
+                completed_date = Todos.completed_date(todo))
             for index, todo in enumerate(self.raw_items) ]
 
-    def contexts(self, item):
+    @staticmethod
+    def contexts(item):
         return sorted( Todos._context_regex.findall(item) )
 
-    def projects(self, item):
+    @staticmethod
+    def projects(item):
         return sorted( Todos._project_regex.findall(item) )
 
     def all_contexts(self):
@@ -195,19 +208,23 @@ class Todos:
         # Join all items and use one regex.findall
         return sorted(set( Todos._project_regex.findall(" ".join(self.raw_items))))
 
-    def creation_date(self, item):
+    @staticmethod
+    def creation_date(item):
         match = Todos._creation_date_regex.search(item)
         return match.group(1) if match else ""
 
-    def due_date(self, item):
+    @staticmethod
+    def due_date(item):
         match = Todos._due_date_regex.search(item)
         return match.group(1) if match else ""
 
-    def priority(self, item):
+    @staticmethod
+    def priority(item):
         match = Todos._priority_regex.match(item)
         return match.group(1) if match else ""
 
-    def completed_date(self, item):
+    @staticmethod
+    def completed_date(item):
         match = Todos._completed_regex.match(item)
         return match.group(1) if match else ""
 
