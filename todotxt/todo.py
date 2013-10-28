@@ -96,10 +96,12 @@ class Todo:
         return colored
 
     def is_complete(self):
-      if self.completed_date == "":
-        return False
-      else:
-        return True
+        if self.raw[0:2] == "x ":
+            return True
+        elif self.completed_date == "":
+            return False
+        else:
+            return True
 
     def complete(self):
         today = date.today()
@@ -114,7 +116,10 @@ class Todos:
     """Todo items"""
     _context_regex       = re.compile(r'\s*(@\S+)\s*')
     _project_regex       = re.compile(r'\s*(\+\S+)\s*')
-    _creation_date_regex = re.compile(r'^(?:x \d\d\d\d-\d\d-\d\d )?(?:\(\w\) )?(\d\d\d\d-\d\d-\d\d)\s*')
+    _creation_date_regex = re.compile(r'^'
+                                      r'(?:x \d\d\d\d-\d\d-\d\d )?'
+                                      r'(?:\(\w\) )?'
+                                      r'(\d\d\d\d-\d\d-\d\d)\s*')
     _due_date_regex      = re.compile(r'\s*due:(\d\d\d\d-\d\d-\d\d)\s*')
     _priority_regex      = re.compile(r'\(([A-Z])\) ')
     _completed_regex     = re.compile(r'^x (\d\d\d\d-\d\d-\d\d) ')

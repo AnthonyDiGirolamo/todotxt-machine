@@ -3,7 +3,7 @@ from datetime import date
 from .. import todo
 
 import pprint
-pp = pprint.PrettyPrinter(indent=2).pprint
+pp = pprint.PrettyPrinter(indent=4).pprint
 
 @pytest.fixture
 def todos():
@@ -157,6 +157,32 @@ def test_todos_filter_context_and_project(todos):
     assert [t.raw for t in todos.filter_context_and_project("@phone", "+GarageSale")] == [
         "(B) Schedule Goodwill pickup +GarageSale @phone" ]
 
+def test_todo_update(todos):
+    todos.update([
+        "(A) 1999-12-24 Thank Mom for the dinner @phone",
+        "(B) Schedule Goodwill pickup +GarageSale @phone",
+        "Unpack the guest bedroom +Unpacking due:2013-10-20",
+        "2013-10-19 Post signs around the neighborhood +GarageSale",
+        "x 2013-10-01 @GroceryStore Eskimo pies" ])
+    assert [t.raw for t in todos] == [
+        "(A) 1999-12-24 Thank Mom for the dinner @phone",
+        "(B) Schedule Goodwill pickup +GarageSale @phone",
+        "Unpack the guest bedroom +Unpacking due:2013-10-20",
+        "2013-10-19 Post signs around the neighborhood +GarageSale",
+        "x 2013-10-01 @GroceryStore Eskimo pies" ]
+    todos.update([
+        "x 1999-12-25 (A) 1999-12-24 Thank Mom for the dinner @phone"
+        "x 1999-11-10 (B) Schedule Goodwill pickup +GarageSale @phone"
+        "Unpack the guest bedroom +Unpacking due:2013-10-20",
+        "2013-10-19 Post signs around the neighborhood +GarageSale",
+        "x 2013-10-01 @GroceryStore Eskimo pies" ])
+    assert [t.raw for t in todos] == [
+        "x 1999-12-25 (A) 1999-12-24 Thank Mom for the dinner @phone"
+        "x 1999-11-10 (B) Schedule Goodwill pickup +GarageSale @phone"
+        "Unpack the guest bedroom +Unpacking due:2013-10-20",
+        "2013-10-19 Post signs around the neighborhood +GarageSale",
+        "x 2013-10-01 @GroceryStore Eskimo pies" ]
+
 def test_todo_complete(todos):
     today = date.today()
     todos.update([
@@ -198,8 +224,8 @@ def test_todo_complete(todos):
 
 def test_todos_incomplete(todos):
     todos.update([
-        "x 1999-12-25 (A) 1999-12-24 Thank Mom for the dinner @phone"
-        "x 1999-11-10 (B) Schedule Goodwill pickup +GarageSale @phone"
+        "x 1999-12-25 (A) 1999-12-24 Thank Mom for the dinner @phone",
+        "x 1999-11-10 (B) Schedule Goodwill pickup +GarageSale @phone",
         "Unpack the guest bedroom +Unpacking due:2013-10-20",
         "2013-10-19 Post signs around the neighborhood +GarageSale",
         "x 2013-10-01 @GroceryStore Eskimo pies" ])
@@ -214,4 +240,16 @@ def test_todos_incomplete(todos):
     todos[0].incomplete()
     assert todos[0].creation_date == "1999-12-24"
     assert todos[0].completed_date == ""
+
+def test_todo_is_complete(todos):
+    todos.update([
+        "x 1999-12-25 (A) 1999-12-24 Thank Mom for the dinner @phone",
+        "Unpack the guest bedroom +Unpacking due:2013-10-20",
+        "2013-10-19 Post signs around the neighborhood +GarageSale",
+        "x @GroceryStore Eskimo pies" ])
+    assert [t.is_complete() for t in todos] == [
+        True,
+        False,
+        False,
+        True ]
 
