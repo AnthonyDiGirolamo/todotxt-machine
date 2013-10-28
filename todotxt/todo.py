@@ -7,12 +7,32 @@ from todotxt.terminal_operations import TerminalOperations
 class Todo:
     """Single Todo item"""
 
+    # ! SOLARIZED HEX     16/8 TERMCOL       XTERM/HEX   L*A*B      RGB         HSB
+    # ! --------- ------- ---- -------       ----------- ---------- ----------- -----------
+    # ! base03    #002b36  8/4 brightblack   234 #1c1c1c 15 -12 -12   0  43  54 193 100  21
+    # ! base02    #073642  0/4 black         235 #262626 20 -12 -12   7  54  66 192  90  26
+    # ! base01    #586e75 10/7 brightgreen   240 #585858 45 -07 -07  88 110 117 194  25  46
+    # ! base00    #657b83 11/7 brightyellow  241 #626262 50 -07 -07 101 123 131 195  23  51
+    # ! base0     #839496 12/6 brightblue    244 #808080 60 -06 -03 131 148 150 186  13  59
+    # ! base1     #93a1a1 14/4 brightcyan    245 #8a8a8a 65 -05 -02 147 161 161 180   9  63
+    # ! base2     #eee8d5  7/7 white         254 #e4e4e4 92 -00  10 238 232 213  44  11  93
+    # ! base3     #fdf6e3 15/7 brightwhite   230 #ffffd7 97  00  10 253 246 227  44  10  99
+    # ! yellow    #b58900  3/3 yellow        136 #af8700 60  10  65 181 137   0  45 100  71
+    # ! orange    #cb4b16  9/3 brightred     166 #d75f00 50  50  55 203  75  22  18  89  80
+    # ! red       #dc322f  1/1 red           160 #d70000 50  65  45 220  50  47   1  79  86
+    # ! magenta   #d33682  5/5 magenta       125 #af005f 50  65 -05 211  54 130 331  74  83
+    # ! violet    #6c71c4 13/5 brightmagenta  61 #5f5faf 50  15 -45 108 113 196 237  45  77
+    # ! blue      #268bd2  4/4 blue           33 #0087ff 55 -10 -45  38 139 210 205  82  82
+    # ! cyan      #2aa198  6/6 cyan           37 #00afaf 60 -35 -05  42 161 152 175  74  63
+    # ! green     #859900  2/2 green          64 #5f8700 60 -20  65 133 153   0  68 100  60
+
     colors = {
-        "foreground":    TerminalOperations.foreground_color(13),
-        "completed":     TerminalOperations.foreground_color(12),
-        "context":       TerminalOperations.foreground_color(115),
-        "project":       TerminalOperations.foreground_color(204),
-        "creation_date": TerminalOperations.foreground_color(9),
+        "foreground":    TerminalOperations.foreground_color(250),
+        "completed":     TerminalOperations.foreground_color(59),
+        "context":       TerminalOperations.foreground_color(118),
+        "project":       TerminalOperations.foreground_color(161),
+        "creation_date": TerminalOperations.foreground_color(135),
+        "due_date":      TerminalOperations.foreground_color(208),
         "priority": {
             "A": TerminalOperations.foreground_color(int("0xa7",16)),
             "B": TerminalOperations.foreground_color(int("0xad",16)),
@@ -94,12 +114,15 @@ class Todos:
     """Todo items"""
     _context_regex       = re.compile(r'\s*(@\S+)\s*')
     _project_regex       = re.compile(r'\s*(\+\S+)\s*')
-    _creation_date_regex = re.compile(r'^\(?\w?\)?\s*(\d\d\d\d-\d\d-\d\d)\s*')
+    _creation_date_regex = re.compile(r'^(?:x \d\d\d\d-\d\d-\d\d )?(?:\(\w\) )?(\d\d\d\d-\d\d-\d\d)\s*')
     _due_date_regex      = re.compile(r'\s*due:(\d\d\d\d-\d\d-\d\d)\s*')
     _priority_regex      = re.compile(r'\(([A-Z])\) ')
     _completed_regex     = re.compile(r'^x (\d\d\d\d-\d\d-\d\d) ')
 
     def __init__(self, todo_items):
+        self.update(todo_items)
+
+    def update(self, todo_items):
         self.raw_items = todo_items
         self.parse_raw_entries()
 
@@ -136,7 +159,7 @@ class Todos:
                 priority       = self.priority(todo),
                 creation_date  = self.creation_date(todo),
                 due_date       = self.due_date(todo),
-                completed_date = self.completed(todo))
+                completed_date = self.completed_date(todo))
             for index, todo in enumerate(self.raw_items) ]
 
     def contexts(self, item):
@@ -179,7 +202,7 @@ class Todos:
         match = Todos._priority_regex.match(item)
         return match.group(1) if match else ""
 
-    def completed(self, item):
+    def completed_date(self, item):
         match = Todos._completed_regex.match(item)
         return match.group(1) if match else ""
 

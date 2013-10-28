@@ -6,17 +6,20 @@ import termios
 import select
 import time
 
+from todotxt.todo import Todo
 from todotxt.terminal_operations import TerminalOperations
 
 class Screen:
     """Maintains the screen state"""
 
     colors = {
+        "normal":   {
+            "bg": TerminalOperations.background_color(234)},
         "header":   {
-            "fg": TerminalOperations.foreground_color(195),
-            "bg": TerminalOperations.background_color(237)},
+            "bg": TerminalOperations.background_color(235),
+            "fg": TerminalOperations.foreground_color(81)},
         "selected": {
-            "bg": TerminalOperations.background_color(241)},
+            "bg": TerminalOperations.background_color(238)},
     }
 
     def __init__(self, todo):
@@ -98,7 +101,7 @@ class Screen:
         # Contexts
         term.output("Context: {}".format("".join(
             ["{} {} {}".format(
-                term.foreground_color(115)+Screen.colors["selected"]["bg"], c, Screen.colors["header"]["fg"]+Screen.colors["header"]["bg"]) if c == self.context_list[self.selected_context] else " {} ".format(c) for c in self.context_list]
+                Todo.colors["context"]+Screen.colors["selected"]["bg"], c, Screen.colors["header"]["fg"]+Screen.colors["header"]["bg"]) if c == self.context_list[self.selected_context] else " {} ".format(c) for c in self.context_list]
         )))
 
         term.move_cursor(3, 1)
@@ -110,7 +113,7 @@ class Screen:
         term.output( Screen.colors["header"]["fg"] + Screen.colors["header"]["bg"] )
         term.output("Project: {}".format("".join(
             ["{} {} {}".format(
-                term.foreground_color(204)+Screen.colors["selected"]["bg"], p, Screen.colors["header"]["fg"]+Screen.colors["header"]["bg"]) if p == self.project_list[self.selected_project] else " {} ".format(p) for p in self.project_list]
+                Todo.colors["project"]+Screen.colors["selected"]["bg"], p, Screen.colors["header"]["fg"]+Screen.colors["header"]["bg"]) if p == self.project_list[self.selected_project] else " {} ".format(p) for p in self.project_list]
         )))
 
         # Todo List
@@ -125,7 +128,7 @@ class Screen:
                 if self.selected_row == row:
                     term.output( Screen.colors["selected"]["bg"] )
                 else:
-                    term.output( term.clear_formatting() )
+                    term.output( term.clear_formatting()+Screen.colors["normal"]["bg"] )
 
                 term.output(
                     self.items[current_item].highlight(
