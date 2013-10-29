@@ -330,3 +330,17 @@ def test_todos_delete(todos):
         "Unpack the guest bedroom +Unpacking due:2013-10-20",
         "2013-10-19 Post signs around the neighborhood +GarageSale"]
 
+def test_todos_insert(todos, today):
+    todos.insert(1, "THIS IS A TEST @testing")
+    todos.insert(1, "THIS IS ANOTHER TEST @testing")
+    assert [t.raw for t in todos] == [
+        "(A) Thank Mom for the dinner @phone",
+        "{} THIS IS ANOTHER TEST @testing".format(today),
+        "{} THIS IS A TEST @testing".format(today),
+        "(B) Schedule Goodwill pickup +GarageSale @phone",
+        "Unpack the guest bedroom +Unpacking due:2013-10-20",
+        "2013-10-19 Post signs around the neighborhood +GarageSale",
+        "x 2013-10-01 @GroceryStore Eskimo pies",
+    ]
+    assert [todo.raw_index for todo in todos.todo_items] == [0, 1, 2, 3, 4, 5, 6]
+

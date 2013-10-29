@@ -129,8 +129,12 @@ class Todos:
         self.parse_raw_entries()
 
     def append(self, item):
-        self.todo_items.append( self.create_todo(item, len(self.raw_items)) )
-        newtodo = self.todo_items[len(self.raw_items)]
+        self.insert(len(self.todo_items), item)
+
+    def insert(self, index, item):
+        self.todo_items.insert(index, self.create_todo(item, index) )
+        self.update_raw_indices()
+        newtodo = self.todo_items[index]
         if newtodo.creation_date == "":
             newtodo.add_creation_date()
         self.raw_items.append(newtodo.raw)
@@ -177,6 +181,10 @@ class Todos:
         self.todo_items = [
             self.create_todo(todo, index)
             for index, todo in enumerate(self.raw_items) ]
+
+    def update_raw_indices(self):
+        for index, todo in enumerate(self.todo_items):
+            todo.raw_index = index
 
     @staticmethod
     def contexts(item):
