@@ -262,12 +262,16 @@ class Screen:
                             c = sys.stdin.read(1)
                             self.key = c
                             if ord(c) == 65: # up
+                                # self.key = 'up'
                                 self.move_selection_up()
                             elif ord(c) == 66: # down
+                                # self.key = 'down'
                                 self.move_selection_down()
                             elif ord(c) == 53: # page up
+                                # self.key = 'pageup'
                                 self.move_selection_top()
                             elif ord(c) == 54: # page down
+                                # self.key = 'pagedown'
                                 self.move_selection_bottom()
                     self.update()
             # check the screen size every 2 seconds or so instead of trapping SIGWINCH
