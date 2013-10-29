@@ -252,8 +252,12 @@ class Screen:
                             self.todo[i].complete()
                     elif c == 'A' or c == 'e' or ord(c) == 13: # enter
                         self.edit_item()
-                    elif c == 'o' or c == 'n':
+                    elif c == 'n':
                         self.edit_item(new='append')
+                    elif c == 'O':
+                        self.edit_item(new='insert_before')
+                    elif c == 'o':
+                        self.edit_item(new='insert_after')
                     elif c == 'D':
                         self.delete_item()
                     elif ord(c) == 3: # ctrl-c
@@ -297,15 +301,21 @@ class Screen:
     def delete_item(self):
         raw_index = self.items[self.selected_item].raw_index
         self.todo.delete(raw_index)
-        self.move_selection_up()
         self.terminal.clear_screen()
 
     def edit_item(self, new=False):
         self.terminal.move_cursor_next_line()
         self.restore_normal_input()
 
-        if new:
+        if new == 'append':
             pass
+        elif new == 'insert_before' or new == 'insert_after':
+            if len(self.todo) > 0:
+                raw_index = self.items[self.selected_item].raw_index
+                if new == 'insert_after':
+                    raw_index += 1
+            else:
+                raw_index = 0
         else:
             raw_index = self.items[self.selected_item].raw_index
             new_todo_line = self.items[self.selected_item].raw.strip()
@@ -325,6 +335,8 @@ class Screen:
 
         if new == 'append':
             self.todo.append(new_todo_line)
+        elif new == 'insert_before' or new == 'insert_after':
+            self.todo.insert(raw_index, new_todo_line)
         else:
             self.todo[raw_index].update(new_todo_line)
 

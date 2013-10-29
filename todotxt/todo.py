@@ -106,7 +106,8 @@ class Todo:
 
     def add_creation_date(self):
         if self.creation_date == "":
-            self.update("{} {}".format(date.today(), self.raw))
+            p = "({}) ".format(self.priority) if self.priority != "" else ""
+            self.update("{}{} {}".format(p, date.today(), self.raw.replace(p, "")))
 
 
 class Todos:
@@ -128,20 +129,21 @@ class Todos:
         self.raw_items = todo_items
         self.parse_raw_entries()
 
-    def append(self, item):
-        self.insert(len(self.todo_items), item)
+    def append(self, item, add_creation_date=True):
+        self.insert(len(self.todo_items), item, add_creation_date)
 
-    def insert(self, index, item):
+    def insert(self, index, item, add_creation_date=True):
         self.todo_items.insert(index, self.create_todo(item, index) )
         self.update_raw_indices()
         newtodo = self.todo_items[index]
-        if newtodo.creation_date == "":
+        if add_creation_date and newtodo.creation_date == "":
             newtodo.add_creation_date()
         self.raw_items.append(newtodo.raw)
 
     def delete(self, index):
         del self.todo_items[index]
         del self.raw_items[index]
+        self.update_raw_indices()
 
     def __iter__(self):
         self.index = -1

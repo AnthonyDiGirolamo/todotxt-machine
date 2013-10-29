@@ -309,13 +309,16 @@ def test_todo_add_creation_date(todos, today):
 
 def test_todos_append(todos, today):
     todos.append("THIS IS A TEST @testing")
+    todos.append("THIS IS A TEST @testing", add_creation_date=False)
     assert [t.raw for t in todos] == [
         "(A) Thank Mom for the dinner @phone",
         "(B) Schedule Goodwill pickup +GarageSale @phone",
         "Unpack the guest bedroom +Unpacking due:2013-10-20",
         "2013-10-19 Post signs around the neighborhood +GarageSale",
         "x 2013-10-01 @GroceryStore Eskimo pies",
-        "{} THIS IS A TEST @testing".format(today)]
+        "{} THIS IS A TEST @testing".format(today),
+        "THIS IS A TEST @testing".format(today)]
+    assert [todo.raw_index for todo in todos.todo_items] == [0, 1, 2, 3, 4, 5, 6]
 
 def test_todos_delete(todos):
     todos.delete(0)
@@ -324,23 +327,27 @@ def test_todos_delete(todos):
         "Unpack the guest bedroom +Unpacking due:2013-10-20",
         "2013-10-19 Post signs around the neighborhood +GarageSale",
         "x 2013-10-01 @GroceryStore Eskimo pies"]
+    assert [todo.raw_index for todo in todos.todo_items] == [0, 1, 2, 3]
     todos.delete(3)
     assert [t.raw for t in todos] == [
         "(B) Schedule Goodwill pickup +GarageSale @phone",
         "Unpack the guest bedroom +Unpacking due:2013-10-20",
         "2013-10-19 Post signs around the neighborhood +GarageSale"]
+    assert [todo.raw_index for todo in todos.todo_items] == [0, 1, 2]
 
 def test_todos_insert(todos, today):
     todos.insert(1, "THIS IS A TEST @testing")
-    todos.insert(1, "THIS IS ANOTHER TEST @testing")
+    todos.insert(1, "(B) THIS IS ANOTHER TEST @testing")
+    todos.insert(1, "(A) THIS IS ANOTHER TEST @testing", add_creation_date=False)
     assert [t.raw for t in todos] == [
         "(A) Thank Mom for the dinner @phone",
-        "{} THIS IS ANOTHER TEST @testing".format(today),
+        "(A) THIS IS ANOTHER TEST @testing".format(today),
+        "(B) {} THIS IS ANOTHER TEST @testing".format(today),
         "{} THIS IS A TEST @testing".format(today),
         "(B) Schedule Goodwill pickup +GarageSale @phone",
         "Unpack the guest bedroom +Unpacking due:2013-10-20",
         "2013-10-19 Post signs around the neighborhood +GarageSale",
         "x 2013-10-01 @GroceryStore Eskimo pies",
     ]
-    assert [todo.raw_index for todo in todos.todo_items] == [0, 1, 2, 3, 4, 5, 6]
+    assert [todo.raw_index for todo in todos.todo_items] == [0, 1, 2, 3, 4, 5, 6, 7]
 
