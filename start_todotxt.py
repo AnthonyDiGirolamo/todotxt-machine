@@ -1,23 +1,32 @@
 #!/usr/bin/env python
 import os
-# import ipdb
-# import sys
-# import signal
-# import urwid
-
+import argparse
 from todotxt import *
-
 # import pprint
-# pp = pprint.PrettyPrinter(indent=2).pprint
+# pp = pprint.PrettyPrinter(indent=4).pprint
 
-todotxt_file_path = os.path.expanduser("~/Dropbox/todo/todobackup.txt")
-# todotxt_file_path = os.path.expanduser("~/Documents/Dropbox/todo/todobackup.txt")
+# Default todo.txt file
+todotxt_file = '~/Dropbox/todo/todo.txt'
 
-# if os.path.exists(todotxt_file_path):
-#   print("FOUND: ", todotxt_file_path)
-# else:
-#   print("WARNING: unable to open", repr(todotxt_file_path))
-#   exit(1)
+# Parse command line
+command_line = argparse.ArgumentParser(
+    description = 'Interactive terminal interface for todo.txt files.')
+command_line.add_argument(
+    '-f', '--file',
+    help    = 'path to your todo.txt file default:{}'.format(todotxt_file),
+    default = todotxt_file)
+
+args = command_line.parse_args()
+print(args.file)
+
+todotxt_file_path = os.path.expanduser(args.file)
+
+if os.path.exists(todotxt_file_path):
+    pass
+    # print("FOUND: ", todotxt_file_path)
+else:
+    print("ERROR: unable to open {}\nUse the --file option to specify a path to your todo.txt file".format(todotxt_file_path))
+    exit(1)
 
 try:
     with open(todotxt_file_path, "r") as todotxt_file:
