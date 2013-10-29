@@ -250,12 +250,16 @@ class Screen:
                             self.todo[i].incomplete()
                         else:
                             self.todo[i].complete()
+                    elif c == 'A' or c == 'e' or ord(c) == 13: # enter
+                        self.edit_item()
+                    elif c == 'o' or c == 'n':
+                        self.edit_item(new='append')
+                    elif c == 'D':
+                        self.delete_item()
                     elif ord(c) == 3: # ctrl-c
                         break
                     # elif ord(c) == 127: # backspace
                     # elif ord(c) == 9: # tab
-                    elif ord(c) == 13: # enter
-                        self.edit_item()
                     elif ord(c) == 27: # special key - read another byte
                         c = sys.stdin.read(1)
                         self.key = c
@@ -290,15 +294,26 @@ class Screen:
         self.terminal.show_cursor()
         termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, self.original_terminal_settings)
 
-    def edit_item(self):
-        self.restore_normal_input()
+    def delete_item(self):
         raw_index = self.items[self.selected_item].raw_index
-        new_todo_line = self.items[self.selected_item].raw.strip()
+        self.todo.delete(raw_index)
+        self.move_selection_up()
+        self.terminal.clear_screen()
+
+    def edit_item(self, new=False):
+        self.terminal.move_cursor_next_line()
+        self.restore_normal_input()
+
+        if new:
+            pass
+        else:
+            raw_index = self.items[self.selected_item].raw_index
+            new_todo_line = self.items[self.selected_item].raw.strip()
+            readline.set_startup_hook(lambda: readline.insert_text(new_todo_line))
 
         readline.parse_and_bind('set editing-mode vi')
         readline.parse_and_bind('set keymap vi-command')
 
-        readline.set_startup_hook(lambda: readline.insert_text(new_todo_line))
         try:
             # new_todo_line = raw_input()
             new_todo_line = input()
@@ -308,7 +323,10 @@ class Screen:
         self.set_raw_input()
         self.terminal.clear_screen()
 
-        self.todo[raw_index].update(new_todo_line)
+        if new == 'append':
+            self.todo.append(new_todo_line)
+        else:
+            self.todo[raw_index].update(new_todo_line)
 
     def exit(self):
         self.restore_normal_input()

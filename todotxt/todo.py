@@ -29,10 +29,10 @@ class Todo:
             creation_date="", due_date="", completed_date=""):
         self.raw            = item.strip()
         self.raw_index      = index
+        self.creation_date  = creation_date
         self.priority       = priority
         self.contexts       = contexts
         self.projects       = projects
-        self.creation_date  = creation_date
         self.due_date       = due_date
         self.completed_date = completed_date
         self.colored        = self.highlight()
@@ -104,6 +104,11 @@ class Todo:
         self.raw = re.sub(Todos._completed_regex, "", self.raw)
         self.completed_date = ""
 
+    def add_creation_date(self):
+        if self.creation_date == "":
+            self.update("{} {}".format(date.today(), self.raw))
+
+
 class Todos:
     """Todo items"""
     _context_regex       = re.compile(r'\s*(@\S+)\s*')
@@ -122,6 +127,17 @@ class Todos:
     def update(self, todo_items):
         self.raw_items = todo_items
         self.parse_raw_entries()
+
+    def append(self, item):
+        self.todo_items.append( self.create_todo(item, len(self.raw_items)) )
+        newtodo = self.todo_items[len(self.raw_items)]
+        if newtodo.creation_date == "":
+            newtodo.add_creation_date()
+        self.raw_items.append(newtodo.raw)
+
+    def delete(self, index):
+        del self.todo_items[index]
+        del self.raw_items[index]
 
     def __iter__(self):
         self.index = -1
@@ -148,15 +164,18 @@ class Todos:
     def __repr__(self):
         return repr( [i for i in self.todo_items] )
 
+    def create_todo(self, todo, index):
+        return Todo(todo, index,
+            contexts       = Todos.contexts(todo),
+            projects       = Todos.projects(todo),
+            priority       = Todos.priority(todo),
+            creation_date  = Todos.creation_date(todo),
+            due_date       = Todos.due_date(todo),
+            completed_date = Todos.completed_date(todo))
+
     def parse_raw_entries(self):
         self.todo_items = [
-            Todo(todo, index,
-                contexts       = Todos.contexts(todo),
-                projects       = Todos.projects(todo),
-                priority       = Todos.priority(todo),
-                creation_date  = Todos.creation_date(todo),
-                due_date       = Todos.due_date(todo),
-                completed_date = Todos.completed_date(todo))
+            self.create_todo(todo, index)
             for index, todo in enumerate(self.raw_items) ]
 
     @staticmethod

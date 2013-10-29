@@ -64,10 +64,10 @@ view = screen.Screen(todos)
 # signal.siginterrupt(signal.SIGWINCH, False)
 view.main_loop()
 
-print("writing {}".format(todotxt_file_path))
+print("Writing: {}".format(todotxt_file_path), end=' ... ')
 with open(todotxt_file_path, "w") as todotxt_file:
     todotxt_file.write( "\n".join([t.raw for t in view.todo]) )
-print("done")
+print("done!")
 
 # urwid
 # class ItemWidget (urwid.WidgetWrap):

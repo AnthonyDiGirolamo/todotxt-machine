@@ -14,6 +14,10 @@ def todos():
         "2013-10-19 Post signs around the neighborhood +GarageSale",
         "x 2013-10-01 @GroceryStore Eskimo pies" ])
 
+@pytest.fixture
+def today():
+    return date.today()
+
 def test_todos_init(todos):
     assert len(todos.raw_items)  == 5
     assert len(todos.todo_items) == 5
@@ -293,3 +297,36 @@ def test_todo_update(todos):
     assert t.contexts       == ["@GroceryStore"]
     assert t.projects       == []
     assert t.completed_date == "2013-10-01"
+
+def test_todo_add_creation_date(todos, today):
+    todos[2].add_creation_date()
+    assert todos[2].raw == "{} Unpack the guest bedroom +Unpacking due:2013-10-20".format(today)
+    assert todos[2].creation_date == "{}".format(today)
+
+    todos[3].add_creation_date()
+    assert todos[3].raw == "2013-10-19 Post signs around the neighborhood +GarageSale"
+    assert todos[3].creation_date == "2013-10-19".format(today)
+
+def test_todos_append(todos, today):
+    todos.append("THIS IS A TEST @testing")
+    assert [t.raw for t in todos] == [
+        "(A) Thank Mom for the dinner @phone",
+        "(B) Schedule Goodwill pickup +GarageSale @phone",
+        "Unpack the guest bedroom +Unpacking due:2013-10-20",
+        "2013-10-19 Post signs around the neighborhood +GarageSale",
+        "x 2013-10-01 @GroceryStore Eskimo pies",
+        "{} THIS IS A TEST @testing".format(today)]
+
+def test_todos_delete(todos):
+    todos.delete(0)
+    assert [t.raw for t in todos] == [
+        "(B) Schedule Goodwill pickup +GarageSale @phone",
+        "Unpack the guest bedroom +Unpacking due:2013-10-20",
+        "2013-10-19 Post signs around the neighborhood +GarageSale",
+        "x 2013-10-01 @GroceryStore Eskimo pies"]
+    todos.delete(3)
+    assert [t.raw for t in todos] == [
+        "(B) Schedule Goodwill pickup +GarageSale @phone",
+        "Unpack the guest bedroom +Unpacking due:2013-10-20",
+        "2013-10-19 Post signs around the neighborhood +GarageSale"]
+
