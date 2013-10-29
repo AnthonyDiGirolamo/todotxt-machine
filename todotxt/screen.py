@@ -3,6 +3,7 @@ import sys
 
 import tty
 import termios
+import readline
 import select
 import time
 
@@ -206,10 +207,9 @@ class Screen:
             self.selected_project = 0
 
     def main_loop(self):
-        self.terminal.hide_cursor()
+        self.set_raw_input()
         self.update()
         c = ""
-        tty.setraw(sys.stdin.fileno())
         while c != "q":
             # if we have new input
             # if timeout is 0 cpu is 100% pegged
@@ -253,8 +253,9 @@ class Screen:
                     elif ord(c) == 3: # ctrl-c
                         break
                     # elif ord(c) == 127: # backspace
-                    # elif ord(c) == 13: # enter
                     # elif ord(c) == 9: # tab
+                    elif ord(c) == 13: # enter
+                        self.edit_item()
                     elif ord(c) == 27: # special key - read another byte
                         c = sys.stdin.read(1)
                         self.key = c
@@ -281,7 +282,34 @@ class Screen:
         # End while - exit app
         self.exit()
 
-    def exit(self):
+    def set_raw_input(self):
+        self.terminal.hide_cursor()
+        tty.setraw(sys.stdin.fileno())
+
+    def restore_normal_input(self):
         self.terminal.show_cursor()
         termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, self.original_terminal_settings)
+
+    def edit_item(self):
+        self.restore_normal_input()
+        raw_index = self.items[self.selected_item].raw_index
+        new_todo_line = self.items[self.selected_item].raw.strip()
+
+        readline.parse_and_bind('set editing-mode vi')
+        readline.parse_and_bind('set keymap vi-command')
+
+        readline.set_startup_hook(lambda: readline.insert_text(new_todo_line))
+        try:
+            # new_todo_line = raw_input()
+            new_todo_line = input()
+        finally:
+            readline.set_startup_hook(None)
+
+        self.set_raw_input()
+        self.terminal.clear_screen()
+
+        self.todo[raw_index].update(new_todo_line)
+
+    def exit(self):
+        self.restore_normal_input()
 

@@ -64,8 +64,8 @@ view = screen.Screen(todos)
 # signal.siginterrupt(signal.SIGWINCH, False)
 view.main_loop()
 
-print("writing...")
-with open(todotxt_file_path+"test", "w") as todotxt_file:
+print("writing {}".format(todotxt_file_path))
+with open(todotxt_file_path, "w") as todotxt_file:
     todotxt_file.write( "\n".join([t.raw for t in view.todo]) )
 print("done")
 
