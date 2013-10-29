@@ -337,8 +337,8 @@ class Screen:
         readline.parse_and_bind('set keymap vi-command')
 
         try:
-            # new_todo_line = raw_input()
-            new_todo_line = input()
+            new_todo_line = raw_input()
+            # new_todo_line = input()
         finally:
             readline.set_startup_hook(None)
 

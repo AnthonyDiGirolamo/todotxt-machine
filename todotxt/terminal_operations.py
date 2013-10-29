@@ -60,10 +60,10 @@ class TerminalOperations:
             # tty.setraw(sys.stdout.fileno())
             # os.system("stty raw -echo -icanon isig")
             # state = subprocess.check_output(["stty", "-g"]).decode()
-        sys.stdout.write("\x1B[18t\n")
+        sys.stdout.write("\x1B[18t")
         while c != b"t":
-            c = sys.stdin.buffer.read(1)
-            response += c.decode()
+            c = sys.stdin.read(1)
+            response += c #.decode()
 
         if set_terminal_raw:
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, original_stdin_settings)
