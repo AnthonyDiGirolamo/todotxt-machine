@@ -28,8 +28,8 @@ class TerminalOperations:
     def __init__(self):
         self.update_screen_size()
 
-    def update_screen_size(self):
-        self.columns, self.rows = self.screen_size()
+    def update_screen_size(self, set_terminal_raw=True):
+        self.columns, self.rows = self.screen_size(set_terminal_raw)
 
     def output(self, text):
         sys.stdout.write(text)
@@ -45,21 +45,29 @@ class TerminalOperations:
     def clear_screen(self):
         self.output("\x1B[2J")
 
-    def screen_size(self):
+    def screen_size(self, set_terminal_raw=True):
         # return ( int(subprocess.check_output(["tput", "cols"])), int(subprocess.check_output(["tput", "lines"])) )
         response = ""
         c        = b""
-        original_terminal_settings = termios.tcgetattr(sys.stdin.fileno())
-        tty.setraw(sys.stdin.fileno())
-        # state = subprocess.check_output(["stty", "-g"]).decode()
-        # os.system("stty raw -echo -icanon isig")
-        self.output("\x1B[18t\n")
-        # os.system("stty {}".format(state.strip()))
+        if set_terminal_raw:
+            original_stdin_settings = termios.tcgetattr(sys.stdin.fileno())
+            # original_stdout_settings = termios.tcgetattr(sys.stdout.fileno())
+            # new_stdout_settings = original_stdout_settings
+            # new_stdout_settings[3] = new_stdout_settings[3] & ~termios.ECHO
+            tty.setraw(sys.stdin.fileno())
+            # termios.tcsetattr(sys.stdout.fileno(), termios.TCSADRAIN, new_stdout_settings)
+            # tty.setraw(sys.stdout.fileno())
+            # os.system("stty raw -echo -icanon isig")
+            # state = subprocess.check_output(["stty", "-g"]).decode()
+        sys.stdout.write("\x1B[18t\n")
         while c != b"t":
             c = sys.stdin.buffer.read(1)
             response += c.decode()
 
-        termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, original_terminal_settings)
+        if set_terminal_raw:
+            termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, original_stdin_settings)
+            # termios.tcsetattr(sys.stdout.fileno(), termios.TCSADRAIN, original_stdout_settings)
+            # os.system("stty {}".format(state.strip()))
         response = response.split(";")
         rows     = int(response[-2])
         columns  = int(response[-1][0:-1])

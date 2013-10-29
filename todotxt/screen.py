@@ -81,7 +81,7 @@ class Screen:
         elif self.selected_context != 0:
             self.items = self.todo.filter_context(self.context_list[self.selected_context])
 
-        term.update_screen_size()
+        term.update_screen_size(set_terminal_raw=False)
 
         # if window resized
         if self.terminal.columns != columns or self.terminal.rows != rows:
@@ -297,7 +297,7 @@ class Screen:
                     self.update()
             # check the screen size every 2 seconds or so instead of trapping SIGWINCH
             elif int(time.time()) % 2 == 0:
-                if (self.columns, self.rows) != self.terminal.screen_size():
+                if (self.columns, self.rows) != self.terminal.screen_size(set_terminal_raw=False):
                     self.update()
         # End while - exit app
         self.exit()
