@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 import sys
+import os
 import subprocess
-# import tty
-# import termios
-# import select
+import tty
+import termios
+import select
 import re
 
 class TerminalOperations:
     """For interacting with the terminal"""
 
     _escape_sequence_regex = re.compile(r'\x1b\[[0-9;]*m')
+    _screen_size_regex     = re.compile(r'\[8;(.*);(.*)t')
 
     @staticmethod
     def foreground_color(index):
@@ -44,7 +46,24 @@ class TerminalOperations:
         self.output("\x1B[2J")
 
     def screen_size(self):
-        return ( int(subprocess.check_output(["tput", "cols"])), int(subprocess.check_output(["tput", "lines"])) )
+        # return ( int(subprocess.check_output(["tput", "cols"])), int(subprocess.check_output(["tput", "lines"])) )
+        response = ""
+        c        = b""
+        original_terminal_settings = termios.tcgetattr(sys.stdin.fileno())
+        tty.setraw(sys.stdin.fileno())
+        # state = subprocess.check_output(["stty", "-g"]).decode()
+        # os.system("stty raw -echo -icanon isig")
+        self.output("\x1B[18t\n")
+        # os.system("stty {}".format(state.strip()))
+        while c != b"t":
+            c = sys.stdin.buffer.read(1)
+            response += c.decode()
+
+        termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, original_terminal_settings)
+        response = response.split(";")
+        rows     = int(response[-2])
+        columns  = int(response[-1][0:-1])
+        return (columns, rows)
 
     def move_cursor(self, row, column):
         self.output("\x1B[{};{}H".format(row, column))

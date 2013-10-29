@@ -1,14 +1,13 @@
 #!/usr/bin/env python
-import sys
-
-import tty
-import termios
-import readline
-import select
-import time
-
 from todotxt.todo import Todo
 from todotxt.terminal_operations import TerminalOperations
+
+import sys
+import tty
+import termios
+import select
+import time
+import readline
 
 # if sys.version_info.major >= 3:
 #     perf_counter = time.perf_counter
@@ -101,7 +100,15 @@ class Screen:
         term.move_cursor(1, 1)
         term.output( Screen.colors["header"]["fg"] + Screen.colors["header"]["bg"] )
         term.output( "Todos:{}  Sort: {}  Key:'{}'  Rows:{}  Columns:{}  StartingItem:{} SelectedRow:{} SelectedItem:{}".format(
-            len(self.items), self.sorting_names[self.sorting], ord(self.key), self.terminal.rows, self.terminal.columns, self.starting_item, self.selected_row, self.selected_item).ljust(columns)[:columns]
+                len(self.items),
+                self.sorting_names[self.sorting],
+                ord(self.key),
+                self.terminal.rows,
+                self.terminal.columns,
+                self.starting_item,
+                self.selected_row,
+                self.selected_item
+            ).ljust(columns)[:columns]
         )
 
         term.move_cursor(2, 1)
