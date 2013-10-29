@@ -46,6 +46,7 @@ class TerminalOperations:
         self.output("\x1B[2J")
 
     def screen_size(self, set_terminal_raw=True):
+        # stty -echo; echo -en "\033[18t"; read -d t size; stty echo; size=${size/#??/}; echo $size
         # return ( int(subprocess.check_output(["tput", "cols"])), int(subprocess.check_output(["tput", "lines"])) )
         response = ""
         c        = b""
