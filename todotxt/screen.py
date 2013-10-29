@@ -10,6 +10,11 @@ import time
 from todotxt.todo import Todo
 from todotxt.terminal_operations import TerminalOperations
 
+# if sys.version_info.major >= 3:
+#     perf_counter = time.perf_counter
+# elif sys.version_info.major < 3:
+#     perf_counter = time.time
+
 class Screen:
     """Maintains the screen state"""
 
@@ -96,7 +101,7 @@ class Screen:
         term.move_cursor(1, 1)
         term.output( Screen.colors["header"]["fg"] + Screen.colors["header"]["bg"] )
         term.output( "Todos:{}  Sort: {}  Key:'{}'  Rows:{}  Columns:{}  StartingItem:{} SelectedRow:{} SelectedItem:{}".format(
-            len(self.items), self.sorting_names[self.sorting], ord(self.key), rows, columns, self.starting_item, self.selected_row, self.selected_item).ljust(columns)[:columns]
+            len(self.items), self.sorting_names[self.sorting], ord(self.key), self.terminal.rows, self.terminal.columns, self.starting_item, self.selected_row, self.selected_item).ljust(columns)[:columns]
         )
 
         term.move_cursor(2, 1)
@@ -284,7 +289,7 @@ class Screen:
                                 self.move_selection_bottom()
                     self.update()
             # check the screen size every 2 seconds or so instead of trapping SIGWINCH
-            elif int(time.clock()) % 2 == 0:
+            elif int(time.time()) % 2 == 0:
                 if (self.columns, self.rows) != self.terminal.screen_size():
                     self.update()
         # End while - exit app
