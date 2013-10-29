@@ -14,12 +14,15 @@ class Screen:
 
     colors = {
         "normal":   {
-            "bg": TerminalOperations.background_color(234)},
+            "bg": TerminalOperations.background_color(234)
+        },
         "header":   {
             "bg": TerminalOperations.background_color(235),
-            "fg": TerminalOperations.foreground_color(81)},
+            "fg": TerminalOperations.foreground_color(81)
+        },
         "selected": {
-            "bg": TerminalOperations.background_color(238)},
+            "bg": TerminalOperations.background_color(238)
+        },
     }
 
     def __init__(self, todo):
@@ -32,6 +35,8 @@ class Screen:
         self.selected_item  = 0
         self.starting_item  = 0
         self.todo           = todo
+        self.sorting_names  = ["Unsorted", "Ascending ", "Descending"]
+        self.sorting        = 0
         self.update_todos(todo)
         self.original_terminal_settings = termios.tcgetattr(sys.stdin.fileno())
         self.terminal.clear_screen()
@@ -89,8 +94,8 @@ class Screen:
         term.output( term.clear_formatting() )
         term.move_cursor(1, 1)
         term.output( Screen.colors["header"]["fg"] + Screen.colors["header"]["bg"] )
-        term.output( "Todos:{}  Key:'{}'  Rows:{}  Columns:{}  StartingItem:{} SelectedRow:{} SelectedItem:{}".format(
-            len(self.items), ord(self.key), rows, columns, self.starting_item, self.selected_row, self.selected_item).ljust(columns)[:columns]
+        term.output( "Todos:{}  Sort: {}  Key:'{}'  Rows:{}  Columns:{}  StartingItem:{} SelectedRow:{} SelectedItem:{}".format(
+            len(self.items), self.sorting_names[self.sorting], ord(self.key), rows, columns, self.starting_item, self.selected_row, self.selected_item).ljust(columns)[:columns]
         )
 
         term.move_cursor(2, 1)
@@ -229,6 +234,16 @@ class Screen:
                         self.select_next_context()
                     elif c == "C":
                         self.select_previous_context()
+                    elif c == "s":
+                        if self.sorting == 0:
+                            self.todo.sorted()
+                            self.sorting = 1
+                        elif self.sorting == 1:
+                            self.todo.sorted_reverse()
+                            self.sorting = 2
+                        elif self.sorting == 2:
+                            self.todo.sorted_raw()
+                            self.sorting = 0
                     elif c == "x":
                         i = self.items[self.selected_item].raw_index
                         if self.todo[i].is_complete():
