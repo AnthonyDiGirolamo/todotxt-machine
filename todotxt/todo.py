@@ -394,6 +394,23 @@ class Todos:
         "Make a pact with yourself today to not be defined by your past. Sometimes the greatest thing to come out of all your hard work isn't what you get for it, but what you become for it. Shake things up today! Be You...Be Free...Share.  -- Steve Maraboli, Life, the Truth, and Being Free",
         "If I told you I’ve worked hard to get where I’m at, I’d be lying, because I have no idea where I am right now.  -- Jarod Kintz, This Book is Not for Sale",
         "It's hard to beat a person who never gives up.  -- Babe Ruth",
+        "The best way to not feel hopeless is to get up and do something. Don’t wait for good things to happen to you. If you go out and make some good things happen, you will fill the world with hope, you will fill yourself with hope. -- Barack Obama",
+        "The only man who never makes mistakes is the man who never does anything. --  Theodore Roosevelt",
+        "What would life be if we had no courage to attempt anything? -- Vincent van Gogh",
+        "Far better it is to dare mighty things, to win glorious triumphs, even though checkered by failure, than to take rank with those poor spirits who neither enjoy much nor suffer much, because they live in the gray twilight that knows neither victory nor defeat. -- Theodore Roosevelt, Strenuous Life",
+        "...wanting change is step one, but step two is taking it. -- Isaac Marion, Warm Bodies",
+        "Make voyages. Attempt them. There's nothing else. -- Tennessee Williams, Camino Real",
+        "Do more than belong: participate. Do more than care: help. Do more than believe: practice. Do more than be fair: be kind. Do more than forgive: forget. Do more than dream: work. -- William Arthur Ward",
+        "To live a creative life, we must lose our fear of being wrong. -- Joseph Chilton Pearce",
+        "I love to sail forbidden seas, and land on barbarous coasts. -- Herman Melville",
+        "Do anything, save to lie down and die! -- Nathaniel Hawthorne, The Scarlet Letter",
+        "Whatever the mind of man can conceive and believe, it can achieve -- W. Clement Stone",
+        "He who waits to do a great deal of good at once will never do anything. -- Samuel Johnson",
+        "There's doubt in trying.  Just do it or stop thinking. -- Toba Beta, Master of Stupidity",
+        "You'll never know the the outcome unless you just go out there and just do it. -- Jonathan Anthony Burkett, Neglected But Undefeated: The Life Of A Boy Who Never Knew A Mother's Love",
+        "The only dreams that matter are the ones you have when you're awake. -- John O'Callaghan",
+        "A person can choose to stand against adversity, but most people will run from it before they come to terms with who they truly are, a wise person watches through adversity and follows the signs when it is their turn to stand. -- Faith Brashear",
+        "People tell you that you cannot, because they do not. -- Tim Fargo",
     ]
 
     @staticmethod
