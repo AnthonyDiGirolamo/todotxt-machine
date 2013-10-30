@@ -1,2 +1,2 @@
 # TodoTXT Package
-__all__ = ["todo", "screen", "terminal_operations"]
+__all__ = ["todo", "screen", "terminal_operations", "completer"]

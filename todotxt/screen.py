@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from todotxt.todo import Todo
 from todotxt.terminal_operations import TerminalOperations
+from todotxt.completer import Completer
 
 import sys
 import tty
@@ -331,13 +332,15 @@ class Screen:
                 raw_index = 0
 
             if new == 'insert_after':
-                self.terminal.move_cursor(self.selected_row+1, 1)
-                self.terminal.output(" "*self.terminal.columns)
+                for r in range(self.selected_row+1, self.terminal.rows+1):
+                    self.terminal.move_cursor(r, 1)
+                    self.terminal.output(" "*self.terminal.columns)
                 self.terminal.move_cursor(self.selected_row+1, 1)
             elif new == 'insert_before':
-                self.terminal.move_cursor(self.selected_row-1, 1)
-                self.terminal.output(" "*self.terminal.columns)
-                self.terminal.move_cursor(self.selected_row-1, 1)
+                for r in range(self.selected_row, self.terminal.rows+1):
+                    self.terminal.move_cursor(r, 1)
+                    self.terminal.output(" "*self.terminal.columns)
+                self.terminal.move_cursor(self.selected_row, 1)
         else:
             self.terminal.move_cursor(self.selected_row, 1)
 
@@ -345,8 +348,14 @@ class Screen:
             new_todo_line = self.items[self.selected_item].raw.strip()
             readline.set_startup_hook(lambda: readline.insert_text(new_todo_line))
 
+        # setup readline
         readline.parse_and_bind('set editing-mode vi')
-        readline.parse_and_bind('set keymap vi-command')
+        completer = Completer(self.context_list + self.project_list)
+        # we want to autocomplete tokens with @ and + symbols so we remove them from # the current readline delims
+        delims = readline.get_completer_delims().replace("@","").replace("+","")
+        readline.set_completer_delims(delims)
+        readline.set_completer(completer.complete)
+        readline.parse_and_bind('tab: complete')
 
         try:
             new_todo_line = getinput()
