@@ -9,6 +9,8 @@ import termios
 import select
 import time
 import readline
+import textwrap
+import random
 
 if sys.version_info.major >= 3:
     getinput = input
@@ -35,6 +37,7 @@ class Screen:
     }
 
     def __init__(self, todo):
+        random.seed()
         self.key            = ' '
         self.terminal       = TerminalOperations()
         self.columns        = self.terminal.columns
@@ -165,9 +168,28 @@ class Screen:
                 term.output( Screen.colors["normal"]["fg"]+Screen.colors["normal"]["bg"] )
                 term.output(" "*columns)
             term.move_cursor(self.top_row, 1)
-            term.output( Screen.colors["normal"]["fg"]+Screen.colors["normal"]["bg"] )
-            term.output(self.todo.quote())
 
+            quote_width = int(self.terminal.columns * 0.60)
+            quote_margin = int((self.terminal.columns - quote_width)/2)
+            quote, author = self.todo.quote().split(' -- ')
+
+            lines = []
+            for line in textwrap.wrap(quote, width=quote_width):
+                lines.append( " "*quote_margin + line.strip().ljust(quote_width) + " "*quote_margin )
+            lines.append(" "*columns )
+            for index, line in enumerate(textwrap.wrap("-- "+author, width=quote_width)):
+                if index == 0:
+                    l = line.strip().rjust(quote_width)
+                else:
+                    l = line.strip().ljust(quote_width)
+                lines.append( " "*quote_margin + l + " "*quote_margin )
+
+            for i in range(int((self.terminal.rows - 4 - len(lines))/2)):
+                term.move_cursor_next_line()
+            term.output( Screen.colors["normal"]["fg"]+Screen.colors["normal"]["bg"] )
+            for index, line in enumerate(lines):
+                term.output(line)
+                term.move_cursor_next_line()
 
         sys.stdout.flush()
 
