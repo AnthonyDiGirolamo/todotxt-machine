@@ -86,6 +86,9 @@ class Todo:
             colored = colored.replace(self.creation_date, "{}{}{}".format(
                 colors["creation_date"], self.creation_date, line_color), 1)
 
+            colored = colored.replace("due:"+self.due_date, "{}{}{}".format(
+                colors["due_date"], "due:"+self.due_date, line_color), 1)
+
         return colored
 
     def is_complete(self):
@@ -127,8 +130,7 @@ class Todos:
         self.update(todo_items)
 
     def update(self, todo_items):
-        self.raw_items = todo_items
-        self.parse_raw_entries()
+        self.parse_raw_entries(todo_items)
 
     def append(self, item, add_creation_date=True):
         self.insert(len(self.todo_items), item, add_creation_date)
@@ -139,11 +141,9 @@ class Todos:
         newtodo = self.todo_items[index]
         if add_creation_date and newtodo.creation_date == "":
             newtodo.add_creation_date()
-        self.raw_items.append(newtodo.raw)
 
     def delete(self, index):
         del self.todo_items[index]
-        del self.raw_items[index]
         self.update_raw_indices()
 
     def __iter__(self):
@@ -180,10 +180,10 @@ class Todos:
             due_date       = Todos.due_date(todo),
             completed_date = Todos.completed_date(todo))
 
-    def parse_raw_entries(self):
+    def parse_raw_entries(self, raw_items):
         self.todo_items = [
             self.create_todo(todo, index)
-            for index, todo in enumerate(self.raw_items) ]
+            for index, todo in enumerate(raw_items) ]
 
     def update_raw_indices(self):
         for index, todo in enumerate(self.todo_items):

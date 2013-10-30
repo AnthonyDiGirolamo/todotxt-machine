@@ -19,7 +19,7 @@ def today():
     return date.today()
 
 def test_todos_init(todos):
-    assert len(todos.raw_items)  == 5
+    assert len(todos) == 5
     assert len(todos.todo_items) == 5
 
 def test_todos_parse_entries(todos):
@@ -101,13 +101,12 @@ def test_todos_priority(todos):
     assert todos.priority("(A)->No Priority") == ""
 
 def test_todos_sorted(todos):
-    todos.raw_items = [
+    todos.parse_raw_entries([
         "(B) Schedule Goodwill pickup +GarageSale @phone",
         "(A) Thank Mom for the dinner @phone",
         "Unpack the guest bedroom +Unpacking due:2013-10-20",
         "2013-10-19 Post signs around the neighborhood +GarageSale",
-        "x 2013-10-01 @GroceryStore Eskimo pies" ]
-    todos.parse_raw_entries()
+        "x 2013-10-01 @GroceryStore Eskimo pies" ])
     assert [todo.raw_index for todo in todos.todo_items] == [0, 1, 2, 3, 4]
 
     todos.sorted()
@@ -153,8 +152,7 @@ def test_todos_filter_project(todos):
         "Unpack the guest bedroom +Unpacking due:2013-10-20" ]
 
 def test_todo_highlight(todos):
-    todos.raw_items = ["2013-10-25 This is a +Very @cool test"]
-    todos.parse_raw_entries()
+    todos.parse_raw_entries(["2013-10-25 This is a +Very @cool test"])
     assert "\x1b[m" + todos.todo_items[0].colored == "\x1b[m" + "\x1b[38;5;135m2013-10-25\x1b[38;5;250m This is a \x1b[38;5;161m+Very\x1b[38;5;250m \x1b[38;5;118m@cool\x1b[38;5;250m test"
 
 def test_todos_filter_context_and_project(todos):
