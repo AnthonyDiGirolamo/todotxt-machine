@@ -22,6 +22,7 @@ class Screen:
 
     colors = {
         "normal":   {
+            "fg": Todo.colors["foreground"],
             "bg": TerminalOperations.background_color(234)
         },
         "header":   {
@@ -322,6 +323,7 @@ class Screen:
         self.restore_normal_input()
 
         if new == 'append':
+            new_todo_line = "New Todo"
             pass
         elif new == 'insert_before' or new == 'insert_after':
             if len(self.todo) > 0:
@@ -331,22 +333,26 @@ class Screen:
             else:
                 raw_index = 0
 
-            if new == 'insert_after':
-                for r in range(self.selected_row+1, self.terminal.rows+1):
-                    self.terminal.move_cursor(r, 1)
-                    self.terminal.output(" "*self.terminal.columns)
-                self.terminal.move_cursor(self.selected_row+1, 1)
-            elif new == 'insert_before':
-                for r in range(self.selected_row, self.terminal.rows+1):
-                    self.terminal.move_cursor(r, 1)
-                    self.terminal.output(" "*self.terminal.columns)
-                self.terminal.move_cursor(self.selected_row, 1)
+            # if new == 'insert_after':
+            # elif new == 'insert_before':
+            new_todo_line = "New Todo"
         else:
-            self.terminal.move_cursor(self.selected_row, 1)
-
             raw_index = self.items[self.selected_item].raw_index
             new_todo_line = self.items[self.selected_item].raw.strip()
             readline.set_startup_hook(lambda: readline.insert_text(new_todo_line))
+
+        # Display editing prompt
+        self.terminal.output(Screen.colors["header"]["fg"]+Screen.colors["header"]["bg"])
+        self.terminal.move_cursor(self.selected_row-1, 1)
+        self.terminal.output(" "*self.terminal.columns)
+        self.terminal.move_cursor(self.selected_row-1, 1)
+        self.terminal.output("Editing: {}".format(new_todo_line))
+
+        for r in range(self.selected_row, self.terminal.rows):
+            self.terminal.move_cursor(r, 1)
+            self.terminal.output( Screen.colors["normal"]["fg"]+Screen.colors["normal"]["bg"] )
+            self.terminal.output(" "*self.terminal.columns)
+        self.terminal.move_cursor(self.selected_row, 1)
 
         # setup readline
         readline.parse_and_bind('set editing-mode vi')
@@ -367,6 +373,7 @@ class Screen:
 
         if new == 'append':
             self.todo.append(new_todo_line)
+            self.move_selection_bottom()
         elif new == 'insert_before' or new == 'insert_after':
             self.todo.insert(raw_index, new_todo_line)
         else:
