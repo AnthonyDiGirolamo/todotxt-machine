@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding=utf-8
 import re
 import random
 from datetime import date
@@ -303,7 +304,7 @@ class Todos:
         "If you are not working towards something, your life will end with nothing.  -- Habeeb Akande",
         "Respect your dream.  -- Jill Williamson, Go Teen Writers: How to Turn Your First Draft into a Published Book",
         "Hard work beats talent when talent fails to work hard.  -- Kevin Durant",
-        "I’m not a very good sleeper. But you know what? I’m willing to put in a few extra hours every day to get better. That’s just the kind of hard worker I am.  -- Jarod Kintz, Whenever You're Gone, I'm Here For You",
+        "Im not a very good sleeper. But you know what? I'm willing to put in a few extra hours every day to get better. That's just the kind of hard worker I am.  -- Jarod Kintz, Whenever You're Gone, I'm Here For You",
         "Persistence and passion will make you invincible.  -- Christian Baloga",
         "When God calls you to build 100 castles on earth and you built 98, take the 99th as if it's the begining of your work and work hard to finish the race with all excellence. Go the extra mile!  -- Israelmore Ayivor",
         # "It's a complex song, and it's fascinating to watch the creative process as they went back and forth and finally created it over a few months. Lennon was always my favorite Beatle. [ He laughs as Lennon stops during the first take and makes the band go back and revise a chord.] Did you hear that little detour they took? It didn't work, so they went back and started from where they were. It's so raw in this version. It actually makes the sound like mere mortals. You could actually imagine other people doing this, up to this version. Maybe not writing and conceiving it, but certainly playing it. Yet they just didn't stop. They were such perfectionists they kept it going This made a big impression on me when I was in my thirties. You could just tell how much they worked at this.  -- Walter Isaacson, Steve Jobs",
@@ -329,7 +330,7 @@ class Todos:
         "As I see it, if you work more hours than somebody else, during those hours you learn more about your craft. That can make you more efficient, more able, even happier. Hard work is like compounded interest in the bank. The rewards build faster.  -- Randy Pausch, The Last Lecture",
         "For a great tomorrow, plan today. Because every tomorrow becomes today, and every today becomes tomorrow. -- Richmond Akhigbe",
         "This should have been a red flag, I realize in retrospect. Working really hard on anything is, by definition, not cool.  -- Leila Sales, This Song Will Save Your Life",
-        "I want the peace in knowing that is wasn’t for lack of hustling that I missed a target for my dream. I want to know that the one thing in my control was under control.  -- Jon Acuff, Quitter: Closing the Gap Between Your Day Job and Your Dream Job",
+        "I want the peace in knowing that is wasn't for lack of hustling that I missed a target for my dream. I want to know that the one thing in my control was under control.  -- Jon Acuff, Quitter: Closing the Gap Between Your Day Job and Your Dream Job",
         "Though you can love what you do not master, you cannot master what you do not love.  -- Mokokoma Mokhonoana",
         "Today's marriages become toxic, with resentments, after only a few years. It's one thing to say, 'I forgive,' but most lack the enterprise to do the necessary work that follows. It was the day after that proved who had the wisdom of God and who didn't.  -- Michael Ben Zehabe, Song of Songs the book for daughters",
         "I believe in success.  -- Himmilicious",
@@ -338,8 +339,6 @@ class Todos:
         "To be a great achiever, you must first discover your main purpose of existing through feasible communication mode with your maker, the source of your destiny. This brings you a conviction to work with.  -- Israelmore Ayivor, Michelangelo | Beethoven | Shakespeare: 15 Things Common to Great Achievers",
         "A block won't move without the effort.  -- Isabella Poretsis",
         "People have struggled for the benefits of others, you can struggle at least for your own benefit.  -- Amit Kalantri",
-        # "If basketball was going to enable Bradley to make friends, to prove that a banker's son is as good as the next fellow, to prove that he could do without being the greatest-end-ever at Missouri, to prove that he was not chicken, and to live up to his mother's championship standards, and if he was going to have some moments left over to savor his delight in the game, he obviously needed considerable practice, so he borrowed keys to the gym and set a schedule for himself that he adhereded to for four full years—in the school year, three and a half hours every day after school, nine to five on Saturday, one-thirty to five on Sunday, and, in the summer, about three hours a day.  -- John McPhee, A Sense of Where You Are: Bill Bradley at Princeton",
-        # "Bradley is one of the few basketball players who have ever been appreciatively cheered by a disinterested away-from-home crowd while warming up. This curious event occurred last March, just before Princeton eliminated the Virginia Military Institute, the year's Southern Conference champion, from the NCAA championships. The game was played in Philadelphia and was the last of a tripleheader. The people there were worn out, because most of them were emotionally committed to either Villanova or Temple-two local teams that had just been involved in enervating battles with Providence and Connecticut, respectively, scrambling for a chance at the rest of the country. A group of Princeton players shooting basketballs miscellaneously in preparation for still another game hardly promised to be a high point of the evening, but Bradley, whose routine in the warmup time is a gradual crescendo of activity, is more interesting to watch before a game than most players are in play. In Philadelphia that night, what he did was, for him, anything but unusual. As he does before all games, he began by shooting set shots close to the basket, gradually moving back until he was shooting long sets from 20 feet out, and nearly all of them dropped into the net with an almost mechanical rhythm of accuracy. Then he began a series of expandingly difficult jump shots, and one jumper after another went cleanly through the basket with so few exceptions that the crowd began to murmur. Then he started to perform whirling reverse moves before another cadence of almost steadily accurate jump shots, and the murmur increased. Then he began to sweep hook shots into the air. He moved in a semicircle around the court. First with his right hand, then with his left, he tried seven of these long, graceful shots-the most difficult ones in the orthodoxy of basketball-and ambidextrously made them all. The game had not even begun, but the presumably unimpressible Philadelphians were applauding like an audience at an opera.  -- John McPhee, A Sense of Where You Are: Bill Bradley at Princeton",
         "Man was designed in a way in which he must eat in order to give him a solid reason to go to work everyday. This helps to keep him out of trouble. God is wise.  -- Criss Jami",
         "Submitting seemed to me a lot like giving up. If God gave us the strength to bail- the gumption to try and save ourselves- isn't that what he wanted us to do?  -- Jeannette Walls, Half Broke Horses",
         "Too many irons, not enough fire.  -- S. Kelley Harrell",
@@ -347,7 +346,7 @@ class Todos:
         "I'm really very self-confident when it comes to my work. When I take on a project, I believe in it 100%. I really put my soul into it. I'd die for it. That's how I am -- Michael  Jackson",
         "Create with the heart; build with the mind.  -- Criss Jami",
         "Praying without working is faith inaction.  -- Saji Ijiyemi",
-        "Such is life. It is no cleaner than a kitchen; it reeks like a kitchen; and if you mean to cook your dinner, you must expect to soil your hands; the real art is in getting them clean again, and therein lies the whole morality of our epoch.  -- Honoré de Balzac, Père Goriot",
+        "Such is life. It is no cleaner than a kitchen; it reeks like a kitchen; and if you mean to cook your dinner, you must expect to soil your hands; the real art is in getting them clean again, and therein lies the whole morality of our epoch.  -- Honore de Balzac, Pere Goriot",
         "It's a question of attitude. If you really work at something you can do it up to a point. If you really work at being happy you can do it up to a point. But anything more than that you can't. Anything more than that is luck.  -- Haruki Murakami, Dance Dance Dance",
         "With intellectual labor your hard work is forever, while with manual labor your hard work is temporary and soon forgotten.  -- Jarod Kintz, At even one penny, this book would be overpriced. In fact, free is too expensive, because you'd still waste time by reading it. ",
         "I feel as though whenever I create something, my Mr. Hyde wakes up in the middle of the night and starts thrashing it. I sometimes love it the next morning, but other times it is an abomination.  -- Criss Jami",
@@ -364,7 +363,7 @@ class Todos:
         "In the land where excellence is commended, not envied, where weakness is aided, not mocked, there is no question as to how its inhabitants are all superhuman.  -- Criss Jami, Venus in Arms",
         "No one ever drowned in sweat.  -- United States Marine Corps",
         "What is hard work? It takes strength, energy, and stress to truly care about others enough to place oneself last, but it is easy to wrap oneself up and selfishly scramble on the heads of others.  -- Criss Jami",
-        "I don’t have a blue-collar job. It’s more of a green collar, because of all the yellow sweat stains mixing in.   -- Jarod Kintz, This Book Has No Title",
+        "I don't have a blue-collar job. It's more of a green collar, because of all the yellow sweat stains mixing in.   -- Jarod Kintz, This Book Has No Title",
         "As Aristotle said, 'Excellence is a habit.' I would say furthermore that excellence is made constant through the feeling that comes right after one has completed a work which he himself finds undeniably awe-inspiring. He only wants to relax until he's ready to renew such a feeling all over again because to him, all else has become absolutely trivial.  -- Criss Jami",
         "Inspiration is the windfall from hard work and focus. Muses are too unreliable to keep on the payroll.  -- Helen Hanson",
         "The idea that the harder you work, the better you're going to be is just garbage. The greatest improvement is made by the man or woman who works most intelligently.  -- Bill Bowerman",
@@ -378,7 +377,7 @@ class Todos:
         "The harder you fall, the heavier your heart; the heavier your heart, the stronger you climb; the stronger you climb, the higher your pedestal.  -- Criss Jami",
         "Every job from the heart is, ultimately, of equal value. The nurse injects the syringe; the writer slides the pen; the farmer plows the dirt; the comedian draws the laughter. Monetary income is the perfect deceiver of a man's true worth.  -- Criss Jami",
         "It is a pity that doing one's best does not always answer.  -- Charlotte Brontë, Jane Eyre",
-        "I don’t like to celebrate my birthday, because I don’t like taking credit for others’ work—in this case, my mom and dad. Or possibly my mom and the mailman.  -- Jarod Kintz, This Book Has No Title",
+        "I don't like to celebrate my birthday, because I don't like taking credit for others' work—in this case, my mom and dad. Or possibly my mom and the mailman.  -- Jarod Kintz, This Book Has No Title",
         "The dictionary is the only place that success comes  before work. work is the key to success, and hard work can help you accomplish anything.  -- Vince Lombardi",
         "Many who are self-taught far excel the doctors, masters, and bachelors of the most renowned universities.  -- Ludwig von Mises",
         "...talent means nothing, while experience, acquired in humility and with hard work, means everything.  -- Patrick Süskind, Perfume: The Story of a Murderer",
@@ -392,9 +391,9 @@ class Todos:
         "I'm a greater believer in luck, and I find the harder I work the more I have of it -- Thomas Jefferson",
         "If you try and lose then it isn't your fault. But if you don't try and we lose, then it's all your fault.  -- Orson Scott Card, Ender's Game",
         "Make a pact with yourself today to not be defined by your past. Sometimes the greatest thing to come out of all your hard work isn't what you get for it, but what you become for it. Shake things up today! Be You...Be Free...Share.  -- Steve Maraboli, Life, the Truth, and Being Free",
-        "If I told you I’ve worked hard to get where I’m at, I’d be lying, because I have no idea where I am right now.  -- Jarod Kintz, This Book is Not for Sale",
+        "If I told you I've worked hard to get where I'm at, I'd be lying, because I have no idea where I am right now.  -- Jarod Kintz, This Book is Not for Sale",
         "It's hard to beat a person who never gives up.  -- Babe Ruth",
-        "The best way to not feel hopeless is to get up and do something. Don’t wait for good things to happen to you. If you go out and make some good things happen, you will fill the world with hope, you will fill yourself with hope. -- Barack Obama",
+        "The best way to not feel hopeless is to get up and do something. Don't wait for good things to happen to you. If you go out and make some good things happen, you will fill the world with hope, you will fill yourself with hope. -- Barack Obama",
         "The only man who never makes mistakes is the man who never does anything. --  Theodore Roosevelt",
         "What would life be if we had no courage to attempt anything? -- Vincent van Gogh",
         "Far better it is to dare mighty things, to win glorious triumphs, even though checkered by failure, than to take rank with those poor spirits who neither enjoy much nor suffer much, because they live in the gray twilight that knows neither victory nor defeat. -- Theodore Roosevelt, Strenuous Life",

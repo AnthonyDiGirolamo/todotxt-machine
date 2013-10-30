@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding=utf-8
 from todotxt.todo import Todo
 from todotxt.terminal_operations import TerminalOperations
 from todotxt.completer import Completer

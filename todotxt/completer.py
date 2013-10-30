@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# coding=utf-8
 class Completer(object):
     def __init__(self, words):
         self.words = words

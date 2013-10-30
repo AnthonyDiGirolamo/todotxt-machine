@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# coding=utf-8
 import pytest
 from .. import terminal_operations
 
