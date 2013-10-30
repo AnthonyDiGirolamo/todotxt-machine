@@ -67,12 +67,10 @@ class Screen:
         if self.selected_context != self.last_context:
             self.last_context = self.selected_context
             self.move_selection_top()
-            term.clear_screen()
         # if project changed
         if self.selected_project != self.last_project:
             self.last_project = self.selected_project
             self.move_selection_top()
-            term.clear_screen()
 
         if self.selected_context == 0 and self.selected_project == 0:
             self.items = self.todo.todo_items
@@ -87,7 +85,6 @@ class Screen:
 
         # if window resized
         if self.terminal.columns != columns or self.terminal.rows != rows:
-            term.clear_screen()
             columns = self.terminal.columns
             rows    = self.terminal.rows
             self.columns = columns
@@ -140,23 +137,25 @@ class Screen:
         if len(self.items) > 0:
             current_item = self.starting_item
             for row in range(self.top_row, rows + 1):
-                if current_item >= len(self.items):
-                    break
                 # term.move_cursor_next_line()
                 term.move_cursor(row, 1)
 
-                if self.selected_row == row:
-                    term.output( Screen.colors["selected"]["bg"] )
+                if current_item >= len(self.items):
+                    term.output( Screen.colors["normal"]["bg"] )
+                    term.output(" "*columns)
                 else:
-                    term.output( term.clear_formatting()+Screen.colors["normal"]["bg"] )
+                    if self.selected_row == row:
+                        term.output( Screen.colors["selected"]["bg"] )
+                    else:
+                        term.output( term.clear_formatting()+Screen.colors["normal"]["bg"] )
 
-                term.output(
-                    self.items[current_item].highlight(
-                        self.items[current_item].raw.strip()[:columns].ljust(columns)
+                    term.output(
+                        self.items[current_item].highlight(
+                            self.items[current_item].raw.strip()[:columns].ljust(columns)
+                        )
                     )
-                )
-                term.output( term.clear_formatting() )
-                current_item += 1
+                    term.output( term.clear_formatting() )
+                    current_item += 1
 
         sys.stdout.flush()
 
@@ -315,10 +314,10 @@ class Screen:
     def delete_item(self):
         raw_index = self.items[self.selected_item].raw_index
         self.todo.delete(raw_index)
-        self.terminal.clear_screen()
+        if self.selected_item == len(self.items):
+            self.move_selection_up()
 
     def edit_item(self, new=False):
-        self.terminal.move_cursor_next_line()
         self.restore_normal_input()
 
         if new == 'append':
@@ -330,7 +329,18 @@ class Screen:
                     raw_index += 1
             else:
                 raw_index = 0
+
+            if new == 'insert_after':
+                self.terminal.move_cursor(self.selected_row+1, 1)
+                self.terminal.output(" "*self.terminal.columns)
+                self.terminal.move_cursor(self.selected_row+1, 1)
+            elif new == 'insert_before':
+                self.terminal.move_cursor(self.selected_row-1, 1)
+                self.terminal.output(" "*self.terminal.columns)
+                self.terminal.move_cursor(self.selected_row-1, 1)
         else:
+            self.terminal.move_cursor(self.selected_row, 1)
+
             raw_index = self.items[self.selected_item].raw_index
             new_todo_line = self.items[self.selected_item].raw.strip()
             readline.set_startup_hook(lambda: readline.insert_text(new_todo_line))
@@ -345,7 +355,6 @@ class Screen:
             readline.set_startup_hook(None)
 
         self.set_raw_input()
-        self.terminal.clear_screen()
 
         if new == 'append':
             self.todo.append(new_todo_line)
