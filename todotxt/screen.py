@@ -71,7 +71,7 @@ class Screen:
         columns = self.terminal.columns
         rows = self.terminal.rows
 
-        term.update_screen_size(set_terminal_raw=False)
+        term.update_screen_size()
 
         # if window resized
         if self.terminal.columns != columns or self.terminal.rows != rows:
@@ -337,7 +337,7 @@ class Screen:
                     self.update()
             # check the screen size every 2 seconds or so instead of trapping SIGWINCH
             elif int(time.time()) % 2 == 0:
-                if (self.columns, self.rows) != self.terminal.screen_size(set_terminal_raw=False):
+                if (self.columns, self.rows) != self.terminal.screen_size():
                     self.update()
         # End while - exit app
         self.exit()
@@ -360,7 +360,8 @@ class Screen:
     def edit_item(self, new=False):
         self.restore_normal_input()
 
-        if new == 'append':
+        empty_list = len(self.todo) == 0
+        if empty_list or new == 'append':
             new_todo_line = "New Todo"
             starting_row = self.top_row
         elif new == 'insert_before' or new == 'insert_after':
@@ -415,7 +416,7 @@ class Screen:
         self.set_raw_input()
 
         if new_todo_line.strip() != "":
-            if new == 'append':
+            if empty_list or new == 'append':
                 self.todo.append(new_todo_line)
                 self.move_selection_bottom()
             elif new == 'insert_before' or new == 'insert_after':

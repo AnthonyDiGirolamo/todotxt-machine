@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys
 # import os
-# import subprocess
+import subprocess
 import tty
 import termios
 import re
@@ -27,12 +27,12 @@ class TerminalOperations:
     def clear_formatting():
         return "\x1B[m"
 
-    def __init__(self):
+    def __init__(self, use_tput=False):
         # self.window = curses.initscr()
-        self.update_screen_size()
+        self.update_screen_size(use_tput)
 
-    def update_screen_size(self, set_terminal_raw=True):
-        self.columns, self.rows = self.screen_size(set_terminal_raw)
+    def update_screen_size(self, use_tput=False):
+        self.columns, self.rows = self.screen_size(use_tput)
 
     def output(self, text):
         sys.stdout.write(text)
@@ -48,9 +48,15 @@ class TerminalOperations:
     def clear_screen(self):
         self.output("\x1B[2J")
 
-    def screen_size(self, set_terminal_raw=True):
+    def screen_size(self, use_tput=False):
         # Method: Usint tput
-        # return ( int(subprocess.check_output(["tput", "cols"])), int(subprocess.check_output(["tput", "lines"])) )
+        if use_tput:
+            return ( int(subprocess.check_output(["tput", "cols"])), int(subprocess.check_output(["tput", "lines"])) )
+        else:
+            # this is how urwid does it in raw_terminal display mode
+            buf = fcntl.ioctl(0, termios.TIOCGWINSZ, ' '*4)
+            y, x = struct.unpack('hh', buf)
+            return x, y
 
         # Query the terminal directly in bash:
         # stty -echo; echo -en "\033[18t"; read -d t size; stty echo; size=${size/#??/}; echo $size
@@ -78,10 +84,6 @@ class TerminalOperations:
         # Method using curses module
         # return self.window.getmaxyx()
 
-        # this is how urwid does it in raw_terminal display mode
-        buf = fcntl.ioctl(0, termios.TIOCGWINSZ, ' '*4)
-        y, x = struct.unpack('hh', buf)
-        return x, y
 
     def move_cursor(self, row, column):
         self.output("\x1B[{};{}H".format(row, column))

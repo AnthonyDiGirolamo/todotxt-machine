@@ -3,7 +3,7 @@ from .. import terminal_operations
 
 @pytest.fixture
 def term():
-  return terminal_operations.TerminalOperations()
+  return terminal_operations.TerminalOperations(use_tput=True)
 
 def test_terminal_operations_init(term):
   assert type(term.rows) == int
