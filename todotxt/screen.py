@@ -9,10 +9,12 @@ import select
 import time
 import readline
 
-# if sys.version_info.major >= 3:
-#     perf_counter = time.perf_counter
-# elif sys.version_info.major < 3:
-#     perf_counter = time.time
+if sys.version_info.major >= 3:
+    getinput = input
+    # perf_counter = time.perf_counter
+elif sys.version_info.major < 3:
+    getinput = raw_input
+    # perf_counter = time.time
 
 class Screen:
     """Maintains the screen state"""
@@ -337,7 +339,7 @@ class Screen:
         readline.parse_and_bind('set keymap vi-command')
 
         try:
-            new_todo_line = raw_input()
+            new_todo_line = getinput()
             # new_todo_line = input()
         finally:
             readline.set_startup_hook(None)

@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 import sys
-import os
-import subprocess
+# import os
+# import subprocess
 import tty
 import termios
-import select
 import re
+# import curses
+import fcntl
+import struct
 
 class TerminalOperations:
     """For interacting with the terminal"""
@@ -26,6 +28,7 @@ class TerminalOperations:
         return "\x1B[m"
 
     def __init__(self):
+        # self.window = curses.initscr()
         self.update_screen_size()
 
     def update_screen_size(self, set_terminal_raw=True):
@@ -46,33 +49,39 @@ class TerminalOperations:
         self.output("\x1B[2J")
 
     def screen_size(self, set_terminal_raw=True):
-        # stty -echo; echo -en "\033[18t"; read -d t size; stty echo; size=${size/#??/}; echo $size
+        # Method: Usint tput
         # return ( int(subprocess.check_output(["tput", "cols"])), int(subprocess.check_output(["tput", "lines"])) )
-        response = ""
-        c        = b""
-        if set_terminal_raw:
-            original_stdin_settings = termios.tcgetattr(sys.stdin.fileno())
-            # original_stdout_settings = termios.tcgetattr(sys.stdout.fileno())
-            # new_stdout_settings = original_stdout_settings
-            # new_stdout_settings[3] = new_stdout_settings[3] & ~termios.ECHO
-            tty.setraw(sys.stdin.fileno())
-            # termios.tcsetattr(sys.stdout.fileno(), termios.TCSADRAIN, new_stdout_settings)
-            # tty.setraw(sys.stdout.fileno())
-            # os.system("stty raw -echo -icanon isig")
-            # state = subprocess.check_output(["stty", "-g"]).decode()
-        sys.stdout.write("\x1B[18t")
-        while c != b"t":
-            c = sys.stdin.read(1)
-            response += c #.decode()
 
-        if set_terminal_raw:
-            termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, original_stdin_settings)
-            # termios.tcsetattr(sys.stdout.fileno(), termios.TCSADRAIN, original_stdout_settings)
-            # os.system("stty {}".format(state.strip()))
-        response = response.split(";")
-        rows     = int(response[-2])
-        columns  = int(response[-1][0:-1])
-        return (columns, rows)
+        # Query the terminal directly in bash:
+        # stty -echo; echo -en "\033[18t"; read -d t size; stty echo; size=${size/#??/}; echo $size
+
+        # Method: querying the terminal directly with escape sequences
+        # the following breaks if the terminal does not have this capability, ie if TERM=screen*
+        # response = ""
+        # c        = ""
+        # if set_terminal_raw:
+        #     original_stdin_settings = termios.tcgetattr(sys.stdin.fileno())
+        #     tty.setraw(sys.stdin.fileno())
+        # sys.stdout.write("\x1B[18t")
+        # try:
+        #     while c != "t":
+        #         c = sys.stdin.read(1)
+        #         response += c
+        # finally:
+        #     if set_terminal_raw:
+        #         termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, original_stdin_settings)
+        # response = response.split(";")
+        # rows     = int(response[-2])
+        # columns  = int(response[-1][0:-1])
+        # return (columns, rows)
+
+        # Method using curses module
+        # return self.window.getmaxyx()
+
+        # this is how urwid does it in raw_terminal display mode
+        buf = fcntl.ioctl(0, termios.TIOCGWINSZ, ' '*4)
+        y, x = struct.unpack('hh', buf)
+        return x, y
 
     def move_cursor(self, row, column):
         self.output("\x1B[{};{}H".format(row, column))
