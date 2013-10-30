@@ -104,17 +104,19 @@ class Screen:
         term.output( term.clear_formatting() )
         term.move_cursor(1, 1)
         term.output( Screen.colors["header"]["fg"] + Screen.colors["header"]["bg"] )
-        term.output( "Todos:{}  Sort: {}  Key:'{}'  Rows:{}  Columns:{}  StartingItem:{} SelectedRow:{} SelectedItem:{}".format(
-                len(self.items),
-                self.sorting_names[self.sorting],
-                ord(self.key),
-                self.terminal.rows,
-                self.terminal.columns,
-                self.starting_item,
-                self.selected_row,
-                self.selected_item
-            ).ljust(columns)[:columns]
+        left_header = "{} Todos  Sorting: {}  ".format(
+            # Key:'{}'  Rows:{}  Columns:{}  StartingItem:{} SelectedRow:{} SelectedItem:{}".format(
+            len(self.items),
+            self.sorting_names[self.sorting],
+            # ord(self.key),
+            # self.terminal.rows,
+            # self.terminal.columns,
+            # self.starting_item,
+            # self.selected_row,
+            # self.selected_item
         )
+        right_header = "n:New enter:Edit x:Complete s:Sort c:Context p:Project ?:Help q:Quit".ljust(columns-len(left_header))[:columns-len(left_header)]
+        term.output( left_header + TerminalOperations.foreground_color(110) + right_header )
 
         term.move_cursor(2, 1)
         term.output( Screen.colors["header"]["fg"] + Screen.colors["header"]["bg"] )
@@ -403,13 +405,14 @@ class Screen:
 
         self.set_raw_input()
 
-        if new == 'append':
-            self.todo.append(new_todo_line)
-            self.move_selection_bottom()
-        elif new == 'insert_before' or new == 'insert_after':
-            self.todo.insert(raw_index, new_todo_line)
-        else:
-            self.todo[raw_index].update(new_todo_line)
+        if new_todo_line.strip() != "":
+            if new == 'append':
+                self.todo.append(new_todo_line)
+                self.move_selection_bottom()
+            elif new == 'insert_before' or new == 'insert_after':
+                self.todo.insert(raw_index, new_todo_line)
+            else:
+                self.todo[raw_index].update(new_todo_line)
 
     def exit(self):
         self.restore_normal_input()
