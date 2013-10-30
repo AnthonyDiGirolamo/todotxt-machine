@@ -65,24 +65,6 @@ class Screen:
         columns = self.terminal.columns
         rows = self.terminal.rows
 
-        # if context changed
-        if self.selected_context != self.last_context:
-            self.last_context = self.selected_context
-            self.move_selection_top()
-        # if project changed
-        if self.selected_project != self.last_project:
-            self.last_project = self.selected_project
-            self.move_selection_top()
-
-        if self.selected_context == 0 and self.selected_project == 0:
-            self.items = self.todo.todo_items
-        elif self.selected_project != 0 and self.selected_context != 0:
-            self.items = self.todo.filter_context_and_project(self.context_list[self.selected_context], self.project_list[self.selected_project])
-        elif self.selected_project != 0:
-            self.items = self.todo.filter_project(self.project_list[self.selected_project])
-        elif self.selected_context != 0:
-            self.items = self.todo.filter_context(self.context_list[self.selected_context])
-
         term.update_screen_size(set_terminal_raw=False)
 
         # if window resized
@@ -95,6 +77,25 @@ class Screen:
             if self.selected_row > rows:
                 self.starting_item = self.selected_item - rows + self.top_row
                 self.selected_row = rows
+
+        # if context changed
+        if self.selected_context != self.last_context:
+            self.last_context = self.selected_context
+            self.move_selection_top()
+        # if project changed
+        if self.selected_project != self.last_project:
+            self.last_project = self.selected_project
+            self.move_selection_top()
+
+        # load items
+        if self.selected_context == 0 and self.selected_project == 0:
+            self.items = self.todo.todo_items
+        elif self.selected_project != 0 and self.selected_context != 0:
+            self.items = self.todo.filter_context_and_project(self.context_list[self.selected_context], self.project_list[self.selected_project])
+        elif self.selected_project != 0:
+            self.items = self.todo.filter_project(self.project_list[self.selected_project])
+        elif self.selected_context != 0:
+            self.items = self.todo.filter_context(self.context_list[self.selected_context])
 
         # Titlebar
         term.output( term.clear_formatting() )
@@ -158,6 +159,15 @@ class Screen:
                     )
                     term.output( term.clear_formatting() )
                     current_item += 1
+        else:
+            for row in range(self.top_row, rows + 1):
+                term.move_cursor(row, 1)
+                term.output( Screen.colors["normal"]["fg"]+Screen.colors["normal"]["bg"] )
+                term.output(" "*columns)
+            term.move_cursor(self.top_row, 1)
+            term.output( Screen.colors["normal"]["fg"]+Screen.colors["normal"]["bg"] )
+            term.output(self.todo.quote())
+
 
         sys.stdout.flush()
 
@@ -381,4 +391,5 @@ class Screen:
 
     def exit(self):
         self.restore_normal_input()
+        self.terminal.output("\n")
 
