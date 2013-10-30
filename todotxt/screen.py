@@ -410,6 +410,8 @@ class Screen:
         try:
             new_todo_line = getinput()
             # new_todo_line = input()
+        except KeyboardInterrupt:
+            new_todo_line = ""
         finally:
             readline.set_startup_hook(None)
 
