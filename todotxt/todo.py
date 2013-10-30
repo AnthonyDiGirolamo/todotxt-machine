@@ -327,7 +327,7 @@ class Todos:
         "Your dreams are like the cement. If you water it with actions, it becomes a hard concrete mass. But if you leave it exposed and unwatered, the air will easily blow it away!  -- Israelmore Ayivor",
         "You may have the greatest vision, plans or goals as you may term it. You can call it Vison 2020, Vision 2045 or whatever. But remember, not work is done unless a distance is covered!  -- Israelmore Ayivor",
         "As I see it, if you work more hours than somebody else, during those hours you learn more about your craft. That can make you more efficient, more able, even happier. Hard work is like compounded interest in the bank. The rewards build faster.  -- Randy Pausch, The Last Lecture",
-        "For a great tomorrow, plan today. Because every tomorrow becomes today, and every today becomes tomorrow.-- Richmond Akhigbe",
+        "For a great tomorrow, plan today. Because every tomorrow becomes today, and every today becomes tomorrow. -- Richmond Akhigbe",
         "This should have been a red flag, I realize in retrospect. Working really hard on anything is, by definition, not cool.  -- Leila Sales, This Song Will Save Your Life",
         "I want the peace in knowing that is wasn’t for lack of hustling that I missed a target for my dream. I want to know that the one thing in my control was under control.  -- Jon Acuff, Quitter: Closing the Gap Between Your Day Job and Your Dream Job",
         "Though you can love what you do not master, you cannot master what you do not love.  -- Mokokoma Mokhonoana",
