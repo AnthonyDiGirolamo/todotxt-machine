@@ -190,12 +190,16 @@ class Screen:
                     l = line.strip().ljust(quote_width)
                 lines.append( " "*quote_margin + l + " "*quote_margin )
 
-            for i in range(int((self.terminal.rows - 4 - len(lines))/2)):
-                term.move_cursor_next_line()
+            row = self.top_row
             term.output( Screen.colors["normal"]["fg"]+Screen.colors["normal"]["bg"] )
+            for i in range(int((self.terminal.rows - 4 - len(lines))/2)):
+                row = i+self.top_row
+                term.move_cursor(row, 1)
+                term.output(" "*columns)
             for index, line in enumerate(lines):
+                term.move_cursor(row, 1)
                 term.output(line)
-                term.move_cursor_next_line()
+                row += 1
 
         sys.stdout.flush()
 
