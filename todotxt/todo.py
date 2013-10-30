@@ -230,14 +230,18 @@ class Todos:
         # return sorted(set( [found_context for item in self.raw_items for found_context in self.contexts(item)] ))
 
         # Join all items and use one regex.findall
-        return sorted(set( Todos._context_regex.findall(" ".join(self.raw_items))))
+        # return sorted(set( Todos._context_regex.findall(" ".join(self.raw_items))))
+
+        return sorted(set( [context for todo in self.todo_items for context in todo.contexts] ))
 
     def all_projects(self):
         # List comprehension
         # return sorted(set( [project for item in self.raw_items for project in self.projects(item)] ))
 
         # Join all items and use one regex.findall
-        return sorted(set( Todos._project_regex.findall(" ".join(self.raw_items))))
+        # return sorted(set( Todos._project_regex.findall(" ".join(self.raw_items))))
+
+        return sorted(set([project for todo in self.todo_items for project in todo.projects] ))
 
     def sorted(self, reversed_sort=False):
         self.todo_items.sort( key=lambda todo: todo.raw, reverse=reversed_sort )

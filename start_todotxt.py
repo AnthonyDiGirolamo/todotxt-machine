@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import sys
 import os
 import argparse
 from todotxt import *
@@ -17,16 +18,22 @@ command_line.add_argument(
     default = todotxt_file)
 
 args = command_line.parse_args()
-print(args.file)
 
 todotxt_file_path = os.path.expanduser(args.file)
 
+print("Opening: {}".format(todotxt_file_path))
+
 if os.path.exists(todotxt_file_path):
     pass
-    # print("FOUND: ", todotxt_file_path)
 else:
-    print("ERROR: unable to open {}\nUse the --file option to specify a path to your todo.txt file".format(todotxt_file_path))
-    exit(1)
+    directory = os.path.dirname(todotxt_file_path)
+    if os.path.exists(directory):
+        pass
+    else:
+        sys.stderr.write("ERROR: The directory: '{}' does not exist\n".format(directory))
+        sys.stderr.write("\nPlease create the directory or specify a different\n"
+                         "todo.txt file using the --file option.\n")
+        exit(1)
 
 try:
     with open(todotxt_file_path, "r") as todotxt_file:
@@ -41,8 +48,9 @@ try:
     #   print(repr(line))
     # todotxt_file.close()       # close the file
 except FileNotFoundError:
-    print("WARNING: unable to open", repr(todotxt_file_path))
-    exit(1)
+    print("ERROR: unable to open {}\nUse the --file option to specify a path to your todo.txt file".format(todotxt_file_path))
+    todos = todo.Todos([])
+
 # except:
 #   print("Unexpected error:", sys.exc_info()[0])
 #   raise
