@@ -9,21 +9,26 @@ Screenshots
 
 View your todos in a list with helpful syntax highlighting:
 
-|screenshot1.png|
+.. image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot1.png
+   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot1.png
 
 Sort in ascending or descending order, or keep things unsorted:
 
-|screenshot3.png|
+.. image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot3.png
+   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot3.png
 
 Filter contexts and projects:
 
-|screenshot2.png|
+.. image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot2.png
+   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot2.png
 
 And some quotes for when you have nothing left to do:
 
-|screenshot\_quote1.png|
+.. image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote1.png
+   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote1.png
 
-|screenshot\_quote2.png|
+.. image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote2.png
+   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote2.png
 
 Requirements
 ------------
@@ -103,13 +108,3 @@ While Editing a Todo
     ctrl-c       - cancel editing a todo
     tab          - tab complete @contexts and +Projects
 
-.. |screenshot1.png| image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot1.png
-   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot1.png
-.. |screenshot3.png| image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot3.png
-   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot3.png
-.. |screenshot2.png| image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot2.png
-   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot2.png
-.. |screenshot\_quote1.png| image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote1.png
-   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote1.png
-.. |screenshot\_quote2.png| image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote2.png
-   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote2.png
