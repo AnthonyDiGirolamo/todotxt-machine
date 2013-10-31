@@ -438,9 +438,9 @@ class Screen:
     def edit_item(self, new=False):
         self.restore_normal_input()
 
-        empty_list = len(self.todo) == 0
+        new_todo_line = ""
+        empty_list    = len(self.todo) == 0
         if empty_list or new == 'append':
-            new_todo_line = "New Todo"
             starting_row = self.top_row
         elif new == 'insert_before' or new == 'insert_after':
             if len(self.todo) > 0:
@@ -451,29 +451,21 @@ class Screen:
                 raw_index = 0
 
             if new == 'insert_after':
-                starting_row = self.selected_row
+                starting_row = self.selected_row + 1
             elif new == 'insert_before':
                 starting_row = self.selected_row - 1
 
-            new_todo_line = "New Todo"
         else:
-            starting_row = self.selected_row - 1
+            starting_row = self.selected_row
             raw_index = self.items[self.selected_item].raw_index
             new_todo_line = self.items[self.selected_item].raw.strip()
             readline.set_startup_hook(lambda: readline.insert_text(new_todo_line))
 
-        # Display editing prompt
-        self.terminal.output(Screen.colors["header"]["fg"]+Screen.colors["header"]["bg"])
+        # edit seleted line
         self.terminal.move_cursor(starting_row, 1)
+        self.terminal.output( Screen.colors["normal"]["fg"]+Screen.colors["normal"]["bg"] )
         self.terminal.output(" "*self.terminal.columns)
         self.terminal.move_cursor(starting_row, 1)
-        self.terminal.output("Editing: {}".format(new_todo_line))
-
-        for r in range(starting_row+1, self.terminal.rows):
-            self.terminal.move_cursor(r, 1)
-            self.terminal.output( Screen.colors["normal"]["fg"]+Screen.colors["normal"]["bg"] )
-            self.terminal.output(" "*self.terminal.columns)
-        self.terminal.move_cursor(starting_row+1, 1)
 
         # setup readline
         readline.parse_and_bind('set editing-mode {}'.format(self.readline_editing_mode))
