@@ -205,7 +205,7 @@ class Screen:
 
             row = self.top_row
             term.output( Screen.colors["normal"]["fg"]+Screen.colors["normal"]["bg"] )
-            for i in range(int((self.terminal.rows - 4 - len(lines))/2)):
+            for i in range(int((self.terminal.rows - 4 - len(lines))/2) + 1):
                 row = i+self.top_row
                 term.move_cursor(row, 1)
                 term.output(" "*columns)
