@@ -45,7 +45,7 @@ import todotxt_machine
 NAME = "todotxt-machine"
 
 try:
-    long_description = open("README.md").read()
+    long_description = open("README.rst").read()
 except IOError:
     long_description = __doc__
 
