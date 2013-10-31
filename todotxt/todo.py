@@ -189,7 +189,7 @@ class Todos:
     def parse_raw_entries(self, raw_items):
         self.todo_items = [
             self.create_todo(todo, index)
-            for index, todo in enumerate(raw_items) ]
+            for index, todo in enumerate(raw_items) if todo.strip() != ""]
 
     def update_raw_indices(self):
         for index, todo in enumerate(self.todo_items):
