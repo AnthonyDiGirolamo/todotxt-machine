@@ -5,8 +5,8 @@ import os
 import argparse
 import random
 
-from todo import Todos
-from screen import Screen
+from todotxt_machine.todo import Todos
+from todotxt_machine.screen import Screen
 
 def main():
     random.seed()
