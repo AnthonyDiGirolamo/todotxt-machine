@@ -11,13 +11,13 @@ View your todos in a list with helpful syntax highlighting:
 
 [![screenshot1.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-python/master/screenshots/screenshot1.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-python/master/screenshots/screenshot1.png)
 
-Filter contexts and projects:
-
-[![screenshot2.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-python/master/screenshots/screenshot2.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-python/master/screenshots/screenshot2.png)
-
 Sort in ascending or descending order, or keep things unsorted:
 
 [![screenshot3.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-python/master/screenshots/screenshot3.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-python/master/screenshots/screenshot3.png)
+
+Filter contexts and projects:
+
+[![screenshot2.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-python/master/screenshots/screenshot2.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-python/master/screenshots/screenshot2.png)
 
 And some quotes for when you have nothing left to do:
 
