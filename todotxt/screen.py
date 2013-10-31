@@ -4,6 +4,7 @@ from todotxt.todo import Todo
 from todotxt.terminal_operations import TerminalOperations
 from todotxt.completer import Completer
 
+import os
 import sys
 import tty
 import termios
@@ -11,6 +12,7 @@ import select
 import time
 import readline
 import textwrap
+import subprocess
 
 if sys.version_info.major >= 3:
     getinput = input
@@ -117,7 +119,8 @@ class Screen:
             # self.selected_row,
             # self.selected_item
         )
-        right_header = "n:New enter:Edit x:Complete s:Sort c:Context p:Project ?:Help q:Quit".ljust(columns-len(left_header))[:columns-len(left_header)]
+        # right_header = "n:New enter:Edit x:Complete s:Sort c:Context p:Project ?:Help q:Quit".ljust(columns-len(left_header))[:columns-len(left_header)]
+        right_header = "- {}  ?:Help q:Quit".format(self.todo.file_path).ljust(columns-len(left_header))[:columns-len(left_header)]
         term.output( left_header + TerminalOperations.foreground_color(110) + right_header )
 
         term.move_cursor(2, 1)
@@ -199,6 +202,7 @@ class Screen:
                 term.output(line)
                 row += 1
 
+        term.output( term.clear_formatting() )
         sys.stdout.flush()
 
     def move_selection_down(self):
@@ -261,6 +265,63 @@ class Screen:
         if self.selected_project == len(self.project_list):
             self.selected_project = 0
 
+    def display_help(self):
+        self.restore_normal_input()
+
+        helptext = """
+            todotxt help - hit q to return
+            ==============================
+
+            Key Bindings
+            ------------
+
+            ### General
+
+                ?            - display this help message
+                q, ctrl-c    - quit
+
+            ### Movement
+
+                j, down      - move selection down
+                k, up        - move selection up
+                g, page up   - move selection to the top item
+                G, page down - move selection to the bottom item
+
+            ### Filtering & Sorting
+
+                p            - select the next project
+                P            - select the previous project
+                c            - select the next context
+                C            - select the previous context
+                s            - switch sorting method
+
+            ### Manipulating Todo Items
+
+                x            - complete / un-complete selected todo item
+                n            - add a new todo to the end of the list
+                o            - add a todo after the selected todo
+                O            - add a todo before the selected todo
+                enter, A, e  - edit the selected todo
+                D            - delete the selected todo
+
+            ### While Editing a Todo
+
+                ctrl-c       - cancel editing a todo
+                tab          - tab complete @contexts and +Projects
+            """
+
+        blank_line            = ((" " * self.terminal.columns) + "\n")
+        remaining_blank_lines = blank_line * (self.terminal.rows - helptext.count("\n"))
+        helptext             += remaining_blank_lines
+
+        try:
+            less = subprocess.Popen(["less", "--clear-screen"], stdin=subprocess.PIPE, universal_newlines=True)
+            less.communicate(input=textwrap.dedent(helptext))
+        except KeyboardInterrupt:
+            less.terminate()
+        finally:
+            self.set_raw_input()
+
     def main_loop(self):
         self.set_raw_input()
         self.update()
@@ -273,7 +334,9 @@ class Screen:
                 c = sys.stdin.read(1)
                 self.key = c
                 if c != "":
-                    if c == "j":
+                    if c == "?":
+                        self.display_help()
+                    elif c == "j":
                         self.move_selection_down()
                     elif c == "k":
                         self.move_selection_up()
