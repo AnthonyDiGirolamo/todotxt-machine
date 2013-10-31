@@ -1,7 +1,7 @@
-todotxt-python
-==============
+todotxt-machine
+===============
 
-todotxt-python is an interactive terminal based todo.txt file editor with an
+todotxt-machine is an interactive terminal based todo.txt file editor with an
 interface similar to [mutt](http://www.mutt.org/).
 
 Screenshots
@@ -9,26 +9,26 @@ Screenshots
 
 View your todos in a list with helpful syntax highlighting:
 
-[![screenshot1.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-python/master/screenshots/screenshot1.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-python/master/screenshots/screenshot1.png)
+[![screenshot1.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot1.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot1.png)
 
 Sort in ascending or descending order, or keep things unsorted:
 
-[![screenshot3.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-python/master/screenshots/screenshot3.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-python/master/screenshots/screenshot3.png)
+[![screenshot3.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot3.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot3.png)
 
 Filter contexts and projects:
 
-[![screenshot2.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-python/master/screenshots/screenshot2.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-python/master/screenshots/screenshot2.png)
+[![screenshot2.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot2.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot2.png)
 
 And some quotes for when you have nothing left to do:
 
-[![screenshot_quote1.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-python/master/screenshots/screenshot_quote1.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-python/master/screenshots/screenshot_quote1.png)
+[![screenshot_quote1.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote1.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote1.png)
 
-[![screenshot_quote2.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-python/master/screenshots/screenshot_quote2.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-python/master/screenshots/screenshot_quote2.png)
+[![screenshot_quote2.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote2.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote2.png)
 
 Requirements
 ------------
 
-Python 2.7.5 or Python 3.3.2 with readline support. todotxt-python outputs raw
+Python 2.7.5 or Python 3.3.2 with readline support. todotxt-machine outputs raw
 [terminal control
 sequences](http://invisible-island.net/xterm/ctlseqs/ctlseqs.html) to draw it's
 interface and does not rely on modules like
@@ -38,7 +38,7 @@ interface and does not rely on modules like
 Command Line Options
 --------------------
 
-    usage: todotxt.py [-h] [-f FILE] [--readline-editing-mode {emacs,vi}]
+    usage: todotxt-machine.py [-h] [-f FILE] [--readline-editing-mode {emacs,vi}]
 
     Interactive terminal interface for todo.txt files.
 
