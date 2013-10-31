@@ -31,7 +31,19 @@ class Screen:
         },
         "header":   {
             "bg": TerminalOperations.background_color(235),
-            "fg": TerminalOperations.foreground_color(81)
+            "fg": TerminalOperations.foreground_color(39),
+            "todo_count": {
+                "bg": TerminalOperations.background_color(27),
+                "fg": TerminalOperations.foreground_color(222)
+            },
+            "sorting": {
+                "bg": TerminalOperations.background_color(39),
+                "fg": TerminalOperations.foreground_color(235)
+            },
+            "file": {
+                "bg": TerminalOperations.background_color(235),
+                "fg": TerminalOperations.foreground_color(39)
+            }
         },
         "selected": {
             "bg": TerminalOperations.background_color(238)
@@ -105,24 +117,23 @@ class Screen:
         elif self.selected_context != 0:
             self.items = self.todo.filter_context(self.context_list[self.selected_context])
 
-        # Titlebar
+        # Header
+        left_header_todo_count = " {} Todos ".format( len(self.items) )
+        left_header_sorting    = " Sorting: {} ".format( self.sorting_names[self.sorting] )
+        left_header_size       = len(left_header_todo_count + left_header_sorting)
+
+        right_header = " {} ".format(
+            self.todo.file_path[:].replace(os.environ['HOME'], '~')
+        ).rjust(columns-left_header_size)[:columns-left_header_size]
+
         term.output( term.clear_formatting() )
         term.move_cursor(1, 1)
-        term.output( Screen.colors["header"]["fg"] + Screen.colors["header"]["bg"] )
-        left_header = "{} Todos  Sorting: {}  ".format(
-            # Key:'{}'  Rows:{}  Columns:{}  StartingItem:{} SelectedRow:{} SelectedItem:{}".format(
-            len(self.items),
-            self.sorting_names[self.sorting],
-            # ord(self.key),
-            # self.terminal.rows,
-            # self.terminal.columns,
-            # self.starting_item,
-            # self.selected_row,
-            # self.selected_item
-        )
-        # right_header = "n:New enter:Edit x:Complete s:Sort c:Context p:Project ?:Help q:Quit".ljust(columns-len(left_header))[:columns-len(left_header)]
-        right_header = "- {}  ?:Help q:Quit".format(self.todo.file_path).ljust(columns-len(left_header))[:columns-len(left_header)]
-        term.output( left_header + TerminalOperations.foreground_color(110) + right_header )
+        term.output( Screen.colors["header"]["todo_count"]["fg"] + Screen.colors["header"]["todo_count"]["bg"] )
+        term.output( left_header_todo_count )
+        term.output( Screen.colors["header"]["sorting"]["fg"] + Screen.colors["header"]["sorting"]["bg"] )
+        term.output( left_header_sorting )
+        term.output( Screen.colors["header"]["file"]["fg"] + Screen.colors["header"]["file"]["bg"] )
+        term.output( right_header )
 
         term.move_cursor(2, 1)
         term.output( Screen.colors["header"]["fg"] + Screen.colors["header"]["bg"] )
