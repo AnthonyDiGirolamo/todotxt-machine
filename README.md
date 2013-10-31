@@ -35,6 +35,11 @@ interface and does not rely on modules like
 [curses](http://docs.python.org/3.3/library/curses.html) or
 [urwid](http://excess.org/urwid/).
 
+Installation
+------------
+
+    pip install todotxt-machine
+
 Command Line Options
 --------------------
 
