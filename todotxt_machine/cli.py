@@ -3,10 +3,10 @@
 import sys
 import os
 import argparse
-
 import random
 
-from todotxt_machine import *
+from todo import Todos
+from screen import Screen
 
 def main():
     random.seed()
@@ -47,12 +47,12 @@ def main():
 
     try:
         with open(todotxt_file_path, "r") as todotxt_file:
-            todos = todo.Todos(todotxt_file.readlines(), todotxt_file_path)
+            todos = Todos(todotxt_file.readlines(), todotxt_file_path)
     except:
         print("ERROR: unable to open {}\nUse the --file option to specify a path to your todo.txt file".format(todotxt_file_path))
         todos = todo.Todos([], todotxt_file_path)
 
-    view = screen.Screen(todos, readline_editing_mode=args.readline_editing_mode)
+    view = Screen(todos, readline_editing_mode=args.readline_editing_mode)
 
     view.main_loop()
 
