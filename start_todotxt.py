@@ -3,6 +3,10 @@
 import sys
 import os
 import argparse
+
+import random
+random.seed()
+
 from todotxt import *
 # import pprint
 # pp = pprint.PrettyPrinter(indent=4).pprint
@@ -38,7 +42,7 @@ else:
 
 try:
     with open(todotxt_file_path, "r") as todotxt_file:
-        todos = todo.Todos(todotxt_file.readlines())
+        todos = todo.Todos(todotxt_file.readlines(), todotxt_file_path)
     # Other ways to read lines:
     # todotxt_file = open(todotxt_file_path, 'r') # open file
     # todotxt_file.read()        # read entire file
@@ -74,8 +78,7 @@ view = screen.Screen(todos)
 view.main_loop()
 
 print("Writing: {}".format(todotxt_file_path))
-with open(todotxt_file_path, "w") as todotxt_file:
-    todotxt_file.write( "\n".join([t.raw for t in view.todo]) )
+view.todo.save()
 
 # urwid
 # class ItemWidget (urwid.WidgetWrap):

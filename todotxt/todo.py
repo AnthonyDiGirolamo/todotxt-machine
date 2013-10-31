@@ -127,8 +127,13 @@ class Todos:
     _priority_regex      = re.compile(r'\(([A-Z])\) ')
     _completed_regex     = re.compile(r'^x (\d\d\d\d-\d\d-\d\d) ')
 
-    def __init__(self, todo_items):
+    def __init__(self, todo_items, file_path):
+        self.file_path = file_path
         self.update(todo_items)
+
+    def save(self):
+        with open(self.file_path, "w") as todotxt_file:
+            todotxt_file.write( "\n".join([t.raw for t in self.todo_items]) )
 
     def update(self, todo_items):
         self.parse_raw_entries(todo_items)

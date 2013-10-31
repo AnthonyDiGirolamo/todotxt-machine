@@ -11,7 +11,6 @@ import select
 import time
 import readline
 import textwrap
-import random
 
 if sys.version_info.major >= 3:
     getinput = input
@@ -38,7 +37,6 @@ class Screen:
     }
 
     def __init__(self, todo):
-        random.seed()
         self.key            = ' '
         self.terminal       = TerminalOperations()
         self.columns        = self.terminal.columns
