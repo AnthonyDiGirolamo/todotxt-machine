@@ -21,6 +21,11 @@ command_line.add_argument(
     '-f', '--file',
     help    = 'path to your todo.txt file default:{}'.format(todotxt_file),
     default = todotxt_file)
+command_line.add_argument(
+    '--readline-editing-mode',
+    choices = ['emacs', 'vi'],
+    help    = 'set readline editing-mode',
+    default = 'vi')
 
 args = command_line.parse_args()
 
@@ -65,7 +70,9 @@ except FileNotFoundError:
 #   print("Done")
 
 # ipdb.set_trace()
-view = screen.Screen(todos)
+
+view = screen.Screen(todos, readline_editing_mode=args.readline_editing_mode)
+
 # signal.siginterrupt(signal.SIGWINCH, False)
 # def resize_terminal(signum, frame):
 #     view.refresh_screen = True

@@ -38,7 +38,7 @@ class Screen:
         },
     }
 
-    def __init__(self, todo):
+    def __init__(self, todo, readline_editing_mode='vi'):
         self.key            = ' '
         self.terminal       = TerminalOperations()
         self.columns        = self.terminal.columns
@@ -50,6 +50,7 @@ class Screen:
         self.todo           = todo
         self.sorting_names  = ["Unsorted", "Ascending ", "Descending"]
         self.sorting        = 0
+        self.readline_editing_mode = readline_editing_mode
         self.update_todos(todo)
         self.original_terminal_settings = termios.tcgetattr(sys.stdin.fileno())
         self.terminal.clear_screen()
@@ -464,7 +465,7 @@ class Screen:
         self.terminal.move_cursor(starting_row+1, 1)
 
         # setup readline
-        readline.parse_and_bind('set editing-mode vi')
+        readline.parse_and_bind('set editing-mode {}'.format(self.readline_editing_mode))
         completer = Completer(self.context_list + self.project_list)
         # we want to autocomplete tokens with @ and + symbols so we remove them from # the current readline delims
         delims = readline.get_completer_delims().replace("@","").replace("+","")
