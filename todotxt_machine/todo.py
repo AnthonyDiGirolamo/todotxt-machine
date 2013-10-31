@@ -4,7 +4,7 @@ import re
 import random
 from datetime import date
 
-from todotxt.terminal_operations import TerminalOperations
+from todotxt_machine.terminal_operations import TerminalOperations
 
 class Todo:
     """Single Todo item"""

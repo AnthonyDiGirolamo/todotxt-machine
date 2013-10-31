@@ -14,7 +14,7 @@ def todos():
         "(B) Schedule Goodwill pickup +GarageSale @phone",
         "Unpack the guest bedroom +Unpacking due:2013-10-20",
         "2013-10-19 Post signs around the neighborhood +GarageSale",
-        "x 2013-10-01 @GroceryStore Eskimo pies" ])
+        "x 2013-10-01 @GroceryStore Eskimo pies" ], './todo.txt')
 
 @pytest.fixture
 def today():

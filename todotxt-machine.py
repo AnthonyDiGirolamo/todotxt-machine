@@ -6,7 +6,7 @@ import argparse
 
 import random
 
-from todotxt import *
+from todotxt_machine import *
 
 def main():
     random.seed()

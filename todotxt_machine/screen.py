@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # coding=utf-8
-from todotxt.todo import Todo
-from todotxt.terminal_operations import TerminalOperations
-from todotxt.completer import Completer
+from todotxt_machine.todo import Todo
+from todotxt_machine.terminal_operations import TerminalOperations
+from todotxt_machine.completer import Completer
 
 import os
 import sys
