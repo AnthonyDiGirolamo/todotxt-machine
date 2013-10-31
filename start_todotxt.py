@@ -36,7 +36,7 @@ print("Opening: {}".format(todotxt_file_path))
 if os.path.exists(todotxt_file_path):
     pass
 else:
-    directory = os.path.dirname(todotxt_file_path)
+    directory = os.path.dirname(os.path.realpath(todotxt_file_path))
     if os.path.exists(directory):
         pass
     else:
@@ -57,9 +57,9 @@ try:
     # for line in todotxt_file:  # iterate over each line in a file
     #   print(repr(line))
     # todotxt_file.close()       # close the file
-except FileNotFoundError:
+except:
     print("ERROR: unable to open {}\nUse the --file option to specify a path to your todo.txt file".format(todotxt_file_path))
-    todos = todo.Todos([])
+    todos = todo.Todos([], todotxt_file_path)
 
 # except:
 #   print("Unexpected error:", sys.exc_info()[0])
