@@ -91,4 +91,9 @@ Key Bindings
     ctrl-c       - cancel editing a todo
     tab          - tab complete @contexts and +Projects
 
+Planned Features
+----------------
+
+- User defined color themes
+- Manual reordering of todo items
 
