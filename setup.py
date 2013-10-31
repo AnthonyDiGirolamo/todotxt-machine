@@ -26,30 +26,23 @@ License
 from setuptools import setup, find_packages
 from sys import version_info
 
+from setuptools.command.test import test as TestCommand
+import sys
+
+class PyTest(TestCommand):
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+    def run_tests(self):
+        #import here, cause outside the eggs aren't loaded
+        import pytest
+        errno = pytest.main(self.test_args)
+        sys.exit(errno)
+
 import todotxt_machine
 
 NAME = "todotxt-machine"
-
-REQUIREMENTS = [
-    # "argparse",
-    # "fcntl",
-    # "os",
-    # "pprint",
-    # "random",
-    # "re",
-    # "readline",
-    # "select",
-    # "struct",
-    # "subprocess",
-    # "sys",
-    # "termios",
-    # "textwrap",
-    # "time",
-    # "tty",
-]
-
-TEST_REQUIREMENTS = list(REQUIREMENTS)
-TEST_REQUIREMENTS.extend(["pytest"])
 
 try:
     long_description = open("README.md").read()
@@ -82,6 +75,8 @@ setup(name=NAME,
           "Programming Language :: Python :: 3.3",
           "Topic :: Communications",
       ],
-      install_requires=REQUIREMENTS,
-      tests_require=TEST_REQUIREMENTS)
+      install_requires=[],
+      tests_require=['pytest'],
+      cmdclass = {'test': PyTest},
+      )
 
