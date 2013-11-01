@@ -96,4 +96,5 @@ Planned Features
 
 - User defined color themes
 - Manual reordering of todo items
+- Searching with fuzzy matching
 
