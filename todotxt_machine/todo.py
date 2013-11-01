@@ -77,17 +77,17 @@ class Todo:
                 colored = line_color + colored
 
             for context in self.contexts:
-                colored = colored.replace(context, "{}{}{}".format(
+                colored = colored.replace(context, "{0}{1}{2}".format(
                     colors["context"], context, line_color ))
 
             for project in self.projects:
-                colored = colored.replace(project, "{}{}{}".format(
+                colored = colored.replace(project, "{0}{1}{2}".format(
                     colors["project"], project, line_color ))
 
-            colored = colored.replace(self.creation_date, "{}{}{}".format(
+            colored = colored.replace(self.creation_date, "{0}{1}{2}".format(
                 colors["creation_date"], self.creation_date, line_color), 1)
 
-            colored = colored.replace("due:"+self.due_date, "{}{}{}".format(
+            colored = colored.replace("due:"+self.due_date, "{0}{1}{2}".format(
                 colors["due_date"], "due:"+self.due_date, line_color), 1)
 
         return colored
@@ -102,8 +102,8 @@ class Todo:
 
     def complete(self):
         today = date.today()
-        self.raw = "x {} ".format(today) + self.raw
-        self.completed_date = "{}".format(today)
+        self.raw = "x {0} ".format(today) + self.raw
+        self.completed_date = "{0}".format(today)
 
     def incomplete(self):
         self.raw = re.sub(Todos._completed_regex, "", self.raw)
@@ -111,8 +111,8 @@ class Todo:
 
     def add_creation_date(self):
         if self.creation_date == "":
-            p = "({}) ".format(self.priority) if self.priority != "" else ""
-            self.update("{}{} {}".format(p, date.today(), self.raw.replace(p, "")))
+            p = "({0}) ".format(self.priority) if self.priority != "" else ""
+            self.update("{0}{1} {2}".format(p, date.today(), self.raw.replace(p, "")))
 
 
 class Todos:

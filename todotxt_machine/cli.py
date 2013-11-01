@@ -19,7 +19,7 @@ def main():
         description = 'Interactive terminal interface for todo.txt files.')
     command_line.add_argument(
         '-f', '--file',
-        help    = 'path to your todo.txt file default:{}'.format(todotxt_file),
+        help    = 'path to your todo.txt file default:{0}'.format(todotxt_file),
         default = todotxt_file)
     command_line.add_argument(
         '--readline-editing-mode',
@@ -31,7 +31,7 @@ def main():
 
     todotxt_file_path = os.path.expanduser(args.file)
 
-    print("Opening: {}".format(todotxt_file_path))
+    print("Opening: {0}".format(todotxt_file_path))
 
     if os.path.exists(todotxt_file_path):
         pass
@@ -40,7 +40,7 @@ def main():
         if os.path.exists(directory):
             pass
         else:
-            sys.stderr.write("ERROR: The directory: '{}' does not exist\n".format(directory))
+            sys.stderr.write("ERROR: The directory: '{0}' does not exist\n".format(directory))
             sys.stderr.write("\nPlease create the directory or specify a different\n"
                             "todo.txt file using the --file option.\n")
             exit(1)
@@ -49,14 +49,14 @@ def main():
         with open(todotxt_file_path, "r") as todotxt_file:
             todos = Todos(todotxt_file.readlines(), todotxt_file_path)
     except:
-        print("ERROR: unable to open {}\nUse the --file option to specify a path to your todo.txt file".format(todotxt_file_path))
+        print("ERROR: unable to open {0}\nUse the --file option to specify a path to your todo.txt file".format(todotxt_file_path))
         todos = todo.Todos([], todotxt_file_path)
 
     view = Screen(todos, readline_editing_mode=args.readline_editing_mode)
 
     view.main_loop()
 
-    print("Writing: {}".format(todotxt_file_path))
+    print("Writing: {0}".format(todotxt_file_path))
     view.todo.save()
     exit(0)
 

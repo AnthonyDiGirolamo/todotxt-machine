@@ -14,10 +14,10 @@ import readline
 import textwrap
 import subprocess
 
-if sys.version_info.major >= 3:
+if sys.version_info[0] >= 3:
     getinput = input
     # perf_counter = time.perf_counter
-elif sys.version_info.major < 3:
+elif sys.version_info[0] < 3:
     getinput = raw_input
     # perf_counter = time.time
 
@@ -118,11 +118,11 @@ class Screen:
             self.items = self.todo.filter_context(self.context_list[self.selected_context])
 
         # Header
-        left_header_todo_count = " {} Todos ".format( len(self.items) )
-        left_header_sorting    = " Sorting: {} ".format( self.sorting_names[self.sorting] )
+        left_header_todo_count = " {0} Todos ".format( len(self.items) )
+        left_header_sorting    = " Sorting: {0} ".format( self.sorting_names[self.sorting] )
         left_header_size       = len(left_header_todo_count + left_header_sorting)
 
-        right_header = " {} ".format(
+        right_header = " {0} ".format(
             self.todo.file_path[:].replace(os.environ['HOME'], '~')
         ).rjust(columns-left_header_size)[:columns-left_header_size]
 
@@ -141,9 +141,9 @@ class Screen:
         term.move_cursor(2, 1)
 
         # Contexts
-        term.output("Context: {}".format("".join(
-            ["{} {} {}".format(
-                Todo.colors["context"]+Screen.colors["selected"]["bg"], c, Screen.colors["header"]["fg"]+Screen.colors["header"]["bg"]) if c == self.context_list[self.selected_context] else " {} ".format(c) for c in self.context_list]
+        term.output("Context: {0}".format("".join(
+            ["{0} {1} {2}".format(
+                Todo.colors["context"]+Screen.colors["selected"]["bg"], c, Screen.colors["header"]["fg"]+Screen.colors["header"]["bg"]) if c == self.context_list[self.selected_context] else " {0} ".format(c) for c in self.context_list]
         )))
 
         term.move_cursor(3, 1)
@@ -153,9 +153,9 @@ class Screen:
 
         # Projects
         term.output( Screen.colors["header"]["fg"] + Screen.colors["header"]["bg"] )
-        term.output("Project: {}".format("".join(
-            ["{} {} {}".format(
-                Todo.colors["project"]+Screen.colors["selected"]["bg"], p, Screen.colors["header"]["fg"]+Screen.colors["header"]["bg"]) if p == self.project_list[self.selected_project] else " {} ".format(p) for p in self.project_list]
+        term.output("Project: {0}".format("".join(
+            ["{0} {1} {2}".format(
+                Todo.colors["project"]+Screen.colors["selected"]["bg"], p, Screen.colors["header"]["fg"]+Screen.colors["header"]["bg"]) if p == self.project_list[self.selected_project] else " {0} ".format(p) for p in self.project_list]
         )))
 
         # Todo List
@@ -468,7 +468,7 @@ class Screen:
         self.terminal.move_cursor(starting_row, 1)
 
         # setup readline
-        readline.parse_and_bind('set editing-mode {}'.format(self.readline_editing_mode))
+        readline.parse_and_bind('set editing-mode {0}'.format(self.readline_editing_mode))
         completer = Completer(self.context_list + self.project_list)
         # we want to autocomplete tokens with @ and + symbols so we remove them from # the current readline delims
         delims = readline.get_completer_delims().replace("@","").replace("+","")

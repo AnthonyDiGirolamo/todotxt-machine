@@ -18,11 +18,11 @@ class TerminalOperations:
 
     @staticmethod
     def foreground_color(index):
-        return "\x1B[38;5;{}m".format(index)
+        return "\x1B[38;5;{0}m".format(index)
 
     @staticmethod
     def background_color(index):
-        return "\x1B[48;5;{}m".format(index)
+        return "\x1B[48;5;{0}m".format(index)
 
     @staticmethod
     def clear_formatting():
@@ -87,7 +87,7 @@ class TerminalOperations:
 
 
     def move_cursor(self, row, column):
-        self.output("\x1B[{};{}H".format(row, column))
+        self.output("\x1B[{0};{1}H".format(row, column))
 
     def move_cursor_home(self):
         self.output("\x1B[[H")
