@@ -13,7 +13,7 @@ __name__ = "todotxt_machine"
 __title__ = "todotxt_machine"
 __author__ = "Anthony DiGirolamo"
 __license__ = "GPL3"
-__version__ = (1, 0, 2)
+__version__ = (1, 0, 3)
 
 version = "%s.%s.%s" % __version__
 

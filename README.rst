@@ -1,8 +1,11 @@
 todotxt-machine
 ===============
 
-todotxt-machine is an interactive terminal based todo.txt file editor
-with an interface similar to `mutt <http://www.mutt.org/>`__.
+todotxt-machine is an interactive terminal based
+`todo.txt <http://todotxt.com/>`__ file editor with an interface similar
+to `mutt <http://www.mutt.org/>`__. It follows `the todo.txt
+format <https://github.com/ginatrapani/todo.txt-cli/wiki/The-Todo.txt-Format>`__
+and stores todo items in plain text.
 
 Screenshots
 -----------
@@ -33,12 +36,19 @@ And some quotes for when you have nothing left to do:
 Requirements
 ------------
 
-Python 2.7.5 or Python 3.3.2 with readline support. todotxt-machine
-outputs raw `terminal control
+Python 2.7.5 or Python 3.3.2 with readline support on Linux or Mac OS X.
+todotxt-machine outputs raw `terminal control
 sequences <http://invisible-island.net/xterm/ctlseqs/ctlseqs.html>`__ to
-draw it's interface and does not rely on modules like
+draw its interface and does not rely on modules like
 `curses <http://docs.python.org/3.3/library/curses.html>`__ or
 `urwid <http://excess.org/urwid/>`__.
+
+Installation
+------------
+
+::
+
+    pip install todotxt-machine
 
 Command Line Options
 --------------------
@@ -107,4 +117,10 @@ While Editing a Todo
 
     ctrl-c       - cancel editing a todo
     tab          - tab complete @contexts and +Projects
+
+Planned Features
+----------------
+
+-  User defined color themes
+-  Manual reordering of todo items
 
