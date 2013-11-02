@@ -98,6 +98,22 @@ Filtering & Sorting
     C            - select the previous context
     s            - switch sorting method
 
+Searching
+~~~~~~~~~
+
+::
+
+    /            - start search
+    ctrl-l       - clear search
+
+While Searching
+~~~~~~~~~~~~~~~
+
+::
+
+    enter        - end search
+    ctrl-c       - cancel search
+
 Manipulating Todo Items
 ~~~~~~~~~~~~~~~~~~~~~~~
 

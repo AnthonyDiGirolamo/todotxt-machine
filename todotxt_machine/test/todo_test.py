@@ -356,12 +356,26 @@ def test_todos_search(todos):
         "(A) Thank Mom for the dinner @phone",
         "Unpack the guest bedroom +Unpacking due:2013-10-20",
         "2013-10-19 Post signs around the neighborhood +GarageSale"]
-    assert [t.search_matches for t in todos.search("the")] == [
-            ('the',), ('the',), ('the',) ]
+    # one match per line!
+    assert [t.search_matches for t in todos.search("the")] == [ ('the',), ('the',), ('the',) ]
     assert [t.raw for t in todos.search("te")] == [
         "(A) Thank Mom for the dinner @phone",
         "Unpack the guest bedroom +Unpacking due:2013-10-20",
         "2013-10-19 Post signs around the neighborhood +GarageSale",
         "x 2013-10-01 @GroceryStore Eskimo pies" ]
-    assert [t.search_matches for t in todos.search("te")] == [
-            ('the',), ('t be',), ('the',), ('tore',) ]
+    assert [t.search_matches for t in todos.search("te")] == [ ('the',), ('t be',), ('the',), ('tore',) ]
+
+    assert todos.search(".*") == [ ]
+    assert todos.search("{b}") == [ ]
+
+    todos.update([
+        "(A) 1999-12-24 .Thank* Mom for the .dinner* @phone",
+        "(B) Schedule Goodwill pickup +GarageSale @phone",
+        "Unpack the guest {bedroom} +Unpacking due:2013-10-20",
+        "2013-10-19 Post signs (around) the neighborhood +GarageSale",
+        "x 2013-10-01 @GroceryStore Eskimo pies" ])
+
+    assert [t.raw for t in todos.search(".*")]             == [ "(A) 1999-12-24 .Thank* Mom for the .dinner* @phone" ]
+    assert [t.search_matches for t in todos.search(".*")]  == [('.dinner*',)]
+    assert [t.raw for t in todos.search("{b}")]            == [ "Unpack the guest {bedroom} +Unpacking due:2013-10-20" ]
+    assert [t.search_matches for t in todos.search("{b}")] == [('{bedroom}',)]

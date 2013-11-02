@@ -43,6 +43,10 @@ class Screen:
             "file": {
                 "bg": TerminalOperations.background_color(235),
                 "fg": TerminalOperations.foreground_color(39)
+            },
+            "search": {
+                "bg": TerminalOperations.background_color(235),
+                "fg": Todo.colors["search_match"],
             }
         },
         "selected": {
@@ -62,8 +66,7 @@ class Screen:
         self.todo           = todo
         self.sorting_names  = ["Unsorted", "Ascending ", "Descending"]
         self.sorting        = 0
-        self.search_string  = ''
-        self.search_string_entered = False
+        self.clear_search_term()
         self.readline_editing_mode = readline_editing_mode
         self.update_todos(todo)
         self.original_terminal_settings = termios.tcgetattr(sys.stdin.fileno())
@@ -110,7 +113,7 @@ class Screen:
             self.move_selection_top()
 
         # load items
-        if self.search_string != "":
+        if self.search_string:
             self.items = self.todo.search(self.search_string)
         elif self.selected_context == 0 and self.selected_project == 0:
             self.items = self.todo.todo_items
@@ -122,12 +125,12 @@ class Screen:
             self.items = self.todo.filter_context(self.context_list[self.selected_context])
 
         # Header
-        left_header_todo_count = " {0} Todos {1}".format( len(self.items), ord(self.key) )
+        left_header_todo_count = " {0} Todos ".format( len(self.items) )
         left_header_sorting    = " Sorting: {0} ".format( self.sorting_names[self.sorting] )
         left_header_size       = len(left_header_todo_count + left_header_sorting)
 
-        if self.search_string != "":
-            right_header = " {0} ".format(
+        if self.search_string:
+            right_header = " searching: {0} ".format(
                 self.search_string
             ).ljust(columns-left_header_size)[:columns-left_header_size]
         else:
@@ -142,6 +145,10 @@ class Screen:
         term.output( Screen.colors["header"]["sorting"]["fg"] + Screen.colors["header"]["sorting"]["bg"] )
         term.output( left_header_sorting )
         term.output( Screen.colors["header"]["file"]["fg"] + Screen.colors["header"]["file"]["bg"] )
+        if self.search_string:
+            term.output( Screen.colors["header"]["search"]["fg"] + Screen.colors["header"]["search"]["bg"] )
+        else:
+            term.output( Screen.colors["header"]["file"]["fg"] + Screen.colors["header"]["file"]["bg"] )
         term.output( right_header )
 
         term.move_cursor(2, 1)
@@ -326,6 +333,16 @@ class Screen:
                 C            - select the previous context
                 s            - switch sorting method
 
+            ### Searching
+
+                /            - start search
+                ctrl-l       - clear search
+
+            ### While Searching
+
+                enter        - end search
+                ctrl-c       - cancel search
+
             ### Manipulating Todo Items
 
                 x            - complete / un-complete selected todo item
@@ -355,6 +372,7 @@ class Screen:
 
     def draw_search_prompt(self):
         self.terminal.output( self.terminal.clear_formatting() )
+        self.terminal.output( Screen.colors["normal"]["fg"]+Screen.colors["normal"]["bg"] )
         self.terminal.move_cursor(self.terminal.rows, 1)
         self.terminal.output(" "*self.terminal.columns)
         self.terminal.move_cursor(self.terminal.rows, 1)
@@ -362,7 +380,19 @@ class Screen:
         self.terminal.output( self.search_string )
         sys.stdout.flush()
 
+    def clear_search_term(self):
+        self.search_string_entered = False
+        self.search_string = ""
+
+    def unfinalize_search(self):
+        self.search_string_entered = False
+
+    def finalize_search(self):
+        self.search_string_entered = True
+
     def search_loop(self):
+        self.unfinalize_search()
+        self.move_selection_top()
         self.selected_context = 0
         self.selected_project = 0
         self.update()
@@ -371,19 +401,21 @@ class Screen:
             if sys.stdin in select.select([sys.stdin], [], [], 0.1)[0]:
                 c = sys.stdin.read(1)
                 if ord(c) == 3: # ctrl-c
-                    self.search_string = ""
+                    self.clear_search_term()
                     self.update()
                     break
                 elif ord(c) == 13: # enter
-                    self.search_string_entered = True
+                    self.finalize_search()
                     self.update()
                     break
                 elif ord(c) == 127: # backspace
                     if len(self.search_string) > 0:
                         self.search_string = self.search_string[:-1]
-                        self.update()
-                        self.draw_search_prompt()
-                else:
+                    else:
+                        self.clear_search_term()
+                    self.update()
+                    self.draw_search_prompt()
+                else: #TODO only append c if c is a printable character
                     self.search_string += c
                     self.update()
                     self.draw_search_prompt()
@@ -448,6 +480,8 @@ class Screen:
                         self.search_loop()
                     elif ord(c) == 3: # ctrl-c
                         break
+                    elif ord(c) == 12: # ctrl-l
+                        self.clear_search_term()
                     # elif ord(c) == 127: # backspace
                     # elif ord(c) == 9: # tab
                     elif ord(c) == 27: # special key - read another byte

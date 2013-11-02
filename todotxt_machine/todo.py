@@ -24,7 +24,7 @@ class Todo:
             "E": TerminalOperations.foreground_color(int("0x50",16)),
             "F": TerminalOperations.foreground_color(int("0x3e",16)),
         },
-        "search_match": TerminalOperations.foreground_color(39),
+        "search_match": TerminalOperations.foreground_color(222),
     }
 
     def __init__(self, item, index,
@@ -279,14 +279,26 @@ class Todos:
         return [item for item in self.todo_items if project in item.projects and context in item.contexts]
 
     def search(self, search_string):
-        search_string_regex  = r'^.*('
-        search_string_regex += ".*?".join(search_string)
-        search_string_regex += r').*$'
+        search_string = re.escape(search_string)
+        # print(search_string)
+        ss = []
+        substrings = search_string.split("\\")
+        for index, substring in enumerate(substrings):
+            s = ".*?".join(substring)
+            # s.replace(" .*?", " ")
+            if 0 < index < len(substrings)-1:
+                s += ".*?"
+            ss.append(s)
+        # print(repr(ss))
+        search_string_regex  = '^.*('
+        search_string_regex += "\\".join(ss)
+        search_string_regex += ').*'
+        # print(search_string_regex)
 
         r = re.compile(search_string_regex, re.IGNORECASE)
         results = []
         for t in self.todo_items:
-            match = r.match(t.raw)
+            match = r.search(t.raw)
             if match:
                 t.search_matches = match.groups()
                 results.append(t)
