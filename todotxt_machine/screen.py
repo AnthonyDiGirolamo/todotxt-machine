@@ -62,6 +62,8 @@ class Screen:
         self.todo           = todo
         self.sorting_names  = ["Unsorted", "Ascending ", "Descending"]
         self.sorting        = 0
+        self.search_string  = ''
+        self.search_string_entered = False
         self.readline_editing_mode = readline_editing_mode
         self.update_todos(todo)
         self.original_terminal_settings = termios.tcgetattr(sys.stdin.fileno())
@@ -108,7 +110,9 @@ class Screen:
             self.move_selection_top()
 
         # load items
-        if self.selected_context == 0 and self.selected_project == 0:
+        if self.search_string != "":
+            self.items = self.todo.search(self.search_string)
+        elif self.selected_context == 0 and self.selected_project == 0:
             self.items = self.todo.todo_items
         elif self.selected_project != 0 and self.selected_context != 0:
             self.items = self.todo.filter_context_and_project(self.context_list[self.selected_context], self.project_list[self.selected_project])
@@ -118,13 +122,18 @@ class Screen:
             self.items = self.todo.filter_context(self.context_list[self.selected_context])
 
         # Header
-        left_header_todo_count = " {0} Todos ".format( len(self.items) )
+        left_header_todo_count = " {0} Todos {1}".format( len(self.items), ord(self.key) )
         left_header_sorting    = " Sorting: {0} ".format( self.sorting_names[self.sorting] )
         left_header_size       = len(left_header_todo_count + left_header_sorting)
 
-        right_header = " {0} ".format(
-            self.todo.file_path[:].replace(os.environ['HOME'], '~')
-        ).rjust(columns-left_header_size)[:columns-left_header_size]
+        if self.search_string != "":
+            right_header = " {0} ".format(
+                self.search_string
+            ).ljust(columns-left_header_size)[:columns-left_header_size]
+        else:
+            right_header = " {0} ".format(
+                self.todo.file_path[:].replace(os.environ['HOME'], '~')
+            ).rjust(columns-left_header_size)[:columns-left_header_size]
 
         term.output( term.clear_formatting() )
         term.move_cursor(1, 1)
@@ -158,6 +167,8 @@ class Screen:
                 Todo.colors["project"]+Screen.colors["selected"]["bg"], p, Screen.colors["header"]["fg"]+Screen.colors["header"]["bg"]) if p == self.project_list[self.selected_project] else " {0} ".format(p) for p in self.project_list]
         )))
 
+        term.output( term.clear_formatting() )
+
         # Todo List
         if len(self.items) > 0:
             current_item = self.starting_item
@@ -174,11 +185,19 @@ class Screen:
                     else:
                         term.output( term.clear_formatting()+Screen.colors["normal"]["bg"] )
 
-                    term.output(
-                        self.items[current_item].highlight(
-                            self.items[current_item].raw.strip()[:columns].ljust(columns)
+                    # normal output if there is no search string or hit enter after searching
+                    if self.search_string_entered or self.search_string == "":
+                        term.output(
+                            self.items[current_item].highlight(
+                                self.items[current_item].raw.strip()[:columns].ljust(columns)
+                            )
                         )
-                    )
+                    else:
+                        term.output(
+                            self.items[current_item].highlight_search_matches(
+                                self.items[current_item].raw.strip()[:columns].ljust(columns)
+                            )
+                        )
                     term.output( term.clear_formatting() )
                     current_item += 1
         else:
@@ -334,6 +353,41 @@ class Screen:
         finally:
             self.set_raw_input()
 
+    def draw_search_prompt(self):
+        self.terminal.output( self.terminal.clear_formatting() )
+        self.terminal.move_cursor(self.terminal.rows, 1)
+        self.terminal.output(" "*self.terminal.columns)
+        self.terminal.move_cursor(self.terminal.rows, 1)
+        self.terminal.output( "/" )
+        self.terminal.output( self.search_string )
+        sys.stdout.flush()
+
+    def search_loop(self):
+        self.selected_context = 0
+        self.selected_project = 0
+        self.update()
+        self.draw_search_prompt()
+        while True:
+            if sys.stdin in select.select([sys.stdin], [], [], 0.1)[0]:
+                c = sys.stdin.read(1)
+                if ord(c) == 3: # ctrl-c
+                    self.search_string = ""
+                    self.update()
+                    break
+                elif ord(c) == 13: # enter
+                    self.search_string_entered = True
+                    self.update()
+                    break
+                elif ord(c) == 127: # backspace
+                    if len(self.search_string) > 0:
+                        self.search_string = self.search_string[:-1]
+                        self.update()
+                        self.draw_search_prompt()
+                else:
+                    self.search_string += c
+                    self.update()
+                    self.draw_search_prompt()
+
     def main_loop(self):
         self.set_raw_input()
         self.update()
@@ -390,6 +444,8 @@ class Screen:
                         self.edit_item(new='insert_after')
                     elif c == 'D':
                         self.delete_item()
+                    elif c == '/':
+                        self.search_loop()
                     elif ord(c) == 3: # ctrl-c
                         break
                     # elif ord(c) == 127: # backspace

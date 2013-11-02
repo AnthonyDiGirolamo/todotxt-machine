@@ -23,7 +23,8 @@ class Todo:
             "D": TerminalOperations.foreground_color(int("0x4d",16)),
             "E": TerminalOperations.foreground_color(int("0x50",16)),
             "F": TerminalOperations.foreground_color(int("0x3e",16)),
-        }
+        },
+        "search_match": TerminalOperations.foreground_color(39),
     }
 
     def __init__(self, item, index,
@@ -38,7 +39,7 @@ class Todo:
         self.due_date       = due_date
         self.completed_date = completed_date
         self.colored        = self.highlight()
-        self.colored_length = TerminalOperations.length_ignoring_escapes(self.colored)
+        # self.colored_length = TerminalOperations.length_ignoring_escapes(self.colored)
 
     def update(self, item):
         self.raw            = item.strip()
@@ -49,7 +50,7 @@ class Todo:
         self.due_date       = Todos.due_date(item)
         self.completed_date = Todos.completed_date(item)
         self.colored        = self.highlight()
-        self.colored_length = TerminalOperations.length_ignoring_escapes(self.colored)
+        # self.colored_length = TerminalOperations.length_ignoring_escapes(self.colored)
 
     def __repr__(self):
         return repr({
@@ -90,6 +91,16 @@ class Todo:
             colored = colored.replace("due:"+self.due_date, "{0}{1}{2}".format(
                 colors["due_date"], "due:"+self.due_date, line_color), 1)
 
+        return colored
+
+    def highlight_search_matches(self, line=""):
+        colors = Todo.colors
+        colored = self.raw if line == "" else line
+        line_color = colors["foreground"]
+        if self.search_matches:
+            for match in self.search_matches:
+                colored = colored.replace(match, "{0}{1}{2}".format(
+                    colors["search_match"], match, line_color))
         return colored
 
     def is_complete(self):
@@ -266,6 +277,20 @@ class Todos:
 
     def filter_context_and_project(self, context, project):
         return [item for item in self.todo_items if project in item.projects and context in item.contexts]
+
+    def search(self, search_string):
+        search_string_regex  = r'^.*('
+        search_string_regex += ".*?".join(search_string)
+        search_string_regex += r').*$'
+
+        r = re.compile(search_string_regex, re.IGNORECASE)
+        results = []
+        for t in self.todo_items:
+            match = r.match(t.raw)
+            if match:
+                t.search_matches = match.groups()
+                results.append(t)
+        return results
 
     quotes = [
         "What you really believe about the source of great performance thus becomes the foundation of all you will ever achieve -- Geoff Colvin, Talent is Overrated: What Really Separates World-Class Performers from Everybody Else",

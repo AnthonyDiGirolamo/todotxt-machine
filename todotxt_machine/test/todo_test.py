@@ -351,3 +351,17 @@ def test_todos_insert(todos, today):
     ]
     assert [todo.raw_index for todo in todos.todo_items] == [0, 1, 2, 3, 4, 5, 6, 7]
 
+def test_todos_search(todos):
+    assert [t.raw for t in todos.search("the")] == [
+        "(A) Thank Mom for the dinner @phone",
+        "Unpack the guest bedroom +Unpacking due:2013-10-20",
+        "2013-10-19 Post signs around the neighborhood +GarageSale"]
+    assert [t.search_matches for t in todos.search("the")] == [
+            ('the',), ('the',), ('the',) ]
+    assert [t.raw for t in todos.search("te")] == [
+        "(A) Thank Mom for the dinner @phone",
+        "Unpack the guest bedroom +Unpacking due:2013-10-20",
+        "2013-10-19 Post signs around the neighborhood +GarageSale",
+        "x 2013-10-01 @GroceryStore Eskimo pies" ]
+    assert [t.search_matches for t in todos.search("te")] == [
+            ('the',), ('t be',), ('the',), ('tore',) ]
