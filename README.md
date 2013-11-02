@@ -19,6 +19,14 @@ Filter contexts and projects:
 
 [![screenshot2.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot2.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot2.png)
 
+Search for the todos you want to edit:
+
+[![screenshot4.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot4.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot4.png)
+
+Search with fuzzy matching:
+
+[![screenshot5.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot5.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot5.png)
+
 And some quotes for when you have nothing left to do:
 
 [![screenshot_quote1.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote1.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote1.png)
@@ -28,7 +36,7 @@ And some quotes for when you have nothing left to do:
 Requirements
 ------------
 
-Python 2.7.5 or Python 3.3.2 with readline support on Linux or Mac OS X.
+Python 2.7 or Python 3.3 with readline support on Linux or Mac OS X.
 todotxt-machine outputs raw [terminal control
 sequences](http://invisible-island.net/xterm/ctlseqs/ctlseqs.html) to draw its
 interface and does not rely on modules like
@@ -106,5 +114,4 @@ Planned Features
 
 - User defined color themes
 - Manual reordering of todo items
-- Searching with fuzzy matching
 

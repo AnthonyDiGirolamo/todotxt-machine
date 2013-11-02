@@ -25,6 +25,16 @@ Filter contexts and projects:
 .. image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot2.png
    :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot2.png
 
+Search for the todos you want to edit:
+
+.. image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot4.png
+   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot4.png
+
+Search with fuzzy matching:
+
+.. image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot5.png
+   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot5.png
+
 And some quotes for when you have nothing left to do:
 
 .. image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote1.png
@@ -36,7 +46,7 @@ And some quotes for when you have nothing left to do:
 Requirements
 ------------
 
-Python 2.7.5 or Python 3.3.2 with readline support on Linux or Mac OS X.
+Python 2.7 or Python 3.3 with readline support on Linux or Mac OS X.
 todotxt-machine outputs raw `terminal control
 sequences <http://invisible-island.net/xterm/ctlseqs/ctlseqs.html>`__ to
 draw its interface and does not rely on modules like
