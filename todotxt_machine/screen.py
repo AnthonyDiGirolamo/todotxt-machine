@@ -568,7 +568,6 @@ class Screen:
         self.terminal.output( Screen.colors["normal"]["fg"]+Screen.colors["normal"]["bg"] )
 
         # setup readline
-        new_todo_line = ""
         readline.parse_and_bind('set editing-mode {0}'.format(self.readline_editing_mode))
         completer = Completer(self.context_list + self.project_list)
         # we want to autocomplete tokens with @ and + symbols so we remove them from the current readline delims
