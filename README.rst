@@ -35,6 +35,11 @@ Search with fuzzy matching:
 .. image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot5.png
    :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot5.png
 
+Tab completion of contexts and projects:
+
+.. image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot6.png
+   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot6.png
+
 And some quotes for when you have nothing left to do:
 
 .. image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote1.png
