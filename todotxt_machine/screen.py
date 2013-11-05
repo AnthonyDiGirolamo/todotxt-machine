@@ -525,13 +525,17 @@ class Screen:
             self.move_selection_up()
         self.update_context_and_project_lists()
 
+    def middle_row(self):
+        return int((self.terminal.rows - self.top_row)/2) + self.top_row
+
     def edit_item(self, new=False):
         self.restore_normal_input()
 
-        new_todo_line = ""
+        new_todo_line = "New Todo"
         empty_list    = len(self.todo) == 0
         if empty_list or new == 'append':
-            starting_row = self.top_row
+            pass
+            # starting_row = self.top_row
         elif new == 'insert_before' or new == 'insert_after':
             if len(self.todo) > 0:
                 raw_index = self.items[self.selected_item].raw_index
@@ -540,27 +544,34 @@ class Screen:
             else:
                 raw_index = 0
 
-            if new == 'insert_after':
-                starting_row = self.selected_row + 1
-            elif new == 'insert_before':
-                starting_row = self.selected_row - 1
+            # if new == 'insert_after':
+            #     starting_row = self.selected_row + 1
+            # elif new == 'insert_before':
+            #     starting_row = self.selected_row - 1
 
         else:
-            starting_row = self.selected_row
+            # starting_row = self.selected_row
             raw_index = self.items[self.selected_item].raw_index
             new_todo_line = self.items[self.selected_item].raw.strip()
             readline.set_startup_hook(lambda: readline.insert_text(new_todo_line))
 
         # edit seleted line
-        self.terminal.move_cursor(starting_row, 1)
+        for r in range(self.middle_row(), self.terminal.rows+1):
+            self.terminal.move_cursor(r, 1)
+            self.terminal.output( Screen.colors["normal"]["fg"]+Screen.colors["normal"]["bg"] )
+            self.terminal.output(" "*self.terminal.columns)
+            self.terminal.move_cursor(r, 1)
+        self.terminal.move_cursor(self.middle_row(), 1)
+        self.terminal.output( Screen.colors["header"]["fg"]+Screen.colors["header"]["bg"] )
+        self.terminal.output("-*- Editing: {0} ".format(new_todo_line)[:self.terminal.columns].ljust(self.terminal.columns, "-"))
+        self.terminal.move_cursor(self.middle_row()+1, 1)
         self.terminal.output( Screen.colors["normal"]["fg"]+Screen.colors["normal"]["bg"] )
-        self.terminal.output(" "*self.terminal.columns)
-        self.terminal.move_cursor(starting_row, 1)
 
         # setup readline
+        new_todo_line = ""
         readline.parse_and_bind('set editing-mode {0}'.format(self.readline_editing_mode))
         completer = Completer(self.context_list + self.project_list)
-        # we want to autocomplete tokens with @ and + symbols so we remove them from # the current readline delims
+        # we want to autocomplete tokens with @ and + symbols so we remove them from the current readline delims
         delims = readline.get_completer_delims().replace("@","").replace("+","")
         readline.set_completer_delims(delims)
         readline.set_completer(None)
@@ -577,7 +588,8 @@ class Screen:
 
         self.set_raw_input()
 
-        if new_todo_line.strip() != "":
+        new_todo_line = new_todo_line.strip()
+        if new_todo_line:
             if empty_list or new == 'append':
                 self.todo.append(new_todo_line)
                 self.move_selection_bottom()
