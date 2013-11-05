@@ -75,7 +75,7 @@ setup(name=NAME,
           "Programming Language :: Python :: 3.3",
           "Topic :: Office/Business :: Scheduling",
       ],
-      install_requires=[],
+      install_requires=['setuptools'],
       tests_require=['pytest'],
       cmdclass = {'test': PyTest},
       )
