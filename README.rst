@@ -150,3 +150,8 @@ Planned Features
 -  User defined color themes
 -  Manual reordering of todo items
 
+Updates
+-------
+
+See the `log on github <https://github.com/AnthonyDiGirolamo/todotxt-machine/commits/master>`__
+
