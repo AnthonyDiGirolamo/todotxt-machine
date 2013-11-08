@@ -69,6 +69,24 @@ def test_todos_projects(todos):
     assert "+GarageSale" in todos.projects("(B) Schedule Goodwill pickup +GarageSale @phone")
     assert ["+deck", "+portch"] == todos.projects("Finish outdoor projects +portch +deck")
 
+def test_context_project_regex(todos):
+    todos.update([
+        "(A) 1999-12-24 Thank Mom for the dinner @phone @email mom@email.com",
+        "(B) Schedule Goodwill pickup +GarageSale NotA+Project @phone",
+        "Unpack the guest bedroom +Unpacking due:2013-10-20",
+        "2013-10-19 Post signs around the neighborhood +GarageSale",
+        "x 2013-10-01 @GroceryStore Eskimo pies" ])
+    todo = todos[0]
+    assert todo.raw      == "(A) 1999-12-24 Thank Mom for the dinner @phone @email mom@email.com"
+    assert todo.contexts == ["@email", "@phone"]
+    assert todo.projects == []
+    assert todo.priority == "A"
+    todo = todos[1]
+    assert todo.raw      == "(B) Schedule Goodwill pickup +GarageSale NotA+Project @phone"
+    assert todo.contexts == ["@phone"]
+    assert todo.projects == ["+GarageSale"]
+    assert todo.priority == "B"
+
 def test_todos_all_contexts(todos):
     assert ["@GroceryStore", "@phone"] == todos.all_contexts()
 

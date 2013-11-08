@@ -128,8 +128,8 @@ class Todo:
 
 class Todos:
     """Todo items"""
-    _context_regex       = re.compile(r'\s*(@\S+)\s*')
-    _project_regex       = re.compile(r'\s*(\+\S+)\s*')
+    _context_regex       = re.compile(r'(?:^|\s+)(@\S+)')
+    _project_regex       = re.compile(r'(?:^|\s+)(\+\S+)')
     _creation_date_regex = re.compile(r'^'
                                       r'(?:x \d\d\d\d-\d\d-\d\d )?'
                                       r'(?:\(\w\) )?'
