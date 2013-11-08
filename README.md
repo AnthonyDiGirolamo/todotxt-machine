@@ -129,6 +129,8 @@ Planned Features
 
 - User defined color themes
 - Manual reordering of todo items
+- Support for archiving todos in done.txt
+- Config file for setting colors and todo.txt file location
 
 Updates
 -------
