@@ -50,7 +50,15 @@ interface and does not rely on modules like
 Installation
 ------------
 
+### Using [pip](https://pypi.python.org/pypi/pip)
+
     pip install todotxt-machine
+
+
+### Manually
+    git clone https://github.com/AnthonyDiGirolamo/todotxt-machine.git
+    cd todotxt-machine
+    ./todotxt-machine.py
 
 Command Line Options
 --------------------
