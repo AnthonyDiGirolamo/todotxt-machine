@@ -56,6 +56,9 @@ Installation
 
 
 ### Manually
+
+Download or clone this repo and run the `todotxt-machine.py` script.
+
     git clone https://github.com/AnthonyDiGirolamo/todotxt-machine.git
     cd todotxt-machine
     ./todotxt-machine.py
