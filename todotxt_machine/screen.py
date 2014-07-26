@@ -460,6 +460,7 @@ class Screen:
                         elif self.sorting == 2:
                             self.todo.sorted_raw()
                             self.sorting = 0
+                        self.move_selection_top()
                     elif c == "x":
                         i = self.items[self.selected_item].raw_index
                         if self.todo[i].is_complete():
