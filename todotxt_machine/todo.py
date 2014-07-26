@@ -115,10 +115,12 @@ class Todo:
         today = date.today()
         self.raw = "x {0} ".format(today) + self.raw
         self.completed_date = "{0}".format(today)
+        self.update(self.raw)
 
     def incomplete(self):
         self.raw = re.sub(Todos._completed_regex, "", self.raw)
         self.completed_date = ""
+        self.update(self.raw)
 
     def add_creation_date(self):
         if self.creation_date == "":
