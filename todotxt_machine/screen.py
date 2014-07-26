@@ -463,6 +463,9 @@ class Screen:
                         self.move_selection_top()
                     elif c == "x":
                         i = self.items[self.selected_item].raw_index
+                        if self.sorting > 0:
+                            i = self.selected_item
+
                         if self.todo[i].is_complete():
                             self.todo[i].incomplete()
                         else:
@@ -521,6 +524,8 @@ class Screen:
 
     def delete_item(self):
         raw_index = self.items[self.selected_item].raw_index
+        if self.sorting > 0:
+            raw_index = self.selected_item
         self.todo.delete(raw_index)
         if self.selected_item == len(self.items):
             self.move_selection_up()
@@ -540,6 +545,8 @@ class Screen:
         elif new == 'insert_before' or new == 'insert_after':
             if len(self.todo) > 0:
                 raw_index = self.items[self.selected_item].raw_index
+                if self.sorting > 0:
+                    raw_index = self.selected_item
                 if new == 'insert_after':
                     raw_index += 1
             else:
@@ -553,6 +560,8 @@ class Screen:
         else:
             # starting_row = self.selected_row
             raw_index = self.items[self.selected_item].raw_index
+            if self.sorting > 0:
+                raw_index = self.selected_item
             new_todo_line = self.items[self.selected_item].raw.strip()
             readline.set_startup_hook(lambda: readline.insert_text(new_todo_line))
 

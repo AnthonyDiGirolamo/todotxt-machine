@@ -264,15 +264,12 @@ class Todos:
 
     def sorted(self, reversed_sort=False):
         self.todo_items.sort( key=lambda todo: todo.raw, reverse=reversed_sort )
-        self.update_raw_indices()
 
     def sorted_reverse(self):
         self.sorted(reversed_sort=True)
-        self.update_raw_indices()
 
     def sorted_raw(self):
         self.todo_items.sort( key=lambda todo: todo.raw_index )
-        self.update_raw_indices()
 
     def filter_context(self, context):
         return [item for item in self.todo_items if context in item.contexts]
