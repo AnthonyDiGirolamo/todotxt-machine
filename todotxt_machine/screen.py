@@ -66,6 +66,7 @@ class Screen:
         self.todo           = todo
         self.sorting_names  = ["Unsorted", "Ascending ", "Descending"]
         self.sorting        = 0
+        self.saved_message  = ""
         self.clear_search_term()
         self.readline_editing_mode = readline_editing_mode
         self.update_todos(todo)
@@ -136,7 +137,11 @@ class Screen:
         else:
             right_header = " {0} ".format(
                 self.todo.file_path[:].replace(os.environ['HOME'], '~')
-            ).rjust(columns-left_header_size)[:columns-left_header_size]
+            )
+            if len(self.saved_message) > 0:
+                right_header = self.saved_message + right_header
+                self.saved_message = ""
+            right_header = right_header.rjust(columns-left_header_size)[:columns-left_header_size]
 
         term.output( term.clear_formatting() )
         term.move_cursor(1, 1)
@@ -317,6 +322,7 @@ class Screen:
 
                 ?            - display this help message
                 q, ctrl-c    - quit
+                w            - save current todo file
 
             ### Movement
 
@@ -434,6 +440,9 @@ class Screen:
                 if c != "":
                     if c == "?":
                         self.display_help()
+                    elif c == "w":
+                        self.todo.save()
+                        self.saved_message = "Saved!"
                     elif c == "j":
                         self.move_selection_down()
                     elif c == "k":
