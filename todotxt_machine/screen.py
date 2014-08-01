@@ -403,6 +403,7 @@ class Screen:
         self.selected_project = 0
         self.update()
         self.draw_search_prompt()
+
         while True:
             if sys.stdin in select.select([sys.stdin], [], [], 0.1)[0]:
                 c = sys.stdin.read(1)
@@ -425,6 +426,11 @@ class Screen:
                     self.search_string += c
                     self.update()
                     self.draw_search_prompt()
+
+        # if we have no search results when return is hit, exit search mode
+        if len(self.items) <= 0:
+            self.clear_search_term()
+            self.update()
 
     def main_loop(self):
         self.set_raw_input()
