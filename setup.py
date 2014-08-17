@@ -10,7 +10,7 @@ interface similar to [mutt](http://www.mutt.org/).
 Requirements
 ------------
 
-Python 2.7.5 or Python 3.3.2 with readline support.
+Python 2.7 or Python 3.3 with readline support.
 
 Documentation
 -------------

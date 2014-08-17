@@ -84,6 +84,7 @@ Key Bindings
 
     ?            - display this help message
     q, ctrl-c    - quit
+    w            - save current todo file
 
 ### Movement
 

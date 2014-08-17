@@ -66,6 +66,7 @@ class Screen:
         self.todo           = todo
         self.sorting_names  = ["Unsorted", "Ascending ", "Descending"]
         self.sorting        = 0
+        self.saved_message  = ""
         self.clear_search_term()
         self.readline_editing_mode = readline_editing_mode
         self.update_todos(todo)
@@ -136,7 +137,11 @@ class Screen:
         else:
             right_header = " {0} ".format(
                 self.todo.file_path[:].replace(os.environ['HOME'], '~')
-            ).rjust(columns-left_header_size)[:columns-left_header_size]
+            )
+            if len(self.saved_message) > 0:
+                right_header = self.saved_message + right_header
+                self.saved_message = ""
+            right_header = right_header.rjust(columns-left_header_size)[:columns-left_header_size]
 
         term.output( term.clear_formatting() )
         term.move_cursor(1, 1)
@@ -317,6 +322,7 @@ class Screen:
 
                 ?            - display this help message
                 q, ctrl-c    - quit
+                w            - save current todo file
 
             ### Movement
 
@@ -397,6 +403,7 @@ class Screen:
         self.selected_project = 0
         self.update()
         self.draw_search_prompt()
+
         while True:
             if sys.stdin in select.select([sys.stdin], [], [], 0.1)[0]:
                 c = sys.stdin.read(1)
@@ -420,6 +427,11 @@ class Screen:
                     self.update()
                     self.draw_search_prompt()
 
+        # if we have no search results when return is hit, exit search mode
+        if len(self.items) <= 0:
+            self.clear_search_term()
+            self.update()
+
     def main_loop(self):
         self.set_raw_input()
         self.update()
@@ -434,6 +446,9 @@ class Screen:
                 if c != "":
                     if c == "?":
                         self.display_help()
+                    elif c == "w":
+                        self.todo.save()
+                        self.saved_message = "Saved!"
                     elif c == "j":
                         self.move_selection_down()
                     elif c == "k":
@@ -460,8 +475,12 @@ class Screen:
                         elif self.sorting == 2:
                             self.todo.sorted_raw()
                             self.sorting = 0
+                        self.move_selection_top()
                     elif c == "x":
                         i = self.items[self.selected_item].raw_index
+                        if self.sorting > 0:
+                            i = self.selected_item
+
                         if self.todo[i].is_complete():
                             self.todo[i].incomplete()
                         else:
@@ -520,6 +539,8 @@ class Screen:
 
     def delete_item(self):
         raw_index = self.items[self.selected_item].raw_index
+        if self.sorting > 0:
+            raw_index = self.selected_item
         self.todo.delete(raw_index)
         if self.selected_item == len(self.items):
             self.move_selection_up()
@@ -539,6 +560,8 @@ class Screen:
         elif new == 'insert_before' or new == 'insert_after':
             if len(self.todo) > 0:
                 raw_index = self.items[self.selected_item].raw_index
+                if self.sorting > 0:
+                    raw_index = self.selected_item
                 if new == 'insert_after':
                     raw_index += 1
             else:
@@ -552,6 +575,8 @@ class Screen:
         else:
             # starting_row = self.selected_row
             raw_index = self.items[self.selected_item].raw_index
+            if self.sorting > 0:
+                raw_index = self.selected_item
             new_todo_line = self.items[self.selected_item].raw.strip()
             readline.set_startup_hook(lambda: readline.insert_text(new_todo_line))
 
