@@ -1,56 +1,47 @@
 import urwid
-import random
 
-class ItemWidget (urwid.WidgetWrap):
-    def __init__ (self, id, description):
+class ItemWidget(urwid.WidgetWrap):
+    def __init__(self, id, text):
         self.id = id
-        self.content = 'item %s: %s...' % (str(id), description[:25])
+        self.content = "raw_index[{0}] {1}".format(str(id), text)
         self.item = [
-            ('fixed', 15, urwid.Padding(urwid.AttrWrap(
-                urwid.Text('item %s' % str(id)), 'body', 'focus'), left=2)),
-            urwid.AttrWrap(urwid.Text('%s' % description), 'body', 'focus'),
+            urwid.AttrWrap( urwid.Text(text), 'body', 'focus')
         ]
         w = urwid.Columns(self.item)
         self.__super.__init__(w)
 
-    def selectable (self):
+    def selectable(self):
         return True
 
     def keypress(self, size, key):
         return key
 
-def main ():
+class UrwidUI:
+    def __init__(self, todos):
+        self.todo = todos
 
-    palette = [
-        ('body','dark cyan', '', 'standout'),
-        ('focus','dark red', '', 'standout'),
-        ('head','light red', 'black'),
+    def main(self):
+        palette = [
+            ('body','dark cyan', '', 'standout'),
+            ('focus','dark red', '', 'standout'),
+            ('head','light red', 'black'),
         ]
 
-    lorem = [
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-        'Sed sollicitudin, nulla id viverra pulvinar.',
-        'Cras a magna sit amet felis fringilla lobortis.',
-    ]
+        def keystroke (input):
+            if input in ('q', 'Q'):
+                raise urwid.ExitMainLoop()
+            if input is 'enter':
+                focus = listbox.get_focus()[0].content
+                view.set_header(urwid.AttrWrap(urwid.Text(
+                    'selected: %s' % str(focus)), 'head'))
 
-    def keystroke (input):
-        if input in ('q', 'Q'):
-            raise urwid.ExitMainLoop()
+        items = []
+        for todo_item in self.todo.todo_items:
+            items.append(ItemWidget(todo_item.raw_index, todo_item.raw))
 
-        if input is 'enter':
-            focus = listbox.get_focus()[0].content
-            view.set_header(urwid.AttrWrap(urwid.Text(
-                'selected: %s' % str(focus)), 'head'))
+        header  = urwid.AttrMap(urwid.Text('selected:'), 'head')
+        listbox = urwid.ListBox(urwid.SimpleListWalker(items))
+        view    = urwid.Frame(urwid.AttrWrap(listbox, 'body'), header=header)
+        loop    = urwid.MainLoop(view, palette, unhandled_input=keystroke)
+        loop.run()
 
-    items = []
-    for i in range(100):
-        items.append(ItemWidget(i, random.choice(lorem)))
-
-    header = urwid.AttrMap(urwid.Text('selected:'), 'head')
-    listbox = urwid.ListBox(urwid.SimpleListWalker(items))
-    view = urwid.Frame(urwid.AttrWrap(listbox, 'body'), header=header)
-    loop = urwid.MainLoop(view, palette, unhandled_input=keystroke)
-    loop.run()
-
-if __name__ == '__main__':
-    main()

@@ -17,4 +17,4 @@ __version__ = (1, 1, 8)
 
 version = "%s.%s.%s" % __version__
 
-__all__ = ["cli", "todo", "screen", "terminal_operations", "completer"]
+__all__ = ["cli", "todo", "screen", "urwid_ui", "terminal_operations", "completer"]
