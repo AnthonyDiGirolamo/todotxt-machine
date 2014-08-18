@@ -52,9 +52,11 @@ def main():
         print("ERROR: unable to open {0}\nUse the --file option to specify a path to your todo.txt file".format(todotxt_file_path))
         todos = todo.Todos([], todotxt_file_path)
 
-    view = Screen(todos, readline_editing_mode=args.readline_editing_mode)
+    # view = Screen(todos, readline_editing_mode=args.readline_editing_mode)
+    # view.main_loop()
 
-    view.main_loop()
+    view = UrwidUI(todos)
+    view.main()
 
     print("Writing: {0}".format(todotxt_file_path))
     view.todo.save()

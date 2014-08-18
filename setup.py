@@ -75,7 +75,7 @@ setup(name=NAME,
           "Programming Language :: Python :: 3.3",
           "Topic :: Office/Business :: Scheduling",
       ],
-      install_requires=['setuptools'],
+      install_requires=['setuptools', 'urwid>=1.2.1'],
       tests_require=['pytest'],
       cmdclass = {'test': PyTest},
       )
