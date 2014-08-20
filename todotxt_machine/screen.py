@@ -284,6 +284,16 @@ class Screen:
         self.starting_item = 0
         self.selected_row = self.top_row
 
+    def swap_below(self):
+        if self.selected_item < len(self.items) - 1:
+            self.todo.swap(self.selected_item, self.selected_item + 1)
+            self.move_selection_down()
+
+    def swap_above(self):
+        if self.selected_item > 0:
+            self.todo.swap(self.selected_item, self.selected_item - 1)
+            self.move_selection_up()
+
     def select_previous_context(self):
         self.last_context = self.selected_context
         self.selected_context -= 1
@@ -457,6 +467,10 @@ class Screen:
                         self.move_selection_top()
                     elif c == "G":
                         self.move_selection_bottom()
+                    elif c == "J":
+                        self.swap_below()
+                    elif c == "K":
+                        self.swap_above()
                     elif c == "p":
                         self.select_next_project()
                     elif c == "P":

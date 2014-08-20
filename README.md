@@ -119,6 +119,8 @@ Key Bindings
     O            - add a todo before the selected todo
     enter, A, e  - edit the selected todo
     D            - delete the selected todo
+    J            - swap with item below
+    K            - swap with item above
 
 ### While Editing a Todo
 
