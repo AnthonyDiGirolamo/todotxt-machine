@@ -2,6 +2,7 @@
 # coding=utf-8
 import re
 import random
+import urwid
 from datetime import date
 
 from todotxt_machine.terminal_operations import TerminalOperations
@@ -70,26 +71,28 @@ class Todo:
         colored = self.raw if line == "" else line
 
         if colored[:2] == "x ":
-            colored = colors['completed'] + colored
+            colored = urwid.AttrMap(urwid.Text(colored), 'completed')
         else:
-            line_color = colors["foreground"]
-            if self.priority:
-                line_color = colors["priority"][self.priority] if self.priority in "ABCDEF" else colors["foreground"]
-                colored = line_color + colored
+            colored = urwid.AttrMap(urwid.Text(colored), 'default')
 
-            for context in self.contexts:
-                colored = colored.replace(context, "{0}{1}{2}".format(
-                    colors["context"], context, line_color ))
+            # line_color = colors["foreground"]
+            # if self.priority:
+            #     line_color = colors["priority"][self.priority] if self.priority in "ABCDEF" else colors["foreground"]
+            #     colored = line_color + colored
 
-            for project in self.projects:
-                colored = colored.replace(project, "{0}{1}{2}".format(
-                    colors["project"], project, line_color ))
+            # for context in self.contexts:
+            #     colored = colored.replace(context, "{0}{1}{2}".format(
+            #         colors["context"], context, line_color ))
 
-            colored = colored.replace(self.creation_date, "{0}{1}{2}".format(
-                colors["creation_date"], self.creation_date, line_color), 1)
+            # for project in self.projects:
+            #     colored = colored.replace(project, "{0}{1}{2}".format(
+            #         colors["project"], project, line_color ))
 
-            colored = colored.replace("due:"+self.due_date, "{0}{1}{2}".format(
-                colors["due_date"], "due:"+self.due_date, line_color), 1)
+            # colored = colored.replace(self.creation_date, "{0}{1}{2}".format(
+            #     colors["creation_date"], self.creation_date, line_color), 1)
+
+            # colored = colored.replace("due:"+self.due_date, "{0}{1}{2}".format(
+            #     colors["due_date"], "due:"+self.due_date, line_color), 1)
 
         return colored
 
@@ -459,4 +462,3 @@ class Todos:
     @staticmethod
     def quote():
         return Todos.quotes[ random.randrange(len(Todos.quotes)) ]
-

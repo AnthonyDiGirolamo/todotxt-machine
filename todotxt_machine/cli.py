@@ -19,7 +19,6 @@ Options:
 
 import sys
 import os
-import argparse
 import random
 
 # Import the correct version of configparser
@@ -42,23 +41,60 @@ def exit_with_error(message):
     print(__doc__.split('\n\n')[1])
     exit(1)
 
+class ColorScheme:
+
+    def __init__(self, name, user_config):
+        self.built_in_colors_directory = os.path.realpath(os.path.expanduser(os.path.dirname(__file__) + '/colors'))
+        self.user_config = user_config
+        self.load_colors(name)
+
+    def load_colors(self, name):
+        self.colors = {}
+        colorscheme_section = "colorscheme-{0}".format(name)
+
+        # Use user defined theme in the user_config if it exists
+        if self.user_config.has_section(colorscheme_section):
+            self.colors = dict( self.user_config.items(colorscheme_section) )
+        else:
+            # Try to load a built in theme
+            cfg = config_parser_module.ConfigParser()
+            if name in os.listdir(self.built_in_colors_directory):
+                cfg.read(self.built_in_colors_directory + "/" + name)
+            # Load default theme
+            else:
+                cfg.read(self.built_in_colors_directory + "/default")
+                colorscheme_section = "colorscheme-default"
+            if cfg.has_section(colorscheme_section):
+                self.colors = dict( cfg.items(colorscheme_section) )
+
+        # Split foreground and background values
+        for key, value in self.colors.items():
+            color_strings = value.split(',')
+            if len(color_strings) == 1:
+                color_strings.append('')
+            self.colors[key] = {'fg': color_strings[0], 'bg': color_strings[1]}
+
+
 def main():
     random.seed()
 
     # Parse command line
     arguments = docopt(__doc__, version=todotxt_machine.version)
-
+    # Validate readline editing mode option (docopt doesn't handle this)
     if arguments['--readline-editing-mode'] not in ['vi', 'emacs']:
         exit_with_error("--readline-editing-mode must be set to either vi or emacs\n")
 
-    todotxt_file = arguments['--file']
-
     # Parse config file
-    cfg = config_parser_module.ConfigParser()
+    cfg = config_parser_module.ConfigParser(allow_no_value=True)
+    cfg.add_section('settings') # make sure we have a setting section so we can call items('settings') and get an empty dict
     cfg.read(os.path.expanduser(arguments['--config']))
 
-    if todotxt_file is None and cfg.has_section('files') and cfg.has_option('files', 'todo'):
-        todotxt_file = cfg.get('files', 'todo')
+    # load the colorscheme defined in the user config, else load the default scheme
+    colorscheme = ColorScheme(dict( cfg.items('settings') ).get('colorscheme', 'default'), cfg)
+
+    # import ipdb; ipdb.set_trace()
+
+    todotxt_file = dict( cfg.items('settings') ).get('file', arguments['--file'])
 
     if todotxt_file is None:
         exit_with_error("ERROR: No todo file specified. Either specify one using the --file option or set it in your configuration file ({0}).".format(arguments['--config']))
@@ -89,7 +125,7 @@ def main():
     # view = Screen(todos, readline_editing_mode=arguments['--readline-editing-mode'])
     # view.main_loop()
 
-    view = UrwidUI(todos)
+    view = UrwidUI(todos, colorscheme)
     view.main()
 
     print("Writing: {0}".format(todotxt_file_path))
