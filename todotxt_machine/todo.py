@@ -69,11 +69,12 @@ class Todo:
     def highlight(self, line=""):
         colors = Todo.colors
         colored = self.raw if line == "" else line
+        color_list = []
 
         if colored[:2] == "x ":
-            colored = urwid.AttrMap(urwid.Text(colored), 'completed')
+            color_list.append( ('completed', colored) )
         else:
-            colored = urwid.AttrMap(urwid.Text(colored), 'default')
+            color_list.append( ('default', colored) )
 
             # line_color = colors["foreground"]
             # if self.priority:
@@ -94,7 +95,7 @@ class Todo:
             # colored = colored.replace("due:"+self.due_date, "{0}{1}{2}".format(
             #     colors["due_date"], "due:"+self.due_date, line_color), 1)
 
-        return colored
+        return color_list
 
     def highlight_search_matches(self, line=""):
         colors = Todo.colors

@@ -1,12 +1,13 @@
 import urwid
+import ipdb #; ipdb.set_trace()
 
 class ItemWidget(urwid.WidgetWrap):
     def __init__(self, id, text):
         self.id = id
         self.content = "raw_index[{0}] {1}".format(str(id), text)
         # self.item = [
-        w = urwid.AttrWrap(text, 'default', 'selected')
-        # w = urwid.AttrWrap( urwid.Text(text), 'default', focus_attr='selected')
+            # w = urwid.AttrWrap(text, 'default', 'selected')
+        w = urwid.AttrMap( urwid.Text(text), None, focus_map='selected')
         # ]
         # w = urwid.Columns(self.item)
         self.__super.__init__(w)
@@ -39,11 +40,16 @@ class UrwidUI:
                     'selected: %s' % str(focus)), 'header'))
 
         items = []
-        import ipdb; ipdb.set_trace()
         for todo_item in self.todo.todo_items:
-            items.append(ItemWidget(todo_item.raw_index, todo_item.colored))
+            items.append(ItemWidget(todo_item.raw_index, todo_item.raw))
 
-        header  = urwid.AttrMap(urwid.Text('selected:'), 'header')
+        header  = urwid.AttrWrap(
+            urwid.Columns( [
+                urwid.Text( ('header_todo_count', " {0} Todos ".format(len(self.todo.todo_items))) ),
+                urwid.Text( " todotxt-machine ", align='center' ),
+                urwid.Text( ('header_file', " {0} ".format(self.todo.file_path)), align='right' )
+            ]), 'header')
+
         listbox = urwid.ListBox(urwid.SimpleListWalker(items))
         view    = urwid.Frame(urwid.AttrWrap(listbox, 'default'), header=header)
         loop    = urwid.MainLoop(view, palette, unhandled_input=keystroke)

@@ -1,6 +1,6 @@
 [colorscheme-default]
-default=h250,h234
-selected=h250,h238
+default=h250
+selected=,h238
 header=h39,h235
 header_todo_count=h222,h27
 header_sorting=h235,h39
