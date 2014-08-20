@@ -21,6 +21,10 @@ import sys
 import os
 import random
 
+import ipdb
+import pprint
+pp = pprint.PrettyPrinter(indent=4).pprint
+
 # Import the correct version of configparser
 if sys.version_info[0] >= 3:
     import configparser
@@ -50,6 +54,7 @@ class ColorScheme:
 
     def load_colors(self, name):
         self.colors = {}
+        self.focus_map = {}
         colorscheme_section = "colorscheme-{0}".format(name)
 
         # Use user defined theme in the user_config if it exists
@@ -74,6 +79,12 @@ class ColorScheme:
                 color_strings.append('')
             self.colors[key] = {'fg': color_strings[0], 'bg': color_strings[1]}
 
+        # Create Selected attributes using the selected_background_color
+        selected_background_color = self.colors['selected']['bg']
+        for key, value in list(self.colors.items()):
+            if key != 'selected':
+                self.colors[key+'_selected'] = {'fg': self.colors[key]['fg'], 'bg': selected_background_color}
+                self.focus_map[key] = key + '_selected'
 
 def main():
     random.seed()

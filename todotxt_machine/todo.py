@@ -4,6 +4,7 @@ import re
 import random
 import urwid
 from datetime import date
+import ipdb
 
 from todotxt_machine.terminal_operations import TerminalOperations
 
@@ -72,14 +73,9 @@ class Todo:
         color_list = []
 
         if colored[:2] == "x ":
-            color_list.append( ('completed', colored) )
+            color_list = ('completed', colored)
         else:
-            color_list.append( ('default', colored) )
-
-            # line_color = colors["foreground"]
-            # if self.priority:
-            #     line_color = colors["priority"][self.priority] if self.priority in "ABCDEF" else colors["foreground"]
-            #     colored = line_color + colored
+            # import ipdb; ipdb.set_trace()
 
             # for context in self.contexts:
             #     colored = colored.replace(context, "{0}{1}{2}".format(
@@ -94,6 +90,17 @@ class Todo:
 
             # colored = colored.replace("due:"+self.due_date, "{0}{1}{2}".format(
             #     colors["due_date"], "due:"+self.due_date, line_color), 1)
+
+            # line_color = colors["foreground"]
+            # if self.priority:
+            #     line_color = colors["priority"][self.priority] if self.priority in "ABCDEF" else colors["foreground"]
+            #     colored = line_color + colored
+
+            if self.priority and self.priority in "ABCDEF":
+                color_list = ("priority_{0}".format(self.priority.lower()), colored)
+            else:
+                color_list = ("plain", colored)
+
 
         return color_list
 

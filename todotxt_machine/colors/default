@@ -1,5 +1,5 @@
 [colorscheme-default]
-default=h250
+plain=h250
 selected=,h238
 header=h39,h235
 header_todo_count=h222,h27

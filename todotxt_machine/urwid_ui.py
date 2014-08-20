@@ -1,22 +1,19 @@
 import urwid
-import ipdb #; ipdb.set_trace()
 
 class ItemWidget(urwid.WidgetWrap):
-    def __init__(self, id, text):
-        self.id = id
-        self.content = "raw_index[{0}] {1}".format(str(id), text)
-        # self.item = [
-            # w = urwid.AttrWrap(text, 'default', 'selected')
-        w = urwid.AttrMap( urwid.Text(text), None, focus_map='selected')
-        # ]
-        # w = urwid.Columns(self.item)
-        self.__super.__init__(w)
-
+    def __init__(self, text):
+        self.__super.__init__(urwid.Text(text))
     def selectable(self):
         return True
 
-    def keypress(self, size, key):
-        return key
+class MenuButton(urwid.Button):
+    def __init__(self, caption, callback, colorscheme):
+        super(MenuButton, self).__init__("")
+        urwid.connect_signal(self, 'click', callback)
+        self._w = urwid.AttrMap( urwid.AttrMap(
+            urwid.LineBox(ItemWidget(caption)),
+            None, 'selected'),
+            None, colorscheme.focus_map)
 
 class UrwidUI:
     def __init__(self, todos, colorscheme):
@@ -41,17 +38,21 @@ class UrwidUI:
 
         items = []
         for todo_item in self.todo.todo_items:
-            items.append(ItemWidget(todo_item.raw_index, todo_item.raw))
+            items.append(
+                # ItemWidget(todo_item.raw_index, todo_item.colored)
+                # urwid.Button(todo_item.colored)
+                MenuButton(todo_item.colored, None, self.colorscheme)
+            )
 
-        header  = urwid.AttrWrap(
+        header  = urwid.AttrMap(
             urwid.Columns( [
                 urwid.Text( ('header_todo_count', " {0} Todos ".format(len(self.todo.todo_items))) ),
-                urwid.Text( " todotxt-machine ", align='center' ),
+                # urwid.Text( " todotxt-machine ", align='center' ),
                 urwid.Text( ('header_file', " {0} ".format(self.todo.file_path)), align='right' )
             ]), 'header')
 
         listbox = urwid.ListBox(urwid.SimpleListWalker(items))
-        view    = urwid.Frame(urwid.AttrWrap(listbox, 'default'), header=header)
+        view    = urwid.Frame(urwid.AttrMap(listbox, 'plain'), header=header)
         loop    = urwid.MainLoop(view, palette, unhandled_input=keystroke)
         loop.screen.set_terminal_properties(colors=256)
         loop.run()
