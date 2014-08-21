@@ -140,7 +140,7 @@ def main():
     view.main()
 
     print("Writing: {0}".format(todotxt_file_path))
-    view.todo.save()
+    view.todos.save()
     exit(0)
 
 if __name__ == '__main__':

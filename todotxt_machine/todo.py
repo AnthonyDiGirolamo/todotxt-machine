@@ -4,7 +4,6 @@ import re
 import random
 import urwid
 from datetime import date
-import ipdb
 
 from todotxt_machine.terminal_operations import TerminalOperations
 
