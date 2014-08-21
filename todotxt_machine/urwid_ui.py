@@ -2,15 +2,18 @@ import urwid
 import collections
 
 class MenuButton(urwid.Button):
-    def __init__(self, todo, colorscheme):
+    def __init__(self, todo, colorscheme, editing=False, wrapping='clip', border='no border'):
         super(MenuButton, self).__init__("")
         self.todo        = todo
-        self.wrapping    = 'clip'
-        self.border      = 'no border'
+        self.wrapping    = wrapping
+        self.border      = border
         self.colorscheme = colorscheme
-        self.editing     = False
+        self.editing     = editing
         # urwid.connect_signal(self, 'click', callback)
-        self.update_todo()
+        if editing:
+            self.edit_item()
+        else:
+            self.update_todo()
 
     def selectable(self):
         return True
@@ -24,22 +27,27 @@ class MenuButton(urwid.Button):
             None, 'selected'),
             None, self.colorscheme.focus_map)
 
+    def edit_item(self):
+        self.editing = True
+        self._w = urwid.Edit(caption="", edit_text=self.todo.raw)
+
+    def save_item(self):
+        self.todo.update(self._w.edit_text.strip())
+        self.update_todo()
+        self.editing = False
+
     def keypress(self, size, key):
-        # import ipdb; ipdb.set_trace()
         if self.editing:
             if key in ['down', 'up']:
                 return None # don't pass up or down to the ListBox
             elif key is 'enter':
-                self.todo.update(self._w.edit_text.strip())
-                self.update_todo()
-                self.editing = False
+                self.save_item()
                 return key
             else:
                 return self._w.keypress(size, key)
         else:
             if key in ['enter', 'e', 'A']:
-                self.editing = True
-                self._w = urwid.Edit(caption="", edit_text=self.todo.raw)
+                self.edit_item()
                 return key
             else:
                 return key
@@ -50,20 +58,15 @@ class UrwidUI:
         self.border      = collections.deque(['no border', 'bordered'])
 
         self.todos       = todos
-        self.items       = []
 
         self.colorscheme = colorscheme
         self.palette     = [ (key, '', '', '', value['fg'], value['bg']) for key, value in self.colorscheme.colors.items() ]
 
     def move_selection_down(self):
-        focus_index = self.listbox.get_focus()[1]
-        if focus_index+1 < len(self.listbox.body):
-            self.listbox.set_focus(focus_index + 1)
+        self.listbox.keypress((0, self.loop.screen_size[1]-2), 'down')
 
     def move_selection_up(self):
-        focus_index = self.listbox.get_focus()[1]
-        if focus_index > 0:
-            self.listbox.set_focus(focus_index - 1)
+        self.listbox.keypress((0, self.loop.screen_size[1]-2), 'up')
 
     def keystroke(self, input):
         focus_index = self.listbox.get_focus()[1]
@@ -124,17 +127,38 @@ class UrwidUI:
             else:
                 self.todos[i].complete()
             focus.update_todo()
+        elif input is 'n':
+            self.edit_item(new='append')
+        elif input is 'O':
+            self.edit_item(new='insert_before')
+        elif input is 'o':
+            self.edit_item(new='insert_after')
 
-        # elif input is 'enter':
-        #     # import ipdb; ipdb.set_trace()
-        #     focus_index = self.listbox.get_focus()[1]
-        #     edit_todo = urwid.Edit(caption="", edit_text=self.listbox.body[focus_index].todo_raw)
-        #     self.listbox.body[focus_index] = edit_todo
-        #     # self.view.set_header(urwid.AttrWrap(urwid.Text('selected: %s' % str(focus)), 'header'))
+    def edit_item(self, new=False):
+        focus_index = self.listbox.get_focus()[1]
 
-    def main(self):
+        if new is 'append':
+            new_index = self.todos.append('')
+            self.listbox.body.append(MenuButton(self.todos[new_index], self.colorscheme, editing=True, wrapping=self.wrapping[0], border=self.border[0]))
+        else:
+            if new is 'insert_after':
+                new_index = self.todos.insert(focus_index+1, '')
+            elif new is 'insert_before':
+                new_index = self.todos.insert(focus_index, '')
+
+            self.listbox.body.insert(new_index, MenuButton(self.todos[new_index], self.colorscheme, editing=True, wrapping=self.wrapping[0], border=self.border[0]))
+
+        if new:
+            self.listbox.set_focus(new_index)
+            edit_widget = self.listbox.body[new_index]._w
+            edit_widget.edit_text += ' '
+            edit_widget.set_edit_pos(len(self.todos[new_index].raw) + 1)
+
+    def rebuild_todo_list(self):
         for t in self.todos.todo_items:
             self.items.append(MenuButton(t, self.colorscheme))
+
+    def main(self):
 
         self.header = urwid.AttrMap(
             urwid.Columns( [
@@ -146,9 +170,11 @@ class UrwidUI:
             urwid.Columns( [
             ]), 'footer')
 
-        self.listbox = urwid.ListBox(urwid.SimpleListWalker(self.items))
+        self.listbox = urwid.ListBox(urwid.SimpleListWalker(
+            [MenuButton(t, self.colorscheme) for t in self.todos.todo_items]
+        ))
         self.view    = urwid.Columns([urwid.Frame(urwid.AttrMap(self.listbox, 'plain'), header=self.header, footer=self.footer)])
 
-        loop = urwid.MainLoop(self.view, self.palette, unhandled_input=self.keystroke)
-        loop.screen.set_terminal_properties(colors=256)
-        loop.run()
+        self.loop = urwid.MainLoop(self.view, self.palette, unhandled_input=self.keystroke)
+        self.loop.screen.set_terminal_properties(colors=256)
+        self.loop.run()

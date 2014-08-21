@@ -158,6 +158,7 @@ class Todos:
 
     def append(self, item, add_creation_date=True):
         self.insert(len(self.todo_items), item, add_creation_date)
+        return len(self.todo_items)-1
 
     def insert(self, index, item, add_creation_date=True):
         self.todo_items.insert(index, self.create_todo(item, index) )
@@ -165,6 +166,7 @@ class Todos:
         newtodo = self.todo_items[index]
         if add_creation_date and newtodo.creation_date == "":
             newtodo.add_creation_date()
+        return index
 
     def delete(self, index):
         del self.todo_items[index]
