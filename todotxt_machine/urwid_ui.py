@@ -73,6 +73,8 @@ class UrwidUI:
         view    = urwid.Frame(urwid.AttrMap(listbox, 'plain'), header=header)
 
         def keystroke (input):
+            focus_index = listbox.get_focus()[1]
+
             if input in ('q', 'Q'):
                 raise urwid.ExitMainLoop()
 
@@ -81,14 +83,28 @@ class UrwidUI:
                 listbox.set_focus(0)
             elif input is 'G':
                 listbox.set_focus(len(listbox.body)-1)
-            elif input in ('k', 'K'):
-                focus_index = listbox.get_focus()[1]
+            elif input is 'k':
                 if focus_index > 0:
                     listbox.set_focus(focus_index - 1)
-            elif input in ('j', 'J'):
-                focus_index = listbox.get_focus()[1]
+            elif input is 'j':
                 if focus_index+1 < len(listbox.body):
                     listbox.set_focus(focus_index + 1)
+            elif input is 'J':
+                if focus_index+1 < len(listbox.body):
+                    self.todos.swap(focus_index, focus_index + 1)
+                    listbox.body[focus_index].todo = self.todos[focus_index]
+                    listbox.body[focus_index+1].todo = self.todos[focus_index+1]
+                    listbox.body[focus_index].update_todo()
+                    listbox.body[focus_index+1].update_todo()
+                    listbox.set_focus(focus_index + 1)
+            elif input is 'K':
+                if focus_index > 0:
+                    self.todos.swap(focus_index, focus_index - 1)
+                    listbox.body[focus_index].todo = self.todos[focus_index]
+                    listbox.body[focus_index-1].todo = self.todos[focus_index-1]
+                    listbox.body[focus_index].update_todo()
+                    listbox.body[focus_index-1].update_todo()
+                    listbox.set_focus(focus_index - 1)
 
             # View options
             elif input is 'w':
@@ -126,4 +142,3 @@ class UrwidUI:
         loop = urwid.MainLoop(view, palette, unhandled_input=keystroke)
         loop.screen.set_terminal_properties(colors=256)
         loop.run()
-
