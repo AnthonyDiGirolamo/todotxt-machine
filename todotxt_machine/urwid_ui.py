@@ -121,7 +121,7 @@ class UrwidUI:
             # Editing
             elif input is 'x':
                 focus = listbox.get_focus()[0]
-                i = focus.todo_id
+                i = focus.todo.raw_index
 
                 # if self.sorting > 0:
                 #     i = self.selected_item
@@ -130,7 +130,7 @@ class UrwidUI:
                     self.todos[i].incomplete()
                 else:
                     self.todos[i].complete()
-                focus.update_todo(self.todos[i].colored)
+                focus.update_todo()
 
             # elif input is 'enter':
             #     # import ipdb; ipdb.set_trace()
