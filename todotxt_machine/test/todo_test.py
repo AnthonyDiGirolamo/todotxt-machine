@@ -397,3 +397,13 @@ def test_todos_search(todos):
     assert [t.search_matches for t in todos.search(".*")]  == [('.dinner*',)]
     assert [t.raw for t in todos.search("{b}")]            == [ "Unpack the guest {bedroom} +Unpacking due:2013-10-20" ]
     assert [t.search_matches for t in todos.search("{b}")] == [('{bedroom}',)]
+
+def test_todos_swap(todos):
+    todos.swap(0, 1)
+    assert [todo.raw_index for todo in todos.todo_items] == [1, 0, 2, 3, 4]
+    todos.swap(3, 2)
+    assert [todo.raw_index for todo in todos.todo_items] == [1, 0, 3, 2, 4]
+    todos.swap(0, -1)
+    assert [todo.raw_index for todo in todos.todo_items] == [4, 0, 3, 2, 1]
+    todos.swap(4, 5)
+    assert [todo.raw_index for todo in todos.todo_items] == [1, 0, 3, 2, 4]

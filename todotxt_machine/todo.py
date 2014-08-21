@@ -276,6 +276,25 @@ class Todos:
     def sorted_raw(self):
         self.todo_items.sort( key=lambda todo: todo.raw_index )
 
+    def swap(self, first, second):
+        """
+        Swap items indexed by *first* and *second*.
+
+        Out-of-bounds situations are handled by wrapping.
+        """
+        if second < first:
+            second, first = first, second
+
+        n_items = len(self.todo_items)
+
+        if first < 0:
+            first += n_items
+
+        if second >= n_items:
+            second = n_items - second
+
+        self.todo_items[first], self.todo_items[second] = self.todo_items[second], self.todo_items[first]
+
     def filter_context(self, context):
         return [item for item in self.todo_items if context in item.contexts]
 
