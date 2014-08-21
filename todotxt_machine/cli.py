@@ -21,9 +21,9 @@ import sys
 import os
 import random
 
-import ipdb
-import pprint
-pp = pprint.PrettyPrinter(indent=4).pprint
+# import ipdb
+# import pprint
+# pp = pprint.PrettyPrinter(indent=4).pprint
 
 # Import the correct version of configparser
 if sys.version_info[0] >= 3:
