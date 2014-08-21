@@ -126,11 +126,13 @@ class UrwidUI:
             else:
                 self.todos[i].complete()
             focus.update_todo()
+            self.update_header()
         elif input is 'D':
             if self.todos.todo_items:
                 i = focus.todo.raw_index
                 self.todos.delete(i)
                 del self.listbox.body[focus_index]
+                self.update_header()
 
         elif input is 'n':
             self.edit_item(new='append')
@@ -158,22 +160,34 @@ class UrwidUI:
             edit_widget = self.listbox.body[new_index]._w
             edit_widget.edit_text += ' '
             edit_widget.set_edit_pos(len(self.todos[new_index].raw) + 1)
+            self.update_header()
 
     def rebuild_todo_list(self):
         for t in self.todos.todo_items:
             self.items.append(MenuButton(t, self.colorscheme))
 
-    def main(self):
-
-        self.header = urwid.AttrMap(
+    def create_header(self):
+        return urwid.AttrMap(
             urwid.Columns( [
-                urwid.Text( ('header_todo_count', " {0} Todos ".format(len(self.todos.todo_items))) ),
+                urwid.Text( [
+                    ('header_todo_count', " {0} Todos ".format(self.todos.__len__())),
+                    ('header_todo_pending_count', " {0} Pending ".format(self.todos.pending_items_count())),
+                    ('header_todo_done_count', " {0} Done ".format(self.todos.done_items_count())),
+
+                ]),
                 # urwid.Text( " todotxt-machine ", align='center' ),
                 urwid.Text( ('header_file', " {0} ".format(self.todos.file_path)), align='right' )
             ]), 'header')
-        self.footer = urwid.AttrMap(
-            urwid.Columns( [
-            ]), 'footer')
+
+    def create_footer(self):
+        return urwid.AttrMap(urwid.Columns( []), 'footer')
+
+    def update_header(self):
+        self.view[0].header = self.create_header()
+
+    def main(self):
+        self.header = self.create_header()
+        self.footer = self.create_footer()
 
         self.listbox = urwid.ListBox(urwid.SimpleListWalker(
             [MenuButton(t, self.colorscheme) for t in self.todos.todo_items]

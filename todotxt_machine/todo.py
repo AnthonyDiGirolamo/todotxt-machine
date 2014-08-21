@@ -191,6 +191,18 @@ class Todos:
     def __len__(self):
         return len(self.todo_items)
 
+    def pending_items(self):
+        return [t for t in self.todo_items if not t.is_complete()]
+
+    def done_items(self):
+        return [t for t in self.todo_items if t.is_complete()]
+
+    def pending_items_count(self):
+        return len(self.pending_items())
+
+    def done_items_count(self):
+        return len(self.done_items())
+
     def __getitem__(self, index):
         return self.todo_items[index]
 
