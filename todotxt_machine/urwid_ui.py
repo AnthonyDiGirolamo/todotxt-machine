@@ -55,6 +55,16 @@ class UrwidUI:
         self.colorscheme = colorscheme
         self.palette     = [ (key, '', '', '', value['fg'], value['bg']) for key, value in self.colorscheme.colors.items() ]
 
+    def move_selection_down(self):
+        focus_index = self.listbox.get_focus()[1]
+        if focus_index+1 < len(self.listbox.body):
+            self.listbox.set_focus(focus_index + 1)
+
+    def move_selection_up(self):
+        focus_index = self.listbox.get_focus()[1]
+        if focus_index > 0:
+            self.listbox.set_focus(focus_index - 1)
+
     def keystroke(self, input):
         focus_index = self.listbox.get_focus()[1]
 
@@ -67,11 +77,9 @@ class UrwidUI:
         elif input is 'G':
             self.listbox.set_focus(len(self.listbox.body)-1)
         elif input is 'k':
-            if focus_index > 0:
-                self.listbox.set_focus(focus_index - 1)
+            self.move_selection_up()
         elif input is 'j':
-            if focus_index+1 < len(self.listbox.body):
-                self.listbox.set_focus(focus_index + 1)
+            self.move_selection_down()
         elif input is 'J':
             if focus_index+1 < len(self.listbox.body):
                 self.todos.swap(focus_index, focus_index + 1)
@@ -79,7 +87,7 @@ class UrwidUI:
                 self.listbox.body[focus_index+1].todo = self.todos[focus_index+1]
                 self.listbox.body[focus_index].update_todo()
                 self.listbox.body[focus_index+1].update_todo()
-                self.listbox.set_focus(focus_index + 1)
+                self.move_selection_down()
         elif input is 'K':
             if focus_index > 0:
                 self.todos.swap(focus_index, focus_index - 1)
@@ -87,7 +95,7 @@ class UrwidUI:
                 self.listbox.body[focus_index-1].todo = self.todos[focus_index-1]
                 self.listbox.body[focus_index].update_todo()
                 self.listbox.body[focus_index-1].update_todo()
-                self.listbox.set_focus(focus_index - 1)
+                self.move_selection_up()
 
         # View options
         elif input is 'c':
