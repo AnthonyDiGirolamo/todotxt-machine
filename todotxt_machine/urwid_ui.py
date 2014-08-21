@@ -145,21 +145,21 @@ class UrwidUI:
         focus_index = self.listbox.get_focus()[1]
 
         if new is 'append':
-            new_index = self.todos.append('')
+            new_index = self.todos.append('', add_creation_date=False)
             self.listbox.body.append(MenuButton(self.todos[new_index], self.colorscheme, editing=True, wrapping=self.wrapping[0], border=self.border[0]))
         else:
             if new is 'insert_after':
-                new_index = self.todos.insert(focus_index+1, '')
+                new_index = self.todos.insert(focus_index+1, '', add_creation_date=False)
             elif new is 'insert_before':
-                new_index = self.todos.insert(focus_index, '')
+                new_index = self.todos.insert(focus_index, '', add_creation_date=False)
 
             self.listbox.body.insert(new_index, MenuButton(self.todos[new_index], self.colorscheme, editing=True, wrapping=self.wrapping[0], border=self.border[0]))
 
         if new:
             self.listbox.set_focus(new_index)
-            edit_widget = self.listbox.body[new_index]._w
-            edit_widget.edit_text += ' '
-            edit_widget.set_edit_pos(len(self.todos[new_index].raw) + 1)
+            # edit_widget = self.listbox.body[new_index]._w
+            # edit_widget.edit_text += ' '
+            # edit_widget.set_edit_pos(len(self.todos[new_index].raw) + 1)
             self.update_header()
 
     def rebuild_todo_list(self):
@@ -175,7 +175,7 @@ class UrwidUI:
                     ('header_todo_done_count', " {0} Done ".format(self.todos.done_items_count())),
 
                 ]),
-                # urwid.Text( " todotxt-machine ", align='center' ),
+                urwid.Text( " todotxt-machine ", align='center' ),
                 urwid.Text( ('header_file', " {0} ".format(self.todos.file_path)), align='right' )
             ]), 'header')
 
@@ -192,7 +192,7 @@ class UrwidUI:
         self.listbox = urwid.ListBox(urwid.SimpleListWalker(
             [MenuButton(t, self.colorscheme) for t in self.todos.todo_items]
         ))
-        self.view    = urwid.Columns([urwid.Frame(urwid.AttrMap(self.listbox, 'plain'), header=self.header, footer=self.footer)])
+        self.view = urwid.Columns([urwid.Frame(urwid.AttrMap(self.listbox, 'plain'), header=self.header, footer=self.footer)])
 
         self.loop = urwid.MainLoop(self.view, self.palette, unhandled_input=self.keystroke)
         self.loop.screen.set_terminal_properties(colors=256)
