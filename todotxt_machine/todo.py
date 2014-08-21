@@ -68,39 +68,34 @@ class Todo:
         })
 
     def highlight(self, line=""):
-        colors = Todo.colors
         colored = self.raw if line == "" else line
-        color_list = []
+        color_list = [colored]
 
         if colored[:2] == "x ":
-            color_list = ('completed', colored)
+            color_list = ('completed', color_list)
         else:
-            # import ipdb; ipdb.set_trace()
+            words_to_be_highlighted = self.contexts + self.projects
+            if self.due_date:
+                words_to_be_highlighted.append("due:"+self.due_date)
+            if self.creation_date:
+                words_to_be_highlighted.append(self.creation_date)
 
-            # for context in self.contexts:
-            #     colored = colored.replace(context, "{0}{1}{2}".format(
-            #         colors["context"], context, line_color ))
-
-            # for project in self.projects:
-            #     colored = colored.replace(project, "{0}{1}{2}".format(
-            #         colors["project"], project, line_color ))
-
-            # colored = colored.replace(self.creation_date, "{0}{1}{2}".format(
-            #     colors["creation_date"], self.creation_date, line_color), 1)
-
-            # colored = colored.replace("due:"+self.due_date, "{0}{1}{2}".format(
-            #     colors["due_date"], "due:"+self.due_date, line_color), 1)
-
-            # line_color = colors["foreground"]
-            # if self.priority:
-            #     line_color = colors["priority"][self.priority] if self.priority in "ABCDEF" else colors["foreground"]
-            #     colored = line_color + colored
+            if words_to_be_highlighted:
+                color_list = re.split("(" + "|".join([re.escape(w) for w in words_to_be_highlighted]) + ")", self.raw)
+                for index, w in enumerate(color_list):
+                   if w in self.contexts:
+                       color_list[index] = ('context', w)
+                   elif w in self.projects:
+                       color_list[index] = ('project', w)
+                   elif w == "due:"+self.due_date:
+                       color_list[index] = ('due_date', w)
+                   elif w == self.creation_date:
+                       color_list[index] = ('creation_date', w)
 
             if self.priority and self.priority in "ABCDEF":
-                color_list = ("priority_{0}".format(self.priority.lower()), colored)
+                color_list = ("priority_{0}".format(self.priority.lower()), color_list)
             else:
-                color_list = ("plain", colored)
-
+                color_list = ("plain", color_list)
 
         return color_list
 
