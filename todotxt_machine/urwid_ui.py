@@ -4,11 +4,11 @@ import collections
 class MenuButton(urwid.Button):
     def __init__(self, todo, colorscheme):
         super(MenuButton, self).__init__("")
-        self.todo = todo
-        self.wrapping = 'clip'
-        self.border = 'no border'
+        self.todo        = todo
+        self.wrapping    = 'clip'
+        self.border      = 'no border'
         self.colorscheme = colorscheme
-        self.editing = False
+        self.editing     = False
         # urwid.connect_signal(self, 'click', callback)
         self.update_todo()
 
@@ -37,7 +37,7 @@ class MenuButton(urwid.Button):
             else:
                 return self._w.keypress(size, key)
         else:
-            if key is 'enter':
+            if key in ['enter', 'e', 'A']:
                 self.editing = True
                 self._w = urwid.Edit(caption="", edit_text=self.todo.raw)
                 return key
@@ -46,9 +46,9 @@ class MenuButton(urwid.Button):
 
 class UrwidUI:
     def __init__(self, todos, colorscheme):
-        self.wrapping = collections.deque(['clip', 'space'])
-        self.border = collections.deque(['no border', 'bordered'])
-        self.todos = todos
+        self.wrapping    = collections.deque(['clip', 'space'])
+        self.border      = collections.deque(['no border', 'bordered'])
+        self.todos       = todos
         self.colorscheme = colorscheme
 
     def main(self):
@@ -126,3 +126,4 @@ class UrwidUI:
         loop = urwid.MainLoop(view, palette, unhandled_input=keystroke)
         loop.screen.set_terminal_properties(colors=256)
         loop.run()
+
