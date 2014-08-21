@@ -69,7 +69,7 @@ class UrwidUI:
         self.listbox.keypress((0, self.loop.screen_size[1]-2), 'up')
 
     def keystroke(self, input):
-        focus_index = self.listbox.get_focus()[1]
+        focus, focus_index = self.listbox.get_focus()
 
         if input in ('q', 'Q'):
             raise urwid.ExitMainLoop()
@@ -116,7 +116,6 @@ class UrwidUI:
 
         # Editing
         elif input is 'x':
-            focus = self.listbox.get_focus()[0]
             i = focus.todo.raw_index
 
             # if self.sorting > 0:
@@ -127,6 +126,12 @@ class UrwidUI:
             else:
                 self.todos[i].complete()
             focus.update_todo()
+        elif input is 'D':
+            if self.todos.todo_items:
+                i = focus.todo.raw_index
+                self.todos.delete(i)
+                del self.listbox.body[focus_index]
+
         elif input is 'n':
             self.edit_item(new='append')
         elif input is 'O':
