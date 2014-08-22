@@ -149,6 +149,10 @@ class Todos:
         self.file_path = file_path
         self.update(todo_items)
 
+    def reload_from_file(self):
+        with open(self.file_path, "r") as todotxt_file:
+            self.update(todotxt_file.readlines())
+
     def save(self):
         with open(self.file_path, "w") as todotxt_file:
             todotxt_file.write( "\n".join([t.raw for t in self.todo_items]) )

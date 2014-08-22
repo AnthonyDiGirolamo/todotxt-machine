@@ -101,7 +101,7 @@ class UrwidUI:
                 self.move_selection_up()
 
         # View options
-        elif input is 'c':
+        elif input is 'f':
             self.view.widget_list.append(urwid.SolidFill('#'))
         elif input is 'w':
             self.wrapping.rotate(1)
@@ -135,55 +135,69 @@ class UrwidUI:
                 self.update_header()
 
         elif input is 'n':
-            self.edit_item(new='append')
+            self.add_new_todo(position='append')
         elif input is 'O':
-            self.edit_item(new='insert_before')
+            self.add_new_todo(position='insert_before')
         elif input is 'o':
-            self.edit_item(new='insert_after')
+            self.add_new_todo(position='insert_after')
 
-    def edit_item(self, new=False):
+        # Save current file
+        elif input is 'W':
+            self.todos.save()
+            self.update_header("Saved")
+
+        # Reload original file
+        elif input is 'R':
+            # import ipdb; ipdb.set_trace()
+            for i in range(len(self.listbox.body)-1, -1, -1):
+                self.listbox.body.pop(i)
+
+            self.todos.reload_from_file()
+
+            for t in self.todos.todo_items:
+                self.listbox.body.append( MenuButton(t, self.colorscheme) )
+
+            self.update_header("Reloaded")
+
+
+    def add_new_todo(self, position=False):
         focus_index = self.listbox.get_focus()[1]
 
-        if new is 'append':
+        if position is 'append':
             new_index = self.todos.append('', add_creation_date=False)
             self.listbox.body.append(MenuButton(self.todos[new_index], self.colorscheme, editing=True, wrapping=self.wrapping[0], border=self.border[0]))
         else:
-            if new is 'insert_after':
+            if position is 'insert_after':
                 new_index = self.todos.insert(focus_index+1, '', add_creation_date=False)
-            elif new is 'insert_before':
+            elif position is 'insert_before':
                 new_index = self.todos.insert(focus_index, '', add_creation_date=False)
 
             self.listbox.body.insert(new_index, MenuButton(self.todos[new_index], self.colorscheme, editing=True, wrapping=self.wrapping[0], border=self.border[0]))
 
-        if new:
+        if position:
             self.listbox.set_focus(new_index)
             # edit_widget = self.listbox.body[new_index]._w
             # edit_widget.edit_text += ' '
             # edit_widget.set_edit_pos(len(self.todos[new_index].raw) + 1)
             self.update_header()
 
-    def rebuild_todo_list(self):
-        for t in self.todos.todo_items:
-            self.items.append(MenuButton(t, self.colorscheme))
-
-    def create_header(self):
+    def create_header(self, message=""):
         return urwid.AttrMap(
             urwid.Columns( [
                 urwid.Text( [
                     ('header_todo_count', " {0} Todos ".format(self.todos.__len__())),
                     ('header_todo_pending_count', " {0} Pending ".format(self.todos.pending_items_count())),
                     ('header_todo_done_count', " {0} Done ".format(self.todos.done_items_count())),
-
                 ]),
-                urwid.Text( " todotxt-machine ", align='center' ),
-                urwid.Text( ('header_file', " {0} ".format(self.todos.file_path)), align='right' )
+                # urwid.Text( " todotxt-machine ", align='center' ),
+                urwid.Text( ('header_file', "{0}  {1} ".format(message, self.todos.file_path)), align='right' )
             ]), 'header')
 
     def create_footer(self):
         return urwid.AttrMap(urwid.Columns( []), 'footer')
 
-    def update_header(self):
-        self.view[0].header = self.create_header()
+    def update_header(self, message=""):
+        self.view[0].header = self.create_header(message)
 
     def main(self):
         self.header = self.create_header()
