@@ -174,8 +174,6 @@ class UrwidUI:
         if position is 'append':
             new_index = self.todos.append('', add_creation_date=False)
             self.listbox.body.append(MenuButton(self.todos[new_index], self.colorscheme, self, editing=True, wrapping=self.wrapping[0], border=self.border[0]))
-            # self.listbox.set_focus(new_index)
-            len(self.listbox.body)-1
         else:
             if position is 'insert_after':
                 new_index = self.todos.insert(focus_index+1, '', add_creation_date=False)
@@ -185,6 +183,8 @@ class UrwidUI:
             self.listbox.body.insert(new_index, MenuButton(self.todos[new_index], self.colorscheme, self, editing=True, wrapping=self.wrapping[0], border=self.border[0]))
 
         if position:
+            # FIXME
+            self.listbox.set_focus(new_index)
             # edit_widget = self.listbox.body[new_index]._w
             # edit_widget.edit_text += ' '
             # edit_widget.set_edit_pos(len(self.todos[new_index].raw) + 1)

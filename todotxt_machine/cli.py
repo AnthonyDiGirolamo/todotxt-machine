@@ -95,7 +95,7 @@ def main():
     # view = Screen(todos, readline_editing_mode=arguments['--readline-editing-mode'])
     # view.main_loop()
 
-    import ipdb; ipdb.set_trace()
+    # import ipdb; ipdb.set_trace()
     view = UrwidUI(todos, colorscheme)
     view.main()
 
