@@ -168,7 +168,7 @@ class UrwidUI:
             self.todos.reload_from_file()
 
             for t in self.todos.todo_items:
-                self.listbox.body.append( MenuButton(t, self.colorscheme, self) )
+                self.listbox.body.append( MenuButton(t, self.colorscheme, self, wrapping=self.wrapping[0], border=self.border[0]) )
 
             self.update_header("Reloaded")
 
@@ -217,8 +217,9 @@ class UrwidUI:
         return urwid.AttrMap(urwid.Columns([  ]), 'footer')
 
     def create_filter_panel(self):
-        w = urwid.AttrMap(urwid.Padding(
-            # urwid.GridFlow(
+        w = urwid.AttrMap(
+            urwid.LineBox(
+            urwid.Padding(
             urwid.ListBox(
                 [ urwid.Divider() ] +
                 [ urwid.Text(('plain_dialog_color', 'Displayed Contexts & Projects:')) ] +
@@ -231,8 +232,10 @@ class UrwidUI:
                 [ urwid.Divider() ] +
                 [ urwid.AttrMap(urwid.Button('Close', on_press=self.toggle_filter_panel), 'dialog_button', 'plain_selected') ] +
                 [ urwid.Divider() ],
-                # 10, 3, 1, 'left') ,
-            ), left=1, right=1, min_width=10), 'dialog_color')
+            ),
+            left=1, right=1, min_width=10 )
+            ),
+        'dialog_color')
 
         bg = urwid.AttrWrap(urwid.SolidFill(u" "), 'dialog_background') # u"\u2592"
         shadow = urwid.AttrWrap(urwid.SolidFill(u" "), 'dialog_shadow')
@@ -250,7 +253,7 @@ class UrwidUI:
             self.listbox.body.pop(i)
 
         for t in self.todos.todo_items:
-            self.listbox.body.append( MenuButton(t, self.colorscheme, self) )
+            self.listbox.body.append( MenuButton(t, self.colorscheme, self, wrapping=self.wrapping[0], border=self.border[0]) )
 
         self.active_projects = []
         self.active_contexts = []
@@ -277,7 +280,7 @@ class UrwidUI:
             self.listbox.body.pop(i)
 
         for t in self.todos.filter_contexts_and_projects(self.active_contexts, self.active_projects):
-            self.listbox.body.append( MenuButton(t, self.colorscheme, self) )
+            self.listbox.body.append( MenuButton(t, self.colorscheme, self, wrapping=self.wrapping[0], border=self.border[0]) )
 
         self.filtering = True
 
