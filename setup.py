@@ -59,6 +59,7 @@ setup(name=NAME,
       long_description=long_description,
       keywords="todotxt, todo.txt, todo, terminal, curses, console",
       packages=find_packages(exclude=["todotxt_machine/test*"]),
+      include_package_data=True,
       entry_points={
           'console_scripts':
             ['todotxt-machine = todotxt_machine.cli:main']
