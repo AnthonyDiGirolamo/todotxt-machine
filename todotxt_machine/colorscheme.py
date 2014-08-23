@@ -19,6 +19,7 @@ class ColorScheme:
     def load_colors(self, name):
         self.colors = {}
         self.focus_map = {}
+        self.dialog_focus_map = {}
         colorscheme_section = "colorscheme-{0}".format(name)
 
         # Use user defined theme in the user_config if it exists
@@ -45,7 +46,13 @@ class ColorScheme:
 
         # Create Selected attributes using the selected_background_color
         selected_background_color = self.colors['selected']['bg']
+        dialog_color = self.colors['dialog_color']['bg']
+        # dialog_button_color = self.colors['dialog_button_color']['bg']
         for key, value in list(self.colors.items()):
-            if key != 'selected':
+            if key not in ['selected', 'dialog_color', 'dialog_button_color']:
                 self.colors[key+'_selected'] = {'fg': self.colors[key]['fg'], 'bg': selected_background_color}
+                self.colors[key+'_dialog_color'] = {'fg': self.colors[key]['fg'], 'bg': dialog_color}
+                # self.colors[key+'_dialog_button_color'] = {'fg': self.colors[key]['fg'], 'bg': dialog_button_color}
                 self.focus_map[key] = key + '_selected'
+                self.dialog_focus_map[key] = key + '_dialog_color'
+                # self.dialog_focus_map[key] = key + '_dialog_button_color'

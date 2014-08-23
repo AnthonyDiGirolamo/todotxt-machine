@@ -21,9 +21,8 @@ import sys
 import os
 import random
 
-# import ipdb
-# import pprint
-# pp = pprint.PrettyPrinter(indent=4).pprint
+import pprint
+pp = pprint.PrettyPrinter(indent=4).pprint
 
 # Import the correct version of configparser
 if sys.version_info[0] >= 3:
@@ -96,6 +95,7 @@ def main():
     # view = Screen(todos, readline_editing_mode=arguments['--readline-editing-mode'])
     # view.main_loop()
 
+    import ipdb; ipdb.set_trace()
     view = UrwidUI(todos, colorscheme)
     view.main()
 

@@ -2,12 +2,13 @@ import urwid
 import collections
 
 class MenuButton(urwid.Button):
-    def __init__(self, todo, colorscheme, editing=False, wrapping='clip', border='no border'):
+    def __init__(self, todo, colorscheme, parent_ui, editing=False, wrapping='clip', border='no border'):
         super(MenuButton, self).__init__("")
         self.todo        = todo
         self.wrapping    = wrapping
         self.border      = border
         self.colorscheme = colorscheme
+        self.parent_ui   = parent_ui
         self.editing     = editing
         # urwid.connect_signal(self, 'click', callback)
         if editing:
@@ -34,6 +35,7 @@ class MenuButton(urwid.Button):
     def save_item(self):
         self.todo.update(self._w.edit_text.strip())
         self.update_todo()
+        self.parent_ui.update_filter_panel(new_contexts=self.todo.contexts, new_projects=self.todo.projects)
         self.editing = False
 
     def keypress(self, size, key):
@@ -61,6 +63,9 @@ class UrwidUI:
 
         self.colorscheme = colorscheme
         self.palette     = [ (key, '', '', '', value['fg'], value['bg']) for key, value in self.colorscheme.colors.items() ]
+
+        self.active_projects = []
+        self.active_contexts = []
 
     def move_selection_down(self):
         self.listbox.keypress((0, self.loop.screen_size[1]-2), 'down')
@@ -102,7 +107,11 @@ class UrwidUI:
 
         # View options
         elif input is 'f':
-            self.view.widget_list.append(urwid.SolidFill('#'))
+            if len(self.view.widget_list) > 1:
+                self.view.widget_list.pop()
+            else:
+                self.filter_panel = self.create_filter_panel()
+                self.view.widget_list.append(self.filter_panel)
         elif input is 'w':
             self.wrapping.rotate(1)
             for widget in self.listbox.body:
@@ -148,14 +157,13 @@ class UrwidUI:
 
         # Reload original file
         elif input is 'R':
-            # import ipdb; ipdb.set_trace()
             for i in range(len(self.listbox.body)-1, -1, -1):
                 self.listbox.body.pop(i)
 
             self.todos.reload_from_file()
 
             for t in self.todos.todo_items:
-                self.listbox.body.append( MenuButton(t, self.colorscheme) )
+                self.listbox.body.append( MenuButton(t, self.colorscheme, self) )
 
             self.update_header("Reloaded")
 
@@ -165,17 +173,18 @@ class UrwidUI:
 
         if position is 'append':
             new_index = self.todos.append('', add_creation_date=False)
-            self.listbox.body.append(MenuButton(self.todos[new_index], self.colorscheme, editing=True, wrapping=self.wrapping[0], border=self.border[0]))
+            self.listbox.body.append(MenuButton(self.todos[new_index], self.colorscheme, self, editing=True, wrapping=self.wrapping[0], border=self.border[0]))
+            # self.listbox.set_focus(new_index)
+            len(self.listbox.body)-1
         else:
             if position is 'insert_after':
                 new_index = self.todos.insert(focus_index+1, '', add_creation_date=False)
             elif position is 'insert_before':
                 new_index = self.todos.insert(focus_index, '', add_creation_date=False)
 
-            self.listbox.body.insert(new_index, MenuButton(self.todos[new_index], self.colorscheme, editing=True, wrapping=self.wrapping[0], border=self.border[0]))
+            self.listbox.body.insert(new_index, MenuButton(self.todos[new_index], self.colorscheme, self, editing=True, wrapping=self.wrapping[0], border=self.border[0]))
 
         if position:
-            self.listbox.set_focus(new_index)
             # edit_widget = self.listbox.body[new_index]._w
             # edit_widget.edit_text += ' '
             # edit_widget.set_edit_pos(len(self.todos[new_index].raw) + 1)
@@ -194,17 +203,89 @@ class UrwidUI:
             ]), 'header')
 
     def create_footer(self):
-        return urwid.AttrMap(urwid.Columns( []), 'footer')
+        return urwid.AttrMap(urwid.Columns([  ]), 'footer')
+
+    def create_filter_panel(self):
+        w = urwid.AttrMap(urwid.Padding(
+            # urwid.GridFlow(
+            urwid.ListBox(
+                [ urwid.Divider() ] +
+                [ urwid.Text(('plain_dialog_color', 'Displayed Contexts & Projects:')) ] +
+                [ urwid.Divider() ] +
+                [urwid.AttrWrap(urwid.CheckBox(c, state=(c in self.active_contexts), on_state_change=self.checkbox_clicked, user_data=['context', c]), 'context_dialog_color', 'context_selected') for c in self.todos.all_contexts()] +
+                [ urwid.Divider() ] +
+                [urwid.AttrWrap(urwid.CheckBox(p, state=(p in self.active_projects), on_state_change=self.checkbox_clicked, user_data=['project', p]), 'project_dialog_color', 'project_selected') for p in self.todos.all_projects()] +
+                [ urwid.Divider() ] +
+                [ urwid.AttrMap(urwid.Button('Clear Filters', on_press=self.show_all_button_press), 'dialog_button', 'plain_selected') ] +
+                [ urwid.Divider() ],
+                # 10, 3, 1, 'left') ,
+            ), left=1, right=1, min_width=10), 'dialog_color')
+
+        bg = urwid.AttrWrap(urwid.SolidFill(u" "), 'dialog_background') # u"\u2592"
+        shadow = urwid.AttrWrap(urwid.SolidFill(u" "), 'dialog_shadow')
+
+        bg = urwid.Overlay( shadow, bg,
+            ('fixed left', 3), ('fixed right', 1),
+            ('fixed top', 2), ('fixed bottom', 1))
+        w = urwid.Overlay( w, bg,
+            ('fixed left', 2), ('fixed right', 3),
+            ('fixed top', 1), ('fixed bottom', 2))
+        return w
+
+    def show_all_button_press(self, button):
+        for i in range(len(self.listbox.body)-1, -1, -1):
+            self.listbox.body.pop(i)
+
+        for t in self.todos.todo_items:
+            self.listbox.body.append( MenuButton(t, self.colorscheme, self) )
+
+        self.active_projects = []
+        self.active_contexts = []
+        self.update_filter_panel()
+
+    def checkbox_clicked(self, checkbox, state, data):
+        if state:
+            if data[0] == 'context':
+                self.active_contexts.append(data[1])
+            else:
+                self.active_projects.append(data[1])
+        else:
+            if data[0] == 'context':
+                self.active_contexts.remove(data[1])
+            else:
+                self.active_projects.remove(data[1])
+        self.filter_todo_list()
+
+    def filter_todo_list(self):
+        for i in range(len(self.listbox.body)-1, -1, -1):
+            self.listbox.body.pop(i)
+
+        for t in self.todos.filter_contexts_and_projects(self.active_contexts, self.active_projects):
+            self.listbox.body.append( MenuButton(t, self.colorscheme, self) )
+
+    def update_filter_panel(self, new_contexts=[], new_projects=[]):
+        for c in new_contexts:
+            self.active_contexts.append(c)
+        for p in new_projects:
+            self.active_projects.append(p)
+
+        self.filter_panel = self.create_filter_panel()
+        if len(self.view.widget_list) > 1:
+            self.view.widget_list.pop()
+            self.view.widget_list.append(self.filter_panel)
 
     def update_header(self, message=""):
         self.view[0].header = self.create_header(message)
+
+    def update_footer(self, message=""):
+        self.view[0].footer = self.create_footer()
 
     def main(self):
         self.header = self.create_header()
         self.footer = self.create_footer()
 
         self.listbox = urwid.ListBox(urwid.SimpleListWalker(
-            [MenuButton(t, self.colorscheme) for t in self.todos.todo_items]
+            [MenuButton(t, self.colorscheme, self) for t in self.todos.todo_items]
         ))
         self.view = urwid.Columns([urwid.Frame(urwid.AttrMap(self.listbox, 'plain'), header=self.header, footer=self.footer)])
 
