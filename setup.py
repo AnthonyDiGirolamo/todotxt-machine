@@ -57,7 +57,7 @@ setup(name=NAME,
       url="https://github.com/AnthonyDiGirolamo/todotxt-machine",
       description="An interactive terminal based todo.txt file editor with an interface similar to mutt",
       long_description=long_description,
-      keywords="todotxt, todo.txt, todo, terminal, curses, console",
+      keywords="todotxt, todo.txt, todo, terminal, urwid, curses, console",
       packages=find_packages(exclude=["todotxt_machine/test*"]),
       include_package_data=True,
       entry_points={
