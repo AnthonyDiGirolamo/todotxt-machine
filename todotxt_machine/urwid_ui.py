@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# coding=utf-8
+
 import urwid
 import collections
 
@@ -66,6 +69,7 @@ class UrwidUI:
 
         self.active_projects = []
         self.active_contexts = []
+        self.filter_dialog_is_open = False
         self.filtering = False
         self.searching = False
 
@@ -76,11 +80,62 @@ class UrwidUI:
         self.listbox.keypress((0, self.loop.screen_size[1]-2), 'up')
 
     def toggle_filter_panel(self, button=None):
-        if len(self.view.widget_list) > 1:
+        if self.filter_dialog_is_open:
             self.view.widget_list.pop()
+            self.filter_dialog_is_open = False
         else:
             self.filter_panel = self.create_filter_panel()
             self.view.widget_list.append(self.filter_panel)
+            self.filter_dialog_is_open = True
+
+    def toggle_wrapping(self, button=None):
+        self.wrapping.rotate(1)
+        for widget in self.listbox.body:
+            widget.wrapping = self.wrapping[0]
+            widget.update_todo()
+
+    def toggle_border(self, button=None):
+        self.border.rotate(1)
+        for widget in self.listbox.body:
+            widget.border = self.border[0]
+            widget.update_todo()
+
+    def swap_down(self):
+        focus, focus_index = self.listbox.get_focus()
+        if not self.filtering:
+            if focus_index+1 < len(self.listbox.body):
+                self.todos.swap(focus_index, focus_index + 1)
+                self.listbox.body[focus_index].todo = self.todos[focus_index]
+                self.listbox.body[focus_index+1].todo = self.todos[focus_index+1]
+                self.listbox.body[focus_index].update_todo()
+                self.listbox.body[focus_index+1].update_todo()
+                self.move_selection_down()
+
+    def swap_up(self):
+        focus, focus_index = self.listbox.get_focus()
+        if not self.filtering:
+            if focus_index > 0:
+                self.todos.swap(focus_index, focus_index - 1)
+                self.listbox.body[focus_index].todo = self.todos[focus_index]
+                self.listbox.body[focus_index-1].todo = self.todos[focus_index-1]
+                self.listbox.body[focus_index].update_todo()
+                self.listbox.body[focus_index-1].update_todo()
+                self.move_selection_up()
+
+    def save_todos(self, button=None):
+        self.todos.save()
+        self.update_header("Saved")
+
+    def reload_todos(self, button=None):
+        for i in range(len(self.listbox.body)-1, -1, -1):
+            self.listbox.body.pop(i)
+
+        self.todos.reload_from_file()
+
+        for t in self.todos.todo_items:
+            self.listbox.body.append( MenuButton(t, self.colorscheme, self, wrapping=self.wrapping[0], border=self.border[0]) )
+
+        self.update_header("Reloaded")
 
     def keystroke(self, input):
         focus, focus_index = self.listbox.get_focus()
@@ -98,35 +153,19 @@ class UrwidUI:
         elif input is 'j':
             self.move_selection_down()
         elif input is 'J':
-            if focus_index+1 < len(self.listbox.body):
-                self.todos.swap(focus_index, focus_index + 1)
-                self.listbox.body[focus_index].todo = self.todos[focus_index]
-                self.listbox.body[focus_index+1].todo = self.todos[focus_index+1]
-                self.listbox.body[focus_index].update_todo()
-                self.listbox.body[focus_index+1].update_todo()
-                self.move_selection_down()
+            self.swap_down()
         elif input is 'K':
-            if focus_index > 0:
-                self.todos.swap(focus_index, focus_index - 1)
-                self.listbox.body[focus_index].todo = self.todos[focus_index]
-                self.listbox.body[focus_index-1].todo = self.todos[focus_index-1]
-                self.listbox.body[focus_index].update_todo()
-                self.listbox.body[focus_index-1].update_todo()
-                self.move_selection_up()
+            self.swap_up()
 
         # View options
         elif input is 'f':
             self.toggle_filter_panel()
+        elif input is 'F':
+            self.clear_filters()
         elif input is 'w':
-            self.wrapping.rotate(1)
-            for widget in self.listbox.body:
-                widget.wrapping = self.wrapping[0]
-                widget.update_todo()
-        elif input is 'l':
-            self.border.rotate(1)
-            for widget in self.listbox.body:
-                widget.border = self.border[0]
-                widget.update_todo()
+            self.toggle_wrapping()
+        elif input is 'b':
+            self.toggle_border()
 
         # Editing
         elif input is 'x':
@@ -156,22 +195,12 @@ class UrwidUI:
             self.add_new_todo(position='insert_after')
 
         # Save current file
-        elif input is 'W':
-            self.todos.save()
-            self.update_header("Saved")
+        elif input is 'S':
+            self.save_todos()
 
         # Reload original file
         elif input is 'R':
-            for i in range(len(self.listbox.body)-1, -1, -1):
-                self.listbox.body.pop(i)
-
-            self.todos.reload_from_file()
-
-            for t in self.todos.todo_items:
-                self.listbox.body.append( MenuButton(t, self.colorscheme, self, wrapping=self.wrapping[0], border=self.border[0]) )
-
-            self.update_header("Reloaded")
-
+            self.reload_todos()
 
     def add_new_todo(self, position=False):
         focus_index = self.listbox.get_focus()[1]
@@ -214,27 +243,39 @@ class UrwidUI:
             ]), 'header')
 
     def create_footer(self):
-        return urwid.AttrMap(urwid.Columns([  ]), 'footer')
+        if self.searching:
+            return urwid.AttrMap(urwid.Columns([
+                urwid.Text(''),
+                # (11, urwid.AttrMap(urwid.Button('Filters', on_press=self.toggle_filter_panel), 'dialog_button', 'plain_selected') )
+            ]), 'footer')
 
     def create_filter_panel(self):
         w = urwid.AttrMap(
-            urwid.LineBox(
+            # urwid.LineBox(
             urwid.Padding(
             urwid.ListBox(
                 [ urwid.Divider() ] +
-                [ urwid.Text(('plain_dialog_color', 'Displayed Contexts & Projects:')) ] +
-                [ urwid.Divider('-') ] +
-                [urwid.AttrWrap(urwid.CheckBox(c, state=(c in self.active_contexts), on_state_change=self.checkbox_clicked, user_data=['context', c]), 'context_dialog_color', 'context_selected') for c in self.todos.all_contexts()] +
+                [ urwid.LineBox(urwid.Pile(
+                    [urwid.AttrWrap(urwid.CheckBox(c, state=(c in self.active_contexts), on_state_change=self.checkbox_clicked, user_data=['context', c]), 'context_dialog_color', 'context_selected') for c in self.todos.all_contexts()] +
+                    [ urwid.Divider(u'─') ] +
+                    [urwid.AttrWrap(urwid.CheckBox(p, state=(p in self.active_projects), on_state_change=self.checkbox_clicked, user_data=['project', p]), 'project_dialog_color', 'project_selected') for p in self.todos.all_projects()] +
+                    [ urwid.Divider(u'─') ] +
+                    [ urwid.AttrMap(urwid.Button('[F] Clear Filters', on_press=self.clear_filters), 'dialog_button', 'plain_selected') ] ), title='Contexts & Projects') ] +
+                # [ urwid.Divider() ] +
+                [ urwid.LineBox(urwid.Pile(
+                    [ urwid.AttrMap(urwid.Button('[w] Toggle Wrapping', on_press=self.toggle_wrapping), 'dialog_button', 'plain_selected') ] +
+                    [ urwid.AttrMap(urwid.Button('[b] Toggle Borders', on_press=self.toggle_border), 'dialog_button', 'plain_selected') ] +
+                    [ urwid.Divider() ] +
+                    [ urwid.AttrMap(urwid.Button('[R] Reload Todo.txt File', on_press=self.reload_todos), 'dialog_button', 'plain_selected') ] +
+                    [ urwid.Divider() ] +
+                    [ urwid.AttrMap(urwid.Button('[S] Save Todo.txt File', on_press=self.save_todos), 'dialog_button', 'plain_selected') ]
+                ), title='Options') ] +
                 [ urwid.Divider() ] +
-                [urwid.AttrWrap(urwid.CheckBox(p, state=(p in self.active_projects), on_state_change=self.checkbox_clicked, user_data=['project', p]), 'project_dialog_color', 'project_selected') for p in self.todos.all_projects()] +
-                [ urwid.Divider() ] +
-                [ urwid.AttrMap(urwid.Button('Clear Filters', on_press=self.show_all_button_press), 'dialog_button', 'plain_selected') ] +
-                [ urwid.Divider() ] +
-                [ urwid.AttrMap(urwid.Button('Close', on_press=self.toggle_filter_panel), 'dialog_button', 'plain_selected') ] +
+                [ urwid.AttrMap(urwid.Button('[f] Close', on_press=self.toggle_filter_panel), 'dialog_button', 'plain_selected') ] +
                 [ urwid.Divider() ],
             ),
             left=1, right=1, min_width=10 )
-            ),
+            ,
         'dialog_color')
 
         bg = urwid.AttrWrap(urwid.SolidFill(u" "), 'dialog_background') # u"\u2592"
@@ -248,7 +289,7 @@ class UrwidUI:
             ('fixed top', 1), ('fixed bottom', 2))
         return w
 
-    def show_all_button_press(self, button):
+    def clear_filters(self, button=None):
         for i in range(len(self.listbox.body)-1, -1, -1):
             self.listbox.body.pop(i)
 
