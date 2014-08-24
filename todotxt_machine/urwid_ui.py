@@ -4,6 +4,16 @@
 import urwid
 import collections
 
+class SearchWidget(urwid.Edit):
+    def __init__(self, parent_ui, edit_text=""):
+        self.parent_ui = parent_ui
+        super(SearchWidget, self).__init__(edit_text=edit_text)
+
+    def keypress(self, size, key):
+        if key == 'enter':
+            self.parent_ui.finalize_search()
+        return super(SearchWidget, self).keypress(size, key)
+
 class TodoWidget(urwid.Button):
     def __init__(self, todo, colorscheme, parent_ui, editing=False, wrapping='clip', border='no border'):
         super(TodoWidget, self).__init__("")
@@ -23,7 +33,11 @@ class TodoWidget(urwid.Button):
         return True
 
     def update_todo(self):
-        text = urwid.Text(self.todo.colored, wrap=self.wrapping)
+        if self.parent_ui.searching and self.parent_ui.search_string:
+            text = urwid.Text(self.todo.highlight_search_matches(), wrap=self.wrapping)
+        else:
+            text = urwid.Text(self.todo.colored, wrap=self.wrapping)
+
         if self.border == 'bordered':
             text = urwid.LineBox(text)
         self._w = urwid.AttrMap( urwid.AttrMap(
@@ -75,6 +89,7 @@ class UrwidUI:
         self.filter_panel_is_open  = False
         self.filtering             = False
         self.searching             = False
+        self.search_string         = ''
 
     def move_selection_down(self):
         self.listbox.keypress((0, self.loop.screen_size[1]-2), 'down')
@@ -149,7 +164,7 @@ class UrwidUI:
         self.todos.save()
         self.update_header("Saved")
 
-    def reload_todos(self, button=None):
+    def reload_todos_from_file(self, button=None):
         for i in range(len(self.listbox.body)-1, -1, -1):
             self.listbox.body.pop(i)
 
@@ -191,6 +206,11 @@ class UrwidUI:
             self.toggle_wrapping()
         elif input is 'b':
             self.toggle_border()
+        elif input is '/':
+            self.start_search()
+        elif input is 'L':
+            if self.searching:
+                self.clear_search_term()
 
         # Editing
         elif input is 'x':
@@ -225,7 +245,7 @@ class UrwidUI:
 
         # Reload original file
         elif input is 'R':
-            self.reload_todos()
+            self.reload_todos_from_file()
 
     def add_new_todo(self, position=False):
         focus_index = self.listbox.get_focus()[1]
@@ -265,12 +285,49 @@ class UrwidUI:
                 urwid.Text( ('header_file', "{0}  {1} ".format(message, self.todos.file_path)), align='right' )
             ]), 'header')
 
+    def search_box_updated(self, edit_widget, new_contents):
+        old_contents = edit_widget.edit_text
+        self.search_string = new_contents
+        self.search_todo_list(self.search_string)
+
+    def search_todo_list(self, search_string=""):
+        if search_string:
+            self.delete_todo_widgets()
+
+            self.searching = True
+
+            for t in self.todos.search(search_string):
+                self.listbox.body.append( TodoWidget(t, self.colorscheme, self, wrapping=self.wrapping[0], border=self.border[0]) )
+
+    def start_search(self):
+        self.searching = True
+        self.update_footer()
+        self.view[0].set_focus('footer')
+
+    def finalize_search(self):
+        self.search_string = ''
+        self.view[0].set_focus('body')
+        for widget in self.listbox.body:
+            widget.update_todo()
+
+    def clear_search_term(self):
+        self.delete_todo_widgets()
+        self.reload_todos_from_memory()
+        self.searching = False
+        self.search_string = ''
+        self.update_footer()
+
     def create_footer(self):
         if self.searching:
-            return urwid.AttrMap(urwid.Columns([
-                urwid.Text(''),
-                # (11, urwid.AttrMap(urwid.Button('Filters', on_press=self.toggle_filter_panel), 'dialog_button', 'plain_selected') )
+            self.search_box = SearchWidget(self, edit_text=self.search_string)
+            w = urwid.AttrMap(urwid.Columns([
+                (1, urwid.Text('/')),
+                self.search_box
             ]), 'footer')
+            urwid.connect_signal(self.search_box, 'change', self.search_box_updated)
+        else:
+            w = None
+        return w
 
     def create_help_panel(self):
         header_highlight = 'plain_selected'
@@ -362,7 +419,7 @@ F            - clear any active filters
                     [ urwid.AttrMap(urwid.Button('[w] Toggle Wrapping', on_press=self.toggle_wrapping), 'dialog_button', 'plain_selected') ] +
                     [ urwid.AttrMap(urwid.Button('[b] Toggle Borders', on_press=self.toggle_border), 'dialog_button', 'plain_selected') ] +
                     [ urwid.Divider() ] +
-                    [ urwid.AttrMap(urwid.Button('[R] Reload Todo.txt File', on_press=self.reload_todos), 'dialog_button', 'plain_selected') ] +
+                    [ urwid.AttrMap(urwid.Button('[R] Reload Todo.txt File', on_press=self.reload_todos_from_file), 'dialog_button', 'plain_selected') ] +
                     [ urwid.Divider() ] +
                     [ urwid.AttrMap(urwid.Button('[S] Save Todo.txt File', on_press=self.save_todos), 'dialog_button', 'plain_selected') ]
                 ), title='Options') ] +
@@ -385,12 +442,17 @@ F            - clear any active filters
             ('fixed top', 1), ('fixed bottom', 2))
         return w
 
-    def clear_filters(self, button=None):
+    def delete_todo_widgets(self):
         for i in range(len(self.listbox.body)-1, -1, -1):
             self.listbox.body.pop(i)
 
+    def reload_todos_from_memory(self):
         for t in self.todos.todo_items:
             self.listbox.body.append( TodoWidget(t, self.colorscheme, self, wrapping=self.wrapping[0], border=self.border[0]) )
+
+    def clear_filters(self, button=None):
+        self.delete_todo_widgets()
+        self.reload_todos_from_memory()
 
         self.active_projects = []
         self.active_contexts = []
@@ -413,8 +475,7 @@ F            - clear any active filters
         self.view.set_focus(0)
 
     def filter_todo_list(self):
-        for i in range(len(self.listbox.body)-1, -1, -1):
-            self.listbox.body.pop(i)
+        self.delete_todo_widgets()
 
         for t in self.todos.filter_contexts_and_projects(self.active_contexts, self.active_projects):
             self.listbox.body.append( TodoWidget(t, self.colorscheme, self, wrapping=self.wrapping[0], border=self.border[0]) )
@@ -454,3 +515,4 @@ F            - clear any active filters
         self.loop = urwid.MainLoop(self.view, self.palette, unhandled_input=self.keystroke)
         self.loop.screen.set_terminal_properties(colors=256)
         self.loop.run()
+

@@ -99,14 +99,14 @@ class Todo:
         return color_list
 
     def highlight_search_matches(self, line=""):
-        colors = Todo.colors
         colored = self.raw if line == "" else line
-        line_color = colors["foreground"]
+        color_list = [colored]
         if self.search_matches:
-            for match in self.search_matches:
-                colored = colored.replace(match, "{0}{1}{2}".format(
-                    colors["search_match"], match, line_color))
-        return colored
+            color_list = re.split("(" + "|".join([re.escape(match) for match in self.search_matches]) + ")", self.raw)
+            for index, w in enumerate(color_list):
+                if w in self.search_matches:
+                    color_list[index] = ('search_match', w)
+        return color_list
 
     def is_complete(self):
         if self.raw[0:2] == "x ":
