@@ -4,6 +4,75 @@
 import urwid
 import collections
 
+# Modified from http://wiki.goffi.org/wiki/Urwid-satext/en
+class AdvancedEdit(urwid.Edit):
+    """Edit box with some custom improvments
+    new chars:
+              - C-a: like 'home'
+              - C-e: like 'end'
+              - C-k: remove everything on the right of the cursor
+              - C-w: remove the word on the back
+    new behaviour: emit a 'click' signal when enter is pressed"""
+    signals = urwid.Edit.signals + ['click']
+
+    def setCompletionMethod(self, callback):
+        """Define method called when completion is asked
+        @callback: method with 2 arguments:
+                    - the text to complete
+                    - if there was already a completion, a dict with
+                        - 'completed':last completion
+                        - 'completion_pos': cursor position where the completion starts
+                        - 'position': last completion cursor position
+                      this dict must be used (and can be filled) to find next completion)
+                   and which return the full text completed"""
+        self.completion_cb = callback
+        self.completion_data = {}
+
+    def keypress(self, size, key):
+        # import ipdb; ipdb.set_trace()
+        if key == 'ctrl a':
+            key = 'home'
+        elif key == 'ctrl e':
+            key = 'end'
+        elif key == 'ctrl k':
+            self._delete_highlighted()
+            self.set_edit_text(self.edit_text[:self.edit_pos])
+        elif key == 'ctrl w':
+            before = self.edit_text[:self.edit_pos]
+            pos = before.rstrip().rfind(" ")+1
+            self.set_edit_text(before[:pos] + self.edit_text[self.edit_pos:])
+            self.set_edit_pos(pos)
+        elif key == 'ctrl b':
+            before = self.edit_text[:self.edit_pos]
+            pos = before.rstrip().rfind(" ")+1
+            self.set_edit_pos(pos)
+        elif key == 'ctrl f':
+            after = self.edit_text[self.edit_pos:]
+            pos = after.rstrip().find(" ")+1
+            self.set_edit_pos(self.edit_pos+pos)
+        elif key == 'enter':
+            self._emit('click')
+        elif key == 'tab':
+            try:
+                before = self.edit_text[:self.edit_pos]
+                if self.completion_data:
+                    if (not self.completion_data['completed']
+                        or self.completion_data['position'] != self.edit_pos
+                        or not before.endswith(self.completion_data['completed'])):
+                        self.completion_data.clear()
+                    else:
+                        before = before[:-len(self.completion_data['completed'])]
+                complet = self.completion_cb(before, self.completion_data)
+                self.completion_data['completed'] = complet[len(before):]
+                self.set_edit_text(complet+self.edit_text[self.edit_pos:])
+                self.set_edit_pos(len(complet))
+                self.completion_data['position'] = self.edit_pos
+                return
+            except AttributeError:
+                #No completion method defined
+                pass
+        return super(AdvancedEdit, self).keypress(size, key)
+
 class SearchWidget(urwid.Edit):
     def __init__(self, parent_ui, edit_text=""):
         self.parent_ui = parent_ui
@@ -47,7 +116,25 @@ class TodoWidget(urwid.Button):
 
     def edit_item(self):
         self.editing = True
-        self._w = urwid.AttrMap(urwid.Edit(caption="", edit_text=self.todo.raw), 'plain_selected')
+        self.edit_widget = AdvancedEdit(caption="", edit_text=self.todo.raw)
+        self.edit_widget.setCompletionMethod(self.completions)
+        self._w = urwid.AttrMap(self.edit_widget, 'plain_selected')
+
+    def completions(self, text, completion_data={}):
+        space = text.rfind(" ")
+        start = text[space+1:]
+        words = self.parent_ui.todos.all_contexts() + self.parent_ui.todos.all_projects()
+        try:
+            start_idx=words.index(completion_data['last_word'])+1
+            if start_idx == len(words):
+                start_idx = 0
+        except (KeyError,ValueError):
+            start_idx = 0
+        for idx in list(range(start_idx,len(words))) + list(range(0,start_idx)):
+            if words[idx].lower().startswith(start.lower()):
+                completion_data['last_word'] = words[idx]
+                return text[:space+1] + words[idx] + (': ' if space < 0 else '')
+        return text
 
     def save_item(self):
         self.todo.update(self._w.original_widget.edit_text.strip())
