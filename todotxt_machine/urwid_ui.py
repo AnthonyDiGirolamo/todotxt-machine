@@ -38,7 +38,8 @@ class TodoWidget(urwid.Button):
     def save_item(self):
         self.todo.update(self._w.edit_text.strip())
         self.update_todo()
-        self.parent_ui.update_filter_panel(new_contexts=self.todo.contexts, new_projects=self.todo.projects)
+        if self.parent_ui.filter_panel_is_open:
+            self.parent_ui.update_filter_panel(new_contexts=self.todo.contexts, new_projects=self.todo.projects)
         self.editing = False
 
     def keypress(self, size, key):
@@ -417,10 +418,12 @@ F            - clear any active filters
         self.filtering = True
 
     def update_filter_panel(self, new_contexts=[], new_projects=[]):
-        for c in new_contexts:
-            self.active_contexts.append(c)
-        for p in new_projects:
-            self.active_projects.append(p)
+        if self.active_contexts:
+            for c in new_contexts:
+                self.active_contexts.append(c)
+        if self.active_projects:
+            for p in new_projects:
+                self.active_projects.append(p)
 
         self.filter_panel = self.create_filter_panel()
         if len(self.view.widget_list) > 1:
