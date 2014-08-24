@@ -66,16 +66,84 @@ Download or clone this repo and run the `todotxt-machine.py` script.
 Command Line Options
 --------------------
 
-    usage: todotxt-machine.py [-h] [-f FILE] [--readline-editing-mode {emacs,vi}]
+    todotxt-machine
 
-    Interactive terminal interface for todo.txt files.
+    Usage:
+      todotxt-machine
+      todotxt-machine [--file FILE] [--config FILE] [--readline-editing-mode=(vi|emacs)]
+      todotxt-machine (-h | --help)
+      todotxt-machine --version
 
-    optional arguments:
-      -h, --help            show this help message and exit
-      -f FILE, --file FILE  path to your todo.txt file
-                            default:~/Dropbox/todo/todo.txt
-      --readline-editing-mode {emacs,vi}
-                            set readline editing-mode
+    Options:
+      -f FILE --file=FILE                 Path to your todo.txt file
+      -c FILE --config=FILE               Path to your todotxt-machine configuraton file [default: ~/.todotxt-machinerc]
+      --readline-editing-mode=(vi|emacs)  Set readline editing mode [default: vi]
+      -h --help                           Show this screen.
+      --version                           Show version.
+
+Config File
+-----------
+
+You can tell todotxt-machine to use the same todo.txt file whenever it starts
+up by adding a `file` entry to the ~/.todotxt-machinerc file.  You can also set
+you preferred colorscheme or even define new themes.
+
+Here is an example config file:
+
+    [settings]
+    file = ~/todo.txt
+    colorscheme = myawesometheme
+
+    [colorscheme-myawesometheme]
+    plain=h250
+    selected=,h238
+    header=h39,h235
+    header_todo_count=h222,h62
+    header_todo_pending_count=h232,h228
+    header_todo_done_count=h22,h156
+    header_sorting=h235,h39
+    header_file=h48,h235
+    dialog_button=h255,h242
+    dialog_background=,h248
+    dialog_color=,h240
+    dialog_shadow=,h238
+    footer=h39,h235
+    search_match=h222,h235
+    completed=h59
+    context=h39
+    project=h214
+    creation_date=h135
+    due_date=h161
+    priority_a=h167
+    priority_b=h173
+    priority_c=h185
+    priority_d=h77
+    priority_e=h80
+    priority_f=h62
+
+You can add colorschemes by adding sections with names that start with
+`colorscheme-`. Then under the `[settings]` section you can say which
+colorscheme you want to use.
+
+The format for color definitions is:
+
+    name=foreground,background
+
+Foreground and background colors are follow the 256 color formats [defined by urwid](http://urwid.org/manual/displayattributes.html#color-foreground-and-background-colors). Here is an excerpt from that link:
+
+> High colors may be specified by their index `h0`, ..., `h255` or with the shortcuts for the color cube `#000`, `#006`, `#008`, ..., `#fff` or gray scale entries `g0` (black from color cube) , `g3`, `g7`, ... `g100` (white from color cube).
+
+You can see the colors defined [here](http://urwid.org/examples/index.html#palette-test-py).
+
+I recommend you leave the foreground out of the following definitions by adding
+a comma immediately after the `=`
+
+    selected=,h238
+    dialog_background=,h248
+    dialog_color=,h240
+    dialog_shadow=,h238
+
+Let me know if you make a good colorscheme and I'll add it to todotxt-machine.
 
 Key Bindings
 ------------
