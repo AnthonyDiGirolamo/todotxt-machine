@@ -88,11 +88,17 @@ class UrwidUI:
         if self.help_panel_is_open:
             self.view.contents.pop()
             self.help_panel_is_open = False
+            # set header line to word-wrap contents
+            # for header_column in self.view[0].header.original_widget.contents:
+            #     header_column[0].set_wrap_mode('space')
         else:
             self.help_panel = self.create_help_panel()
             self.view.contents.append( (self.help_panel, self.view.options(width_type='weight', width_amount=3)) )
             self.view.set_focus(1)
             self.help_panel_is_open = True
+            # set header line to clip contents
+            # for header_column in self.view[0].header.original_widget.contents:
+            #     header_column[0].set_wrap_mode('clip')
 
     def toggle_filter_panel(self, button=None):
         if self.help_panel_is_open:
@@ -238,8 +244,6 @@ class UrwidUI:
             self.listbox.body.insert(new_index, TodoWidget(self.todos[new_index], self.colorscheme, self, editing=True, wrapping=self.wrapping[0], border=self.border[0]))
 
         if position:
-            # import ipdb; ipdb.set_trace()
-            # FIXME
             if self.filtering:
                 self.listbox.set_focus(len(self.listbox.body)-1)
             else:
