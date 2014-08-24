@@ -69,9 +69,11 @@ class UrwidUI:
 
         self.active_projects = []
         self.active_contexts = []
-        self.filter_dialog_is_open = False
-        self.filtering = False
-        self.searching = False
+
+        self.help_panel_is_open    = False
+        self.filter_panel_is_open  = False
+        self.filtering             = False
+        self.searching             = False
 
     def move_selection_down(self):
         self.listbox.keypress((0, self.loop.screen_size[1]-2), 'down')
@@ -79,14 +81,28 @@ class UrwidUI:
     def move_selection_up(self):
         self.listbox.keypress((0, self.loop.screen_size[1]-2), 'up')
 
+    def toggle_help_panel(self, button=None):
+        if self.filter_panel_is_open:
+            self.toggle_filter_panel()
+        if self.help_panel_is_open:
+            self.view.contents.pop()
+            self.help_panel_is_open = False
+        else:
+            self.help_panel = self.create_help_panel()
+            self.view.contents.append( (self.help_panel, self.view.options(width_type='weight', width_amount=2)) )
+            self.view.set_focus(1)
+            self.help_panel_is_open = True
+
     def toggle_filter_panel(self, button=None):
-        if self.filter_dialog_is_open:
-            self.view.widget_list.pop()
-            self.filter_dialog_is_open = False
+        if self.help_panel_is_open:
+            self.toggle_help_panel()
+        if self.filter_panel_is_open:
+            self.view.contents.pop()
+            self.filter_panel_is_open = False
         else:
             self.filter_panel = self.create_filter_panel()
-            self.view.widget_list.append(self.filter_panel)
-            self.filter_dialog_is_open = True
+            self.view.contents.append( (self.filter_panel, self.view.options(width_type='weight', width_amount=1)) )
+            self.filter_panel_is_open = True
 
     def toggle_wrapping(self, button=None):
         self.wrapping.rotate(1)
@@ -158,6 +174,8 @@ class UrwidUI:
             self.swap_up()
 
         # View options
+        elif input in ['h', '?']:
+            self.toggle_help_panel()
         elif input is 'f':
             self.toggle_filter_panel()
         elif input is 'F':
@@ -248,6 +266,47 @@ class UrwidUI:
                 urwid.Text(''),
                 # (11, urwid.AttrMap(urwid.Button('Filters', on_press=self.toggle_filter_panel), 'dialog_button', 'plain_selected') )
             ]), 'footer')
+
+    def create_help_panel(self):
+        return urwid.AttrMap(
+            urwid.LineBox(
+            urwid.Padding(
+            urwid.ListBox(
+                [ urwid.Divider() ] +
+                [ urwid.Text("""General
+
+h, ?         - display this help message
+q            - quit and save
+S            - save current todo file
+R            - reload the todo file (discarding changes)
+
+Movement
+
+mouse click  - select any todo, checkbox or button
+j, down      - move selection down
+k, up        - move selection up
+g, page up   - move selection to the top item
+G, page down - move selection to the bottom item
+left, right  - move selection between todos and filter panel
+
+Manipulating Todo Items
+
+x            - complete / un-complete selected todo item
+n            - add a new todo to the end of the list
+o            - add a todo after the selected todo (when not filtering)
+O            - add a todo before the selected todo (when not filtering)
+enter, A, e  - edit the selected todo
+D            - delete the selected todo
+J            - swap with item below
+K            - swap with item above
+
+Filtering
+
+f            - open the filtering panel
+F            - clear any active filters
+""")]
+            ),
+            left=1, right=1, min_width=10 ), title='Key Bindings'), 'dialog_color')
 
     def create_filter_panel(self):
         w = urwid.AttrMap(
