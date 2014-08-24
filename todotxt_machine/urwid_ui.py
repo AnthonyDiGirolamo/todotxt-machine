@@ -33,10 +33,10 @@ class TodoWidget(urwid.Button):
 
     def edit_item(self):
         self.editing = True
-        self._w = urwid.Edit(caption="", edit_text=self.todo.raw)
+        self._w = urwid.AttrMap(urwid.Edit(caption="", edit_text=self.todo.raw), 'plain_selected')
 
     def save_item(self):
-        self.todo.update(self._w.edit_text.strip())
+        self.todo.update(self._w.original_widget.edit_text.strip())
         self.update_todo()
         if self.parent_ui.filter_panel_is_open:
             self.parent_ui.update_filter_panel(new_contexts=self.todo.contexts, new_projects=self.todo.projects)
