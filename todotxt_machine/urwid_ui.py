@@ -89,7 +89,7 @@ class UrwidUI:
             self.help_panel_is_open = False
         else:
             self.help_panel = self.create_help_panel()
-            self.view.contents.append( (self.help_panel, self.view.options(width_type='weight', width_amount=2)) )
+            self.view.contents.append( (self.help_panel, self.view.options(width_type='weight', width_amount=3)) )
             self.view.set_focus(1)
             self.help_panel_is_open = True
 
@@ -213,7 +213,7 @@ class UrwidUI:
             self.add_new_todo(position='insert_after')
 
         # Save current file
-        elif input is 'w':
+        elif input is 'S':
             self.save_todos()
 
         # Reload original file
@@ -268,29 +268,45 @@ class UrwidUI:
             ]), 'footer')
 
     def create_help_panel(self):
+        header_highlight = 'plain_selected'
         return urwid.AttrMap(
             urwid.LineBox(
             urwid.Padding(
             urwid.ListBox(
                 [ urwid.Divider() ] +
-                [ urwid.Text("""General
 
+                [ urwid.AttrWrap(urwid.Text("""
+General
+""".strip()), header_highlight) ] +
+                # [ urwid.Divider(u'─') ] +
+
+                [ urwid.Text("""
 h, ?         - display this help message
 q            - quit and save
 S            - save current todo file
 R            - reload the todo file (discarding changes)
+""")] +
 
+                [ urwid.AttrWrap(urwid.Text("""
 Movement
+""".strip()), header_highlight) ] +
+                # [ urwid.Divider(u'─') ] +
 
+                [ urwid.Text("""
 mouse click  - select any todo, checkbox or button
 j, down      - move selection down
 k, up        - move selection up
 g, page up   - move selection to the top item
 G, page down - move selection to the bottom item
 left, right  - move selection between todos and filter panel
+""")] +
 
+                [ urwid.AttrWrap(urwid.Text("""
 Manipulating Todo Items
+""".strip()), header_highlight) ] +
+                # [ urwid.Divider(u'─') ] +
 
+                [ urwid.Text("""
 x            - complete / un-complete selected todo item
 n            - add a new todo to the end of the list
 o            - add a todo after the selected todo (when not filtering)
@@ -299,18 +315,30 @@ enter, A, e  - edit the selected todo
 D            - delete the selected todo
 J            - swap with item below
 K            - swap with item above
+""")] +
 
+                [ urwid.AttrWrap(urwid.Text("""
 While Editing a Todo
+""".strip()), header_highlight) ] +
+                # [ urwid.Divider(u'─') ] +
 
+                [ urwid.Text("""
 return       - save todo item
+left, right  - move cursor left and right
+home, end    - move cursor the beginning or end of the line
+""")] +
 
+                [ urwid.AttrWrap(urwid.Text("""
 Filtering
+""".strip()), header_highlight) ] +
+                # [ urwid.Divider(u'─') ] +
 
+                [ urwid.Text("""
 f            - open the filtering panel
 F            - clear any active filters
 """)]
             ),
-            left=1, right=1, min_width=10 ), title='Key Bindings'), 'dialog_color')
+            left=1, right=1, min_width=10 ), title='Key Bindings'), 'default')
 
     def create_filter_panel(self):
         w = urwid.AttrMap(

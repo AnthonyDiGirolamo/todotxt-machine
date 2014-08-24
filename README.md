@@ -178,6 +178,8 @@ Key Bindings
 ### While Editing a Todo
 
     return       - save todo item
+    left, right  - move cursor left and right
+    home, end    - move cursor the beginning or end of the line
 
 ### Filtering
 
