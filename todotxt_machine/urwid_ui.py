@@ -468,9 +468,15 @@ While Editing a Todo
                 # [ urwid.Divider(u'─') ] +
 
                 [ urwid.Text("""
+tab          - tab complete contexts and projects
 return       - save todo item
 left, right  - move cursor left and right
+ctrl-b       - move cursor backwards (left) by one word
+ctrl-f       - move cursor forwards (right) by one word
 home, end    - move cursor the beginning or end of the line
+ctrl-a, ctrl-e
+ctrl-w       - delete one word backwards
+ctrl-k       - delete from the cursor to the end of the line
 """)] +
 
                 [ urwid.AttrWrap(urwid.Text("""
@@ -481,6 +487,16 @@ Filtering
                 [ urwid.Text("""
 f            - open the filtering panel
 F            - clear any active filters
+""")] +
+                [ urwid.AttrWrap(urwid.Text("""
+Searching
+""".strip()), header_highlight) ] +
+                # [ urwid.Divider(u'─') ] +
+
+                [ urwid.Text("""
+/            - start search
+enter        - finalize search
+L            - clear search
 """)]
             ),
             left=1, right=1, min_width=10 ), title='Key Bindings'), 'default')

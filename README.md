@@ -177,9 +177,15 @@ Key Bindings
 
 ### While Editing a Todo
 
+    tab          - tab complete contexts and projects
     return       - save todo item
     left, right  - move cursor left and right
+    ctrl-b       - move cursor backwards (left) by one word
+    ctrl-f       - move cursor forwards (right) by one word
     home, end    - move cursor the beginning or end of the line
+    ctrl-a, ctrl-e
+    ctrl-w       - delete one word backwards
+    ctrl-k       - delete from the cursor to the end of the line
 
 ### Filtering
 
@@ -193,12 +199,8 @@ Key Bindings
 ### Searching
 
     /            - start search
-    ctrl-l       - clear search
-
-### While Searching
-
-    enter        - end search
-    ctrl-c       - cancel search
+    enter        - finalize search
+    L            - clear search
 
 
 Planned Features
