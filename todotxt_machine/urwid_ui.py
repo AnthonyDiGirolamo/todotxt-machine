@@ -175,10 +175,10 @@ class UrwidUI:
         self.search_string         = ''
 
     def move_selection_down(self):
-        self.listbox.keypress((0, self.loop.screen_size[1]-2), 'down')
+        self.listbox.keypress((0, self.loop.screen_size[1]-1), 'down')
 
     def move_selection_up(self):
-        self.listbox.keypress((0, self.loop.screen_size[1]-2), 'up')
+        self.listbox.keypress((0, self.loop.screen_size[1]-1), 'up')
 
     def toggle_help_panel(self, button=None):
         if self.filter_panel_is_open:
