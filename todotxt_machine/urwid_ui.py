@@ -13,6 +13,10 @@ class AdvancedEdit(urwid.Edit):
               - C-k: remove everything on the right of the cursor
               - C-w: remove the word on the back"""
 
+    def __init__(self, parent_ui, *args, **kwargs):
+        self.parent_ui = parent_ui
+        super(AdvancedEdit, self).__init__(*args, **kwargs)
+
     def setCompletionMethod(self, callback):
         """Define method called when completion is asked
         @callback: method with 2 arguments:
@@ -33,11 +37,19 @@ class AdvancedEdit(urwid.Edit):
         elif key == 'ctrl e':
             key = 'end'
         elif key == 'ctrl k':
+            self.parent_ui.yanked_text = self.edit_text[self.edit_pos:]
             self._delete_highlighted()
             self.set_edit_text(self.edit_text[:self.edit_pos])
+        elif key == 'ctrl y':
+            self.set_edit_text(
+                self.edit_text[:self.edit_pos] +
+                self.parent_ui.yanked_text +
+                self.edit_text[self.edit_pos:])
+            self.set_edit_pos(self.edit_pos + len(self.parent_ui.yanked_text))
         elif key == 'ctrl w':
             before = self.edit_text[:self.edit_pos]
             pos = before.rstrip().rfind(" ")+1
+            self.parent_ui.yanked_text = self.edit_text[pos:self.edit_pos]
             self.set_edit_text(before[:pos] + self.edit_text[self.edit_pos:])
             self.set_edit_pos(pos)
         elif key == 'ctrl b':
@@ -112,7 +124,7 @@ class TodoWidget(urwid.Button):
 
     def edit_item(self):
         self.editing = True
-        self.edit_widget = AdvancedEdit(caption="", edit_text=self.todo.raw)
+        self.edit_widget = AdvancedEdit(self.parent_ui, caption="", edit_text=self.todo.raw)
         self.edit_widget.setCompletionMethod(self.completions)
         self._w = urwid.AttrMap(self.edit_widget, 'plain_selected')
 
@@ -173,6 +185,7 @@ class UrwidUI:
         self.filtering             = False
         self.searching             = False
         self.search_string         = ''
+        self.yanked_text           = ''
 
     def move_selection_down(self):
         self.listbox.keypress((0, self.loop.screen_size[1]-1), 'down')
@@ -477,6 +490,7 @@ home, end    - move cursor the beginning or end of the line
 ctrl-a, ctrl-e
 ctrl-w       - delete one word backwards
 ctrl-k       - delete from the cursor to the end of the line
+ctrl-y       - paste last deleted text
 """)] +
 
                 [ urwid.AttrWrap(urwid.Text("""

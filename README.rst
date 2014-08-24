@@ -230,6 +230,7 @@ While Editing a Todo
     ctrl-a, ctrl-e
     ctrl-w       - delete one word backwards
     ctrl-k       - delete from the cursor to the end of the line
+    ctrl-y       - paste last deleted text
 
 Filtering
 ~~~~~~~~~
