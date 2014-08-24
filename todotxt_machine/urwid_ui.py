@@ -4,9 +4,9 @@
 import urwid
 import collections
 
-class MenuButton(urwid.Button):
+class TodoWidget(urwid.Button):
     def __init__(self, todo, colorscheme, parent_ui, editing=False, wrapping='clip', border='no border'):
-        super(MenuButton, self).__init__("")
+        super(TodoWidget, self).__init__("")
         self.todo        = todo
         self.wrapping    = wrapping
         self.border      = border
@@ -149,7 +149,7 @@ class UrwidUI:
         self.todos.reload_from_file()
 
         for t in self.todos.todo_items:
-            self.listbox.body.append( MenuButton(t, self.colorscheme, self, wrapping=self.wrapping[0], border=self.border[0]) )
+            self.listbox.body.append( TodoWidget(t, self.colorscheme, self, wrapping=self.wrapping[0], border=self.border[0]) )
 
         self.update_header("Reloaded")
 
@@ -213,7 +213,7 @@ class UrwidUI:
             self.add_new_todo(position='insert_after')
 
         # Save current file
-        elif input is 'S':
+        elif input is 'w':
             self.save_todos()
 
         # Reload original file
@@ -227,14 +227,14 @@ class UrwidUI:
 
         if position is 'append':
             new_index = self.todos.append('', add_creation_date=False)
-            self.listbox.body.append(MenuButton(self.todos[new_index], self.colorscheme, self, editing=True, wrapping=self.wrapping[0], border=self.border[0]))
+            self.listbox.body.append(TodoWidget(self.todos[new_index], self.colorscheme, self, editing=True, wrapping=self.wrapping[0], border=self.border[0]))
         else:
             if position is 'insert_after':
                 new_index = self.todos.insert(focus_index+1, '', add_creation_date=False)
             elif position is 'insert_before':
                 new_index = self.todos.insert(focus_index, '', add_creation_date=False)
 
-            self.listbox.body.insert(new_index, MenuButton(self.todos[new_index], self.colorscheme, self, editing=True, wrapping=self.wrapping[0], border=self.border[0]))
+            self.listbox.body.insert(new_index, TodoWidget(self.todos[new_index], self.colorscheme, self, editing=True, wrapping=self.wrapping[0], border=self.border[0]))
 
         if position:
             # import ipdb; ipdb.set_trace()
@@ -300,6 +300,10 @@ D            - delete the selected todo
 J            - swap with item below
 K            - swap with item above
 
+While Editing a Todo
+
+return       - save todo item
+
 Filtering
 
 f            - open the filtering panel
@@ -353,7 +357,7 @@ F            - clear any active filters
             self.listbox.body.pop(i)
 
         for t in self.todos.todo_items:
-            self.listbox.body.append( MenuButton(t, self.colorscheme, self, wrapping=self.wrapping[0], border=self.border[0]) )
+            self.listbox.body.append( TodoWidget(t, self.colorscheme, self, wrapping=self.wrapping[0], border=self.border[0]) )
 
         self.active_projects = []
         self.active_contexts = []
@@ -380,7 +384,7 @@ F            - clear any active filters
             self.listbox.body.pop(i)
 
         for t in self.todos.filter_contexts_and_projects(self.active_contexts, self.active_projects):
-            self.listbox.body.append( MenuButton(t, self.colorscheme, self, wrapping=self.wrapping[0], border=self.border[0]) )
+            self.listbox.body.append( TodoWidget(t, self.colorscheme, self, wrapping=self.wrapping[0], border=self.border[0]) )
 
         self.filtering = True
 
@@ -406,7 +410,7 @@ F            - clear any active filters
         self.footer = self.create_footer()
 
         self.listbox = urwid.ListBox(urwid.SimpleListWalker(
-            [MenuButton(t, self.colorscheme, self) for t in self.todos.todo_items]
+            [TodoWidget(t, self.colorscheme, self) for t in self.todos.todo_items]
         ))
         self.view = urwid.Columns([
             ('weight', 2, urwid.Frame(urwid.AttrMap(self.listbox, 'plain'), header=self.header, footer=self.footer) )

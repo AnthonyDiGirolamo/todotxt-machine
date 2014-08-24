@@ -71,12 +71,13 @@ Using `pip <https://pypi.python.org/pypi/pip>`__
 Manually
 ~~~~~~~~
 
+Download or clone this repo and run the ``todotxt-machine.py`` script.
+
 ::
 
     git clone https://github.com/AnthonyDiGirolamo/todotxt-machine.git
     cd todotxt-machine
     ./todotxt-machine.py
-
 
 Command Line Options
 --------------------
@@ -102,30 +103,22 @@ General
 
 ::
 
-    ?            - display this help message
-    q, ctrl-c    - quit
-    w            - save current todo file
+    h, ?         - display this help message
+    q            - quit and save
+    S            - save current todo file
+    R            - reload the todo file (discarding changes)
 
 Movement
 ~~~~~~~~
 
 ::
 
+    mouse click  - select any todo, checkbox or button
     j, down      - move selection down
     k, up        - move selection up
     g, page up   - move selection to the top item
     G, page down - move selection to the bottom item
-
-Filtering & Sorting
-~~~~~~~~~~~~~~~~~~~
-
-::
-
-    p            - select the next project
-    P            - select the previous project
-    c            - select the next context
-    C            - select the previous context
-    s            - switch sorting method
+    left, right  - move selection between todos and filter panel
 
 Searching
 ~~~~~~~~~
@@ -150,8 +143,8 @@ Manipulating Todo Items
 
     x            - complete / un-complete selected todo item
     n            - add a new todo to the end of the list
-    o            - add a todo after the selected todo
-    O            - add a todo before the selected todo
+    o            - add a todo after the selected todo (when not filtering)
+    O            - add a todo before the selected todo (when not filtering)
     enter, A, e  - edit the selected todo
     D            - delete the selected todo
     J            - swap with item below
@@ -162,17 +155,33 @@ While Editing a Todo
 
 ::
 
-    ctrl-c       - cancel editing a todo
-    tab          - tab complete @contexts and +Projects
+    return       - save todo item
+
+Filtering
+~~~~~~~~~
+
+::
+
+    f            - open the filtering panel
+    F            - clear any active filters
+
+    p            - select the next project
+    P            - select the previous project
+    c            - select the next context
+    C            - select the previous context
+    s            - switch sorting method
 
 Planned Features
 ----------------
 
--  User defined color themes
--  Manual reordering of todo items
+-  [STRIKEOUT:User defined color themes]
+-  [STRIKEOUT:Manual reordering of todo items]
+-  [STRIKEOUT:Config file for setting colors and todo.txt file location]
+-  Support for archiving todos in done.txt
 
 Updates
 -------
 
-See the `log on github <https://github.com/AnthonyDiGirolamo/todotxt-machine/commits/master>`__
+See the `log
+here <https://github.com/AnthonyDiGirolamo/todotxt-machine/commits/master>`__
 

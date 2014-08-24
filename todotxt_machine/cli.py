@@ -21,8 +21,8 @@ import sys
 import os
 import random
 
-import pprint
-pp = pprint.PrettyPrinter(indent=4).pprint
+# import pprint
+# pp = pprint.PrettyPrinter(indent=4).pprint
 
 # Import the correct version of configparser
 if sys.version_info[0] >= 3:
@@ -62,8 +62,6 @@ def main():
     # load the colorscheme defined in the user config, else load the default scheme
     colorscheme = ColorScheme(dict( cfg.items('settings') ).get('colorscheme', 'default'), cfg)
 
-    # import ipdb; ipdb.set_trace()
-
     todotxt_file = dict( cfg.items('settings') ).get('file', arguments['--file'])
 
     if todotxt_file is None:
@@ -72,7 +70,7 @@ def main():
     # expand enviroment variables and username, get canonical path
     todotxt_file_path = os.path.realpath(os.path.expanduser(os.path.expandvars(todotxt_file)))
 
-    print("Opening: {0}".format(todotxt_file_path))
+    # print("Opening: {0}".format(todotxt_file_path))
 
     if os.path.isdir(todotxt_file_path):
         exit_with_error("ERROR: Specified todo file is a directory.")
@@ -92,14 +90,12 @@ def main():
         print("ERROR: unable to open {0}\nUse the --file option to specify a path to your todo.txt file\n".format(todotxt_file_path))
         todos = Todos([], todotxt_file_path)
 
-    # view = Screen(todos, readline_editing_mode=arguments['--readline-editing-mode'])
-    # view.main_loop()
-
     # import ipdb; ipdb.set_trace()
+
     view = UrwidUI(todos, colorscheme)
     view.main()
 
-    print("Writing: {0}".format(todotxt_file_path))
+    # print("Writing: {0}".format(todotxt_file_path))
     view.todos.save()
     exit(0)
 
