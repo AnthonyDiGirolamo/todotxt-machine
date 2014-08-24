@@ -11,9 +11,7 @@ class AdvancedEdit(urwid.Edit):
               - C-a: like 'home'
               - C-e: like 'end'
               - C-k: remove everything on the right of the cursor
-              - C-w: remove the word on the back
-    new behaviour: emit a 'click' signal when enter is pressed"""
-    signals = urwid.Edit.signals + ['click']
+              - C-w: remove the word on the back"""
 
     def setCompletionMethod(self, callback):
         """Define method called when completion is asked
@@ -50,8 +48,6 @@ class AdvancedEdit(urwid.Edit):
             after = self.edit_text[self.edit_pos:]
             pos = after.rstrip().find(" ")+1
             self.set_edit_pos(self.edit_pos+pos)
-        elif key == 'enter':
-            self._emit('click')
         elif key == 'tab':
             try:
                 before = self.edit_text[:self.edit_pos]
@@ -227,7 +223,7 @@ class UrwidUI:
 
     def swap_down(self):
         focus, focus_index = self.listbox.get_focus()
-        if not self.filtering:
+        if not self.filtering and not self.searching:
             if focus_index+1 < len(self.listbox.body):
                 self.todos.swap(focus_index, focus_index + 1)
                 self.listbox.body[focus_index].todo = self.todos[focus_index]
@@ -238,7 +234,7 @@ class UrwidUI:
 
     def swap_up(self):
         focus, focus_index = self.listbox.get_focus()
-        if not self.filtering:
+        if not self.filtering and not self.searching:
             if focus_index > 0:
                 self.todos.swap(focus_index, focus_index - 1)
                 self.listbox.body[focus_index].todo = self.todos[focus_index]
