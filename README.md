@@ -88,7 +88,7 @@ You can tell todotxt-machine to use the same todo.txt file whenever it starts
 up by adding a `file` entry to the ~/.todotxt-machinerc file.  You can also set
 you preferred colorscheme or even define new themes.
 
-Here is an example config file:
+Here is an example config file with a complete colorscheme definition:
 
     [settings]
     file = ~/todo.txt
@@ -125,7 +125,7 @@ You can add colorschemes by adding sections with names that start with
 `colorscheme-`. Then under the `[settings]` section you can say which
 colorscheme you want to use.
 
-The format for color definitions is:
+The format for a color definitions is:
 
     name=foreground,background
 
@@ -133,7 +133,7 @@ Foreground and background colors are follow the 256 color formats [defined by ur
 
 > High colors may be specified by their index `h0`, ..., `h255` or with the shortcuts for the color cube `#000`, `#006`, `#008`, ..., `#fff` or gray scale entries `g0` (black from color cube) , `g3`, `g7`, ... `g100` (white from color cube).
 
-You can see the colors defined [here](http://urwid.org/examples/index.html#palette-test-py).
+You can see all the colors defined [here](http://urwid.org/examples/index.html#palette-test-py).
 
 I recommend you leave the foreground out of the following definitions by adding
 a comma immediately after the `=`
@@ -143,12 +143,13 @@ a comma immediately after the `=`
     dialog_color=,h240
     dialog_shadow=,h238
 
-Let me know if you make a good colorscheme and I'll add it to todotxt-machine.
+Let me know if you make any good colorschemes and I'll add it to todotxt-machine.
 
 Key Bindings
 ------------
 
 ### General
+
     h, ?         - display this help message
     q            - quit and save
     S            - save current todo file
@@ -162,16 +163,6 @@ Key Bindings
     g, page up   - move selection to the top item
     G, page down - move selection to the bottom item
     left, right  - move selection between todos and filter panel
-
-### Searching
-
-    /            - start search
-    ctrl-l       - clear search
-
-### While Searching
-
-    enter        - end search
-    ctrl-c       - cancel search
 
 ### Manipulating Todo Items
 
@@ -193,11 +184,19 @@ Key Bindings
     f            - open the filtering panel
     F            - clear any active filters
 
-    p            - select the next project
-    P            - select the previous project
-    c            - select the next context
-    C            - select the previous context
+### Sorting
+
     s            - switch sorting method
+
+### Searching
+
+    /            - start search
+    ctrl-l       - clear search
+
+### While Searching
+
+    enter        - end search
+    ctrl-c       - cancel search
 
 
 Planned Features
