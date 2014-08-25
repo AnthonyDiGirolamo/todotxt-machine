@@ -203,6 +203,10 @@ Key Bindings
     enter        - finalize search
     L            - clear search
 
+Known Issues
+------------
+
+- On Mac OS hitting `ctrl-y` suspends the application. Run `stty dsusp undef` to fix.
 
 Planned Features
 ----------------
