@@ -51,12 +51,8 @@ And some quotes for when you have nothing left to do:
 Requirements
 ------------
 
-Python 2.7 or Python 3.3 with readline support on Linux or Mac OS X.
-todotxt-machine outputs raw `terminal control
-sequences <http://invisible-island.net/xterm/ctlseqs/ctlseqs.html>`__ to
-draw its interface and does not rely on modules like
-`curses <http://docs.python.org/3.3/library/curses.html>`__ or
-`urwid <http://excess.org/urwid/>`__.
+Python 2.7 or Python 3.4 on Linux or Mac OS X. todotxt-machine uses
+`urwid <http://excess.org/urwid/>`__ to draw its user interface.
 
 Installation
 ------------
