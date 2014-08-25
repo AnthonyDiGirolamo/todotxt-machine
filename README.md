@@ -207,6 +207,9 @@ Known Issues
 ------------
 
 - On Mac OS hitting `ctrl-y` suspends the application. Run `stty dsusp undef` to fix.
+- Mouse interaction doesn't seem to work properly in the Apple Terminal. I would
+  recommend using [iTerm2](http://iterm2.com/) or rxvt / xterm in
+  [XQuartz](http://xquartz.macosforge.org/landing/).
 
 Planned Features
 ----------------

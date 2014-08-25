@@ -52,11 +52,11 @@ class AdvancedEdit(urwid.Edit):
             self.parent_ui.yanked_text = self.edit_text[pos:self.edit_pos]
             self.set_edit_text(before[:pos] + self.edit_text[self.edit_pos:])
             self.set_edit_pos(pos)
-        elif key == 'ctrl b':
+        elif key in ['meta b', 'ctrl b']:
             before = self.edit_text[:self.edit_pos]
             pos = before.rstrip().rfind(" ")+1
             self.set_edit_pos(pos)
-        elif key == 'ctrl f':
+        elif key in ['meta f', 'ctrl f']:
             after = self.edit_text[self.edit_pos:]
             pos = after.rstrip().find(" ")+1
             self.set_edit_pos(self.edit_pos+pos)
