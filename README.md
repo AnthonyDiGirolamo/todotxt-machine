@@ -203,7 +203,8 @@ Key Bindings
 
 ### Sorting
 
-    s            - switch sorting method
+    o            - toggle sort order (Unsorted, Ascending, Descending)
+                   sort order is saved on quit
 
 ### Searching
 

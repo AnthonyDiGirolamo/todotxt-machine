@@ -250,6 +250,8 @@ class UrwidUI:
     def __init__(self, todos, colorscheme):
         self.wrapping    = collections.deque(['clip', 'space'])
         self.border      = collections.deque(['no border', 'bordered'])
+        self.sorting     = collections.deque(["Unsorted", "Descending", "Ascending"])
+        self.sorting_display = {"Unsorted": "none", "Descending": "v", "Ascending": "^"}
 
         self.todos       = todos
 
@@ -280,6 +282,12 @@ class UrwidUI:
 
     def move_selection_up(self):
         self.listbox.keypress((0, self.visible_lines()), 'up')
+
+    def move_selection_top(self):
+        self.listbox.set_focus(0)
+
+    def move_selection_bottom(self):
+        self.listbox.set_focus(len(self.listbox.body)-1)
 
     def toggle_help_panel(self, button=None):
         if self.filter_panel_is_open:
@@ -375,9 +383,9 @@ class UrwidUI:
 
         # Movement
         elif input is 'g':
-            self.listbox.set_focus(0)
+            self.move_selection_top()
         elif input is 'G':
-            self.listbox.set_focus(len(self.listbox.body)-1)
+            self.move_selection_bottom()
         elif input is 'k':
             self.move_selection_up()
         elif input is 'j':
@@ -400,6 +408,19 @@ class UrwidUI:
             self.toggle_wrapping()
         elif input is 'b':
             self.toggle_border()
+        elif input is 'o':
+            self.delete_todo_widgets()
+            self.sorting.rotate(1)
+            if self.sorting[0] == 'Ascending':
+                self.todos.sorted()
+            elif self.sorting[0] == 'Descending':
+                self.todos.sorted_reverse()
+            elif self.sorting[0] == 'Unsorted':
+                self.todos.sorted_raw()
+            self.reload_todos_from_memory()
+            self.move_selection_top()
+            self.update_header()
+
         elif input is '/':
             self.start_search()
         elif input is 'L':
@@ -499,6 +520,11 @@ class UrwidUI:
             urwid.Padding(
             urwid.AttrMap(
             urwid.Button([('header_file', 'S'), 'ave'], on_press=self.save_todos),
+            'header', 'plain_selected'), right=2 ),
+
+            urwid.Padding(
+            urwid.AttrMap(
+            urwid.Button([('header_file', 'o'), 'rder: '+self.sorting_display[self.sorting[0]]], on_press=self.save_todos),
             'header', 'plain_selected'), right=2 ),
 
             urwid.Padding(
@@ -625,6 +651,15 @@ ctrl-k       - delete from the cursor to the end of the line
 ctrl-y       - paste last deleted text
 """)] +
 
+                [ urwid.AttrWrap(urwid.Text("""
+Sorting
+""".strip()), header_highlight) ] +
+                # [ urwid.Divider(u'─') ] +
+
+                [ urwid.Text("""
+o            - toggle sort order (Unsorted, Ascending, Descending)
+               sort order is saved on quit
+""")] +
                 [ urwid.AttrWrap(urwid.Text("""
 Filtering
 """.strip()), header_highlight) ] +
