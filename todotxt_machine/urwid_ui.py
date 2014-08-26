@@ -267,11 +267,19 @@ class UrwidUI:
         self.search_string         = ''
         self.yanked_text           = ''
 
+    def visible_lines(self):
+        lines = self.loop.screen_size[1] - 1 # minus one for the header
+        if self.toolbar_is_open:
+            lines -= 1
+        if self.searching:
+            lines -= 1
+        return lines
+
     def move_selection_down(self):
-        self.listbox.keypress((0, self.loop.screen_size[1]-1), 'down')
+        self.listbox.keypress((0, self.visible_lines()), 'down')
 
     def move_selection_up(self):
-        self.listbox.keypress((0, self.loop.screen_size[1]-1), 'up')
+        self.listbox.keypress((0, self.visible_lines()), 'up')
 
     def toggle_help_panel(self, button=None):
         if self.filter_panel_is_open:
