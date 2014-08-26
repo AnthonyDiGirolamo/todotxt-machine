@@ -113,10 +113,24 @@ class TodoWidget(urwid.Button):
         if self.parent_ui.searching and self.parent_ui.search_string:
             text = urwid.Text(self.todo.highlight_search_matches(), wrap=self.wrapping)
         else:
-            text = urwid.Text(self.todo.colored, wrap=self.wrapping)
+            if self.border == 'bordered':
+                text = urwid.Text(self.todo.highlight(show_due_date=False, show_contexts=False, show_projects=False), wrap=self.wrapping)
+            else:
+                text = urwid.Text(self.todo.colored, wrap=self.wrapping)
 
         if self.border == 'bordered':
-            text = urwid.LineBox(text)
+            lt=''
+            if self.todo.due_date:
+                lt = ('due_date', "due:{0}".format(self.todo.due_date))
+            t = []
+            t.append( ('context', ' '.join(self.todo.contexts)) )
+            if self.todo.contexts and self.todo.projects:
+                t.append(' ')
+            t.append( ('project', ' '.join(self.todo.projects)) )
+            bc = 'plain'
+            if self.todo.priority and self.todo.priority in "ABCDEF":
+                bc = "priority_{0}".format(self.todo.priority.lower())
+            text = TodoLineBox(text, top_left_title=lt, bottom_right_title=t, border_color=bc, )
         self._w = urwid.AttrMap( urwid.AttrMap(
             text,
             None, 'selected'),
@@ -148,7 +162,7 @@ class TodoWidget(urwid.Button):
         self.todo.update(self._w.original_widget.edit_text.strip())
         self.update_todo()
         if self.parent_ui.filter_panel_is_open:
-            self.parent_ui.update_filter_panel(new_contexts=self.todo.contexts, new_projects=self.todo.projects)
+            self.parent_ui.update_filters(new_contexts=self.todo.contexts, new_projects=self.todo.projects)
         self.editing = False
 
     def keypress(self, size, key):
@@ -167,6 +181,71 @@ class TodoWidget(urwid.Button):
             else:
                 return key
 
+class TodoLineBox(urwid.WidgetDecoration, urwid.WidgetWrap):
+
+    def __init__(self, original_widget, top_left_title="", bottom_right_title="", border_color='plain',
+                 tlcorner=u'┌', tline=u'─', lline=u'│',
+                 trcorner=u'┐', blcorner=u'└', rline=u'│',
+                 bline=u'─', brcorner=u'┘'):
+        """
+        Draw a line around original_widget.
+
+        Use 'title' to set an initial title text with will be centered
+        on top of the box.
+
+        You can also override the widgets used for the lines/corners:
+            tline: top line
+            bline: bottom line
+            lline: left line
+            rline: right line
+            tlcorner: top left corner
+            trcorner: top right corner
+            blcorner: bottom left corner
+            brcorner: bottom right corner
+
+        """
+
+        tline, bline = urwid.AttrMap(urwid.Divider(tline), border_color),   urwid.AttrMap(urwid.Divider(bline), border_color)
+        lline, rline = urwid.AttrMap(urwid.SolidFill(lline), border_color), urwid.AttrMap(urwid.SolidFill(rline), border_color)
+        tlcorner, trcorner = urwid.AttrMap(urwid.Text(tlcorner), border_color), urwid.AttrMap(urwid.Text(trcorner), border_color)
+        blcorner, brcorner = urwid.AttrMap(urwid.Text(blcorner), border_color), urwid.AttrMap(urwid.Text(brcorner), border_color)
+
+        self.ttitle_widget = urwid.Text(top_left_title)
+        self.tline_widget = urwid.Columns([
+            ('fixed', 1, tline),
+            ('flow', self.ttitle_widget),
+            tline,
+        ])
+        self.btitle_widget = urwid.Text(bottom_right_title)
+        self.bline_widget = urwid.Columns([
+            bline,
+            ('flow', self.btitle_widget),
+            ('fixed', 1, bline),
+        ])
+
+        middle = urwid.Columns([
+            ('fixed', 1, lline),
+            original_widget,
+            ('fixed', 1, rline),
+        ], box_columns=[0, 2], focus_column=1)
+
+        top = urwid.Columns([
+            ('fixed', 1, tlcorner),
+            self.tline_widget,
+            ('fixed', 1, trcorner)
+        ])
+
+        bottom = urwid.Columns([
+            ('fixed', 1, blcorner),
+            self.bline_widget,
+            ('fixed', 1, brcorner)
+        ])
+
+        pile = urwid.Pile([('flow', top), middle, ('flow', bottom)], focus_item=1)
+
+        urwid.WidgetDecoration.__init__(self, original_widget)
+        urwid.WidgetWrap.__init__(self, pile)
+
 class UrwidUI:
     def __init__(self, todos, colorscheme):
         self.wrapping    = collections.deque(['clip', 'space'])
@@ -180,6 +259,7 @@ class UrwidUI:
         self.active_projects = []
         self.active_contexts = []
 
+        self.toolbar_is_open       = False
         self.help_panel_is_open    = False
         self.filter_panel_is_open  = False
         self.filtering             = False
@@ -222,17 +302,25 @@ class UrwidUI:
             self.view.contents.append( (self.filter_panel, self.view.options(width_type='weight', width_amount=1)) )
             self.filter_panel_is_open = True
 
-    def toggle_wrapping(self, button=None):
+    def toggle_wrapping(self, checkbox=None, state=None):
         self.wrapping.rotate(1)
         for widget in self.listbox.body:
             widget.wrapping = self.wrapping[0]
             widget.update_todo()
+        if self.toolbar_is_open:
+            self.update_header()
 
-    def toggle_border(self, button=None):
+    def toggle_border(self, checkbox=None, state=None):
         self.border.rotate(1)
         for widget in self.listbox.body:
             widget.border = self.border[0]
             widget.update_todo()
+        if self.toolbar_is_open:
+            self.update_header()
+
+    def toggle_toolbar(self):
+        self.toolbar_is_open = not self.toolbar_is_open
+        self.update_header()
 
     def swap_down(self):
         focus, focus_index = self.listbox.get_focus()
@@ -294,6 +382,8 @@ class UrwidUI:
         # View options
         elif input in ['h', '?']:
             self.toggle_help_panel()
+        elif input is 't':
+            self.toggle_toolbar()
         elif input is 'f':
             self.toggle_filter_panel()
         elif input is 'F':
@@ -373,13 +463,41 @@ class UrwidUI:
         return urwid.AttrMap(
             urwid.Columns( [
                 urwid.Text( [
-                    ('header_todo_count', " {0} Todos ".format(self.todos.__len__())),
+                    ('header_todo_count', "{0} Todos ".format(self.todos.__len__())),
                     ('header_todo_pending_count', " {0} Pending ".format(self.todos.pending_items_count())),
                     ('header_todo_done_count', " {0} Done ".format(self.todos.done_items_count())),
                 ]),
                 # urwid.Text( " todotxt-machine ", align='center' ),
                 urwid.Text( ('header_file', "{0}  {1} ".format(message, self.todos.file_path)), align='right' )
             ]), 'header')
+
+    def create_toolbar(self):
+        return urwid.AttrMap(urwid.Columns( [
+            urwid.Padding(
+            urwid.AttrMap(
+            urwid.CheckBox([('header_file', 'W'), 'ord Wrap'], state=(self.wrapping[0] == 'space'), on_state_change=self.toggle_wrapping),
+            'header', 'plain_selected'), right=2 ),
+
+            urwid.Padding(
+            urwid.AttrMap(
+            urwid.CheckBox([('header_file', 'b'), 'orders'], state=(self.border[0] == 'bordered'), on_state_change=self.toggle_border),
+            'header', 'plain_selected'), right=2 ),
+
+            urwid.Padding(
+            urwid.AttrMap(
+            urwid.Button([('header_file', 'R'), 'eload'], on_press=self.reload_todos_from_file),
+            'header', 'plain_selected'), right=2 ),
+
+            urwid.Padding(
+            urwid.AttrMap(
+            urwid.Button([('header_file', 'S'), 'ave'], on_press=self.save_todos),
+            'header', 'plain_selected'), right=2 ),
+
+            urwid.Padding(
+            urwid.AttrMap(
+            urwid.Button([('header_file', 'f'), 'iltering'], on_press=self.toggle_filter_panel),
+            'header', 'plain_selected'), right=2 )
+        ] ), 'header')
 
     def search_box_updated(self, edit_widget, new_contents):
         old_contents = edit_widget.edit_text
@@ -406,19 +524,22 @@ class UrwidUI:
         for widget in self.listbox.body:
             widget.update_todo()
 
-    def clear_search_term(self):
+    def clear_search_term(self, button=None):
         self.delete_todo_widgets()
-        self.reload_todos_from_memory()
         self.searching = False
         self.search_string = ''
         self.update_footer()
+        self.reload_todos_from_memory()
 
     def create_footer(self):
         if self.searching:
             self.search_box = SearchWidget(self, edit_text=self.search_string)
             w = urwid.AttrMap(urwid.Columns([
                 (1, urwid.Text('/')),
-                self.search_box
+                self.search_box,
+                (16, urwid.AttrMap(
+                    urwid.Button(['C', ('header_file', 'L'), 'ear Search'], on_press=self.clear_search_term),
+                    'header', 'plain_selected') )
             ]), 'footer')
             urwid.connect_signal(self.search_box, 'change', self.search_box_updated)
         else:
@@ -439,8 +560,11 @@ General
                 # [ urwid.Divider(u'─') ] +
 
                 [ urwid.Text("""
-h, ?         - display this help message
+h, ?         - show / hide this help message
 q            - quit and save
+t            - show / hide toolbar
+w            - toggle word wrap
+b            - toggle borders on todo items
 S            - save current todo file
 R            - reload the todo file (discarding changes)
 """)] +
@@ -499,7 +623,7 @@ Filtering
                 # [ urwid.Divider(u'─') ] +
 
                 [ urwid.Text("""
-f            - open the filtering panel
+f            - open / close the filtering panel
 F            - clear any active filters
 """)] +
                 [ urwid.AttrWrap(urwid.Text("""
@@ -520,24 +644,34 @@ L            - clear search
             # urwid.LineBox(
             urwid.Padding(
             urwid.ListBox(
-                [ urwid.Divider() ] +
-                [ urwid.LineBox(urwid.Pile(
-                    [urwid.AttrWrap(urwid.CheckBox(c, state=(c in self.active_contexts), on_state_change=self.checkbox_clicked, user_data=['context', c]), 'context_dialog_color', 'context_selected') for c in self.todos.all_contexts()] +
-                    [ urwid.Divider(u'─') ] +
-                    [urwid.AttrWrap(urwid.CheckBox(p, state=(p in self.active_projects), on_state_change=self.checkbox_clicked, user_data=['project', p]), 'project_dialog_color', 'project_selected') for p in self.todos.all_projects()] +
-                    [ urwid.Divider(u'─') ] +
-                    [ urwid.AttrMap(urwid.Button('[F] Clear Filters', on_press=self.clear_filters), 'dialog_button', 'plain_selected') ] ), title='Contexts & Projects') ] +
                 # [ urwid.Divider() ] +
-                [ urwid.LineBox(urwid.Pile(
-                    [ urwid.AttrMap(urwid.Button('[w] Toggle Wrapping', on_press=self.toggle_wrapping), 'dialog_button', 'plain_selected') ] +
-                    [ urwid.AttrMap(urwid.Button('[b] Toggle Borders', on_press=self.toggle_border), 'dialog_button', 'plain_selected') ] +
-                    [ urwid.Divider() ] +
-                    [ urwid.AttrMap(urwid.Button('[R] Reload Todo.txt File', on_press=self.reload_todos_from_file), 'dialog_button', 'plain_selected') ] +
-                    [ urwid.Divider() ] +
-                    [ urwid.AttrMap(urwid.Button('[S] Save Todo.txt File', on_press=self.save_todos), 'dialog_button', 'plain_selected') ]
-                ), title='Options') ] +
-                [ urwid.Divider() ] +
-                [ urwid.AttrMap(urwid.Button('[f] Close', on_press=self.toggle_filter_panel), 'dialog_button', 'plain_selected') ] +
+                [
+                    # urwid.LineBox(
+                    urwid.Pile(
+                        [ urwid.Text('Contexts & Projects', align='center') ] +
+                        [ urwid.Divider(u'─') ] +
+                        [urwid.AttrWrap(urwid.CheckBox(c, state=(c in self.active_contexts), on_state_change=self.checkbox_clicked, user_data=['context', c]), 'context_dialog_color', 'context_selected') for c in self.todos.all_contexts()] +
+                        [ urwid.Divider(u'─') ] +
+                        [urwid.AttrWrap(urwid.CheckBox(p, state=(p in self.active_projects), on_state_change=self.checkbox_clicked, user_data=['project', p]), 'project_dialog_color', 'project_selected') for p in self.todos.all_projects()] +
+                        [ urwid.Divider(u'─') ] +
+                        [ urwid.AttrMap(urwid.Button(['Clear ', ('header_file_dialog_color','F'), 'ilters'], on_press=self.clear_filters), 'dialog_color', 'plain_selected') ]
+                    )#, title='Contexts & Projects')
+                ] +
+                # [ urwid.Divider() ] +
+                # [
+                #     # urwid.LineBox(
+                #     urwid.Pile(
+                #         [ urwid.Text('Options', align='center') ] +
+                #         [ urwid.AttrMap(urwid.CheckBox('[w] Word Wrap', state=(self.wrapping[0] == 'space'), on_state_change=self.toggle_wrapping), 'dialog_button', 'plain_selected') ] +
+                #         [ urwid.AttrMap(urwid.CheckBox('[b] Borders', state=(self.border[0] == 'bordered'), on_state_change=self.toggle_border), 'dialog_button', 'plain_selected') ] +
+                #         [ urwid.Divider() ] +
+                #         [ urwid.AttrMap(urwid.Button('[R] Reload Todo.txt File', on_press=self.reload_todos_from_file), 'dialog_button', 'plain_selected') ] +
+                #         [ urwid.Divider() ] +
+                #         [ urwid.AttrMap(urwid.Button('[S] Save Todo.txt File', on_press=self.save_todos), 'dialog_button', 'plain_selected') ]
+                #     )#, title='Options')
+                # ] +
+                # [ urwid.Divider() ] +
+                # [ urwid.AttrMap(urwid.Button('[f] Close', on_press=self.toggle_filter_panel), 'dialog_button', 'plain_selected') ] +
                 [ urwid.Divider() ],
             ),
             left=1, right=1, min_width=10 )
@@ -548,10 +682,10 @@ L            - clear search
         shadow = urwid.AttrWrap(urwid.SolidFill(u" "), 'dialog_shadow')
 
         bg = urwid.Overlay( shadow, bg,
-            ('fixed left', 3), ('fixed right', 1),
+            ('fixed left', 2), ('fixed right', 1),
             ('fixed top', 2), ('fixed bottom', 1))
         w = urwid.Overlay( w, bg,
-            ('fixed left', 2), ('fixed right', 3),
+            ('fixed left', 1), ('fixed right', 2),
             ('fixed top', 1), ('fixed bottom', 2))
         return w
 
@@ -571,7 +705,7 @@ L            - clear search
         self.active_contexts = []
         self.filtering = False
         self.view.set_focus(0)
-        self.update_filter_panel()
+        self.update_filters()
 
     def checkbox_clicked(self, checkbox, state, data):
         if state:
@@ -595,7 +729,7 @@ L            - clear search
 
         self.filtering = True
 
-    def update_filter_panel(self, new_contexts=[], new_projects=[]):
+    def update_filters(self, new_contexts=[], new_projects=[]):
         if self.active_contexts:
             for c in new_contexts:
                 self.active_contexts.append(c)
@@ -603,13 +737,19 @@ L            - clear search
             for p in new_projects:
                 self.active_projects.append(p)
 
+        self.update_filter_panel()
+
+    def update_filter_panel(self):
         self.filter_panel = self.create_filter_panel()
         if len(self.view.widget_list) > 1:
             self.view.widget_list.pop()
             self.view.widget_list.append(self.filter_panel)
 
     def update_header(self, message=""):
-        self.view[0].header = self.create_header(message)
+        if self.toolbar_is_open:
+            self.view[0].header = urwid.Pile([self.create_header(message), self.create_toolbar()])
+        else:
+            self.view[0].header = self.create_header(message)
 
     def update_footer(self, message=""):
         self.view[0].footer = self.create_footer()

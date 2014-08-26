@@ -51,8 +51,13 @@ And some quotes for when you have nothing left to do:
 Requirements
 ------------
 
-Python 2.7 or Python 3.4 on Linux or Mac OS X. todotxt-machine uses
-`urwid <http://excess.org/urwid/>`__ to draw its user interface.
+Python 2.7 or Python 3.4 on Linux or Mac OS X.
+
+todotxt-machine 1.1.8 and earlier drew its user interface using only raw
+terminal escape sequences. While this was very educational it was
+difficult to extend with new features. Version 2 and up used
+`urwid <http://excess.org/urwid/>`__ to draw its interface and is much
+more easily extendable.
 
 Installation
 ------------
@@ -84,14 +89,13 @@ Command Line Options
 
     Usage:
       todotxt-machine
-      todotxt-machine [--file FILE] [--config FILE] [--readline-editing-mode=(vi|emacs)]
+      todotxt-machine [--file FILE] [--config FILE]
       todotxt-machine (-h | --help)
       todotxt-machine --version
 
     Options:
       -f FILE --file=FILE                 Path to your todo.txt file
       -c FILE --config=FILE               Path to your todotxt-machine configuraton file [default: ~/.todotxt-machinerc]
-      --readline-editing-mode=(vi|emacs)  Set readline editing mode [default: vi]
       -h --help                           Show this screen.
       --version                           Show version.
 
@@ -110,13 +114,13 @@ Here is an example config file with a complete colorscheme definition:
     file = ~/todo.txt
     colorscheme = myawesometheme
 
-    [colorscheme-myawesometheme]
+    [colorscheme-default]
     plain=h250
     selected=,h238
-    header=h39,h235
-    header_todo_count=h222,h62
-    header_todo_pending_count=h232,h228
-    header_todo_done_count=h22,h156
+    header=h250,h235
+    header_todo_count=h39,h235
+    header_todo_pending_count=h228,h235
+    header_todo_done_count=h156,h235
     header_sorting=h235,h39
     header_file=h48,h235
     dialog_button=h255,h242
@@ -170,8 +174,15 @@ adding a comma immediately after the ``=``
     dialog_color=,h240
     dialog_shadow=,h238
 
-Let me know if you make any good colorschemes and I'll add it to
-todotxt-machine.
+If you want to use your terminal's default foreground and background
+color use blank strings and keep the comma:
+
+::
+
+    dialog_background=,
+
+Let me know if you make any good colorschemes and I'll add it to the
+default collection.
 
 Key Bindings
 ------------
@@ -181,8 +192,11 @@ General
 
 ::
 
-    h, ?         - display this help message
+    h, ?         - show / hide this help message
     q            - quit and save
+    t            - show / hide toolbar
+    w            - toggle word wrap
+    b            - toggle borders on todo items
     S            - save current todo file
     R            - reload the todo file (discarding changes)
 

@@ -5,14 +5,13 @@
 
 Usage:
   todotxt-machine
-  todotxt-machine [--file FILE] [--config FILE] [--readline-editing-mode=(vi|emacs)]
+  todotxt-machine TODOFILE
+  todotxt-machine [--config FILE]
   todotxt-machine (-h | --help)
   todotxt-machine --version
 
 Options:
-  -f FILE --file=FILE                 Path to your todo.txt file
   -c FILE --config=FILE               Path to your todotxt-machine configuraton file [default: ~/.todotxt-machinerc]
-  --readline-editing-mode=(vi|emacs)  Set readline editing mode [default: vi]
   -h --help                           Show this screen.
   --version                           Show version.
 """
@@ -21,6 +20,7 @@ import sys
 import os
 import random
 
+# import ipdb; # ipdb.set_trace()
 # import pprint
 # pp = pprint.PrettyPrinter(indent=4).pprint
 
@@ -50,9 +50,10 @@ def main():
 
     # Parse command line
     arguments = docopt(__doc__, version=todotxt_machine.version)
+
     # Validate readline editing mode option (docopt doesn't handle this)
-    if arguments['--readline-editing-mode'] not in ['vi', 'emacs']:
-        exit_with_error("--readline-editing-mode must be set to either vi or emacs\n")
+    # if arguments['--readline-editing-mode'] not in ['vi', 'emacs']:
+    #     exit_with_error("--readline-editing-mode must be set to either vi or emacs\n")
 
     # Parse config file
     cfg = config_parser_module.ConfigParser(allow_no_value=True)
@@ -62,10 +63,14 @@ def main():
     # load the colorscheme defined in the user config, else load the default scheme
     colorscheme = ColorScheme(dict( cfg.items('settings') ).get('colorscheme', 'default'), cfg)
 
-    todotxt_file = dict( cfg.items('settings') ).get('file', arguments['--file'])
+    # Load the todo.txt file specified in the [settings] section of the config file
+    # a todo.txt file on the command line takes precedence
+    todotxt_file = dict( cfg.items('settings') ).get('file', arguments['TODOFILE'])
+    if arguments['TODOFILE']:
+        todotxt_file = arguments['TODOFILE']
 
     if todotxt_file is None:
-        exit_with_error("ERROR: No todo file specified. Either specify one using the --file option or set it in your configuration file ({0}).".format(arguments['--config']))
+        exit_with_error("ERROR: No todo file specified. Either specify one as an argument on the command line or set it in your configuration file ({0}).".format(arguments['--config']))
 
     # expand enviroment variables and username, get canonical path
     todotxt_file_path = os.path.realpath(os.path.expanduser(os.path.expandvars(todotxt_file)))
@@ -81,16 +86,14 @@ def main():
             # directory exists, but no todo.txt file - create an empty one
             open(todotxt_file_path, 'a').close()
         else:
-            exit_with_error("ERROR: The directory: '{0}' does not exist\n\nPlease create the directory or specify a different\ntodo.txt file using the --file option.".format(directory))
+            exit_with_error("ERROR: The directory: '{0}' does not exist\n\nPlease create the directory or specify a different\ntodo.txt file on the command line.".format(directory))
 
     try:
         with open(todotxt_file_path, "r") as todotxt_file:
             todos = Todos(todotxt_file.readlines(), todotxt_file_path)
     except:
-        print("ERROR: unable to open {0}\nUse the --file option to specify a path to your todo.txt file\n".format(todotxt_file_path))
+        exit_with_error("ERROR: unable to open {0}\n\nEither specify one as an argument on the command line or set it in your configuration file ({0}).".format(todotxt_file_path, arguments['--config']))
         todos = Todos([], todotxt_file_path)
-
-    # import ipdb; ipdb.set_trace()
 
     view = UrwidUI(todos, colorscheme)
     view.main()

@@ -1,8 +1,8 @@
 [colorscheme-default]
 plain=h250
 selected=,h238
-header=h39,h235
-header_todo_count=h255,h27
+header=h250,h235
+header_todo_count=h39,h235
 header_todo_pending_count=h228,h235
 header_todo_done_count=h156,h235
 header_sorting=h235,h39

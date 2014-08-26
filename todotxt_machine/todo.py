@@ -66,7 +66,7 @@ class Todo:
             "completed_date": self.completed_date
         })
 
-    def highlight(self, line=""):
+    def highlight(self, line="", show_due_date=True, show_contexts=True, show_projects=True):
         colored = self.raw if line == "" else line
         color_list = [colored]
 
@@ -83,11 +83,11 @@ class Todo:
                 color_list = re.split("(" + "|".join([re.escape(w) for w in words_to_be_highlighted]) + ")", self.raw)
                 for index, w in enumerate(color_list):
                    if w in self.contexts:
-                       color_list[index] = ('context', w)
+                       color_list[index] = ('context', w) if show_contexts else ''
                    elif w in self.projects:
-                       color_list[index] = ('project', w)
+                       color_list[index] = ('project', w) if show_projects else ''
                    elif w == "due:"+self.due_date:
-                       color_list[index] = ('due_date', w)
+                       color_list[index] = ('due_date', w) if show_due_date else ''
                    elif w == self.creation_date:
                        color_list[index] = ('creation_date', w)
 
