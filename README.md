@@ -203,7 +203,7 @@ Key Bindings
 
 ### Sorting
 
-    o            - toggle sort order (Unsorted, Ascending, Descending)
+    r            - toggle sort order (Unsorted, Ascending, Descending)
                    sort order is saved on quit
 
 ### Searching

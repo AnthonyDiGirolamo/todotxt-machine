@@ -307,6 +307,19 @@ class UrwidUI:
             # for header_column in self.view[0].header.original_widget.contents:
             #     header_column[0].set_wrap_mode('clip')
 
+    def toggle_sorting(self, button=None):
+        self.delete_todo_widgets()
+        self.sorting.rotate(1)
+        if self.sorting[0] == 'Ascending':
+            self.todos.sorted()
+        elif self.sorting[0] == 'Descending':
+            self.todos.sorted_reverse()
+        elif self.sorting[0] == 'Unsorted':
+            self.todos.sorted_raw()
+        self.reload_todos_from_memory()
+        self.move_selection_top()
+        self.update_header()
+
     def toggle_filter_panel(self, button=None):
         if self.help_panel_is_open:
             self.toggle_help_panel()
@@ -408,18 +421,8 @@ class UrwidUI:
             self.toggle_wrapping()
         elif input is 'b':
             self.toggle_border()
-        elif input is 'o':
-            self.delete_todo_widgets()
-            self.sorting.rotate(1)
-            if self.sorting[0] == 'Ascending':
-                self.todos.sorted()
-            elif self.sorting[0] == 'Descending':
-                self.todos.sorted_reverse()
-            elif self.sorting[0] == 'Unsorted':
-                self.todos.sorted_raw()
-            self.reload_todos_from_memory()
-            self.move_selection_top()
-            self.update_header()
+        elif input is 'r':
+            self.toggle_sorting()
 
         elif input is '/':
             self.start_search()
@@ -524,7 +527,7 @@ class UrwidUI:
 
             urwid.Padding(
             urwid.AttrMap(
-            urwid.Button([('header_file', 'o'), 'rder: '+self.sorting_display[self.sorting[0]]], on_press=self.save_todos),
+            urwid.Button(['o', ('header_file', 'r'), 'der: '+self.sorting_display[self.sorting[0]]], on_press=self.toggle_sorting),
             'header', 'plain_selected'), right=2 ),
 
             urwid.Padding(
@@ -657,7 +660,7 @@ Sorting
                 # [ urwid.Divider(u'─') ] +
 
                 [ urwid.Text("""
-o            - toggle sort order (Unsorted, Ascending, Descending)
+r            - toggle sort order (Unsorted, Ascending, Descending)
                sort order is saved on quit
 """)] +
                 [ urwid.AttrWrap(urwid.Text("""
