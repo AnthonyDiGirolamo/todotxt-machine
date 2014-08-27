@@ -53,15 +53,15 @@ Command Line Options
 
     Usage:
       todotxt-machine
-      todotxt-machine [--file FILE] [--config FILE]
+      todotxt-machine TODOFILE
+      todotxt-machine [--config FILE]
       todotxt-machine (-h | --help)
       todotxt-machine --version
 
     Options:
-      -f FILE --file=FILE                 Path to your todo.txt file
-      -c FILE --config=FILE               Path to your todotxt-machine configuraton file [default: ~/.todotxt-machinerc]
-      -h --help                           Show this screen.
-      --version                           Show version.
+      -c FILE --config=FILE  Path to your todotxt-machine configuraton file [default: ~/.todotxt-machinerc]
+      -h --help              Show this screen.
+      --version              Show version.
 
 Config File
 -----------
@@ -76,7 +76,7 @@ Here is an example config file with a complete colorscheme definition:
     file = ~/todo.txt
     colorscheme = myawesometheme
 
-    [colorscheme-default]
+    [colorscheme-myawesometheme]
     plain=h250
     selected=,h238
     header=h250,h235
@@ -197,6 +197,8 @@ Key Bindings
 Known Issues
 ------------
 
+### OSX
+
 - On Mac OS hitting `ctrl-y` suspends the application. Run `stty dsusp undef` to fix.
 - Mouse interaction doesn't seem to work properly in the Apple Terminal. I would
   recommend using [iTerm2](http://iterm2.com/) or rxvt / xterm in
@@ -208,9 +210,13 @@ Planned Features
 - ~~User defined color themes~~
 - ~~Manual reordering of todo items~~
 - ~~Config file for setting colors and todo.txt file location~~
+- Add vi readline keybindings. urwid doesn't support readline currently. The
+  emacs style bindings currently available are emulated.
 - Support for archiving todos in done.txt
 
 Updates
 -------
+
+
 
 See the [log here](https://github.com/AnthonyDiGirolamo/todotxt-machine/commits/master)

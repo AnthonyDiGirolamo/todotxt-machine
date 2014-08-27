@@ -7,46 +7,22 @@ to `mutt <http://www.mutt.org/>`__. It follows `the todo.txt
 format <https://github.com/ginatrapani/todo.txt-cli/wiki/The-Todo.txt-Format>`__
 and stores todo items in plain text.
 
-Screenshots
------------
+In Action
+---------
 
-View your todos in a list with helpful syntax highlighting:
+.. image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/anmiation1.gif
+   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/anmiation1.gif
 
-.. image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot1.png
-   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot1.png
+Features
+--------
 
-Sort in ascending or descending order, or keep things unsorted:
-
-.. image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot3.png
-   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot3.png
-
-Filter contexts and projects:
-
-.. image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot2.png
-   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot2.png
-
-Search for the todos you want to edit:
-
-.. image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot4.png
-   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot4.png
-
-Search with fuzzy matching:
-
-.. image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot5.png
-   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot5.png
-
-Tab completion of contexts and projects:
-
-.. image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot6.png
-   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot6.png
-
-And some quotes for when you have nothing left to do:
-
-.. image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote1.png
-   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote1.png
-
-.. image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote2.png
-   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote2.png
+-  View your todos in a list with helpful syntax highlighting
+-  Define your own colorschemes
+-  Tab completion of contexts and projects
+-  Filter contexts and projects
+-  Search for the todos you want with fuzzy matching
+-  Sort in ascending or descending order, or keep things unsorted
+-  Clickable UI elements
 
 Requirements
 ------------
@@ -89,15 +65,15 @@ Command Line Options
 
     Usage:
       todotxt-machine
-      todotxt-machine [--file FILE] [--config FILE]
+      todotxt-machine TODOFILE
+      todotxt-machine [--config FILE]
       todotxt-machine (-h | --help)
       todotxt-machine --version
 
     Options:
-      -f FILE --file=FILE                 Path to your todo.txt file
-      -c FILE --config=FILE               Path to your todotxt-machine configuraton file [default: ~/.todotxt-machinerc]
-      -h --help                           Show this screen.
-      --version                           Show version.
+      -c FILE --config=FILE  Path to your todotxt-machine configuraton file [default: ~/.todotxt-machinerc]
+      -h --help              Show this screen.
+      --version              Show version.
 
 Config File
 -----------
@@ -114,7 +90,7 @@ Here is an example config file with a complete colorscheme definition:
     file = ~/todo.txt
     colorscheme = myawesometheme
 
-    [colorscheme-default]
+    [colorscheme-myawesometheme]
     plain=h250
     selected=,h238
     header=h250,h235
@@ -270,6 +246,9 @@ Searching
 Known Issues
 ------------
 
+OSX
+~~~
+
 -  On Mac OS hitting ``ctrl-y`` suspends the application. Run
    ``stty dsusp undef`` to fix.
 -  Mouse interaction doesn't seem to work properly in the Apple
@@ -282,6 +261,8 @@ Planned Features
 -  [STRIKEOUT:User defined color themes]
 -  [STRIKEOUT:Manual reordering of todo items]
 -  [STRIKEOUT:Config file for setting colors and todo.txt file location]
+-  Add vi readline keybindings. urwid doesn't support readline
+   currently. The emacs style bindings currently available are emulated.
 -  Support for archiving todos in done.txt
 
 Updates
@@ -290,3 +271,5 @@ Updates
 See the `log
 here <https://github.com/AnthonyDiGirolamo/todotxt-machine/commits/master>`__
 
+.. |animation1.gif| image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/animation1.gif
+   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/animation1.gif
