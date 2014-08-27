@@ -257,6 +257,15 @@ class ViPile(urwid.Pile):
         self._command_map = command_map
 
 
+class ViColumns(urwid.Columns):
+    def __init__(self, widget_list, dividechars=0, focus_column=None, min_width=1, box_columns=None):
+        super(ViColumns, self).__init__(widget_list, dividechars, focus_column, min_width, box_columns)
+        command_map = urwid.command_map.copy()
+        command_map['L'] = urwid.CURSOR_RIGHT
+        command_map['H'] = urwid.CURSOR_LEFT
+        self._command_map = command_map
+
+
 class UrwidUI:
     def __init__(self, todos, colorscheme):
         self.wrapping    = collections.deque(['clip', 'space'])
@@ -818,7 +827,7 @@ L            - clear search
         self.listbox = urwid.ListBox(urwid.SimpleListWalker(
             [TodoWidget(t, self.colorscheme, self) for t in self.todos.todo_items]
         ))
-        self.view = urwid.Columns([
+        self.view = ViColumns([
             ('weight', 2, urwid.Frame(urwid.AttrMap(self.listbox, 'plain'), header=self.header, footer=self.footer) )
          ])
 
