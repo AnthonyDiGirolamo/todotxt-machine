@@ -13,8 +13,8 @@ __name__ = "todotxt_machine"
 __title__ = "todotxt_machine"
 __author__ = "Anthony DiGirolamo"
 __license__ = "GPL3"
-__version__ = (1, 1, 8)
+__version__ = (2, 0, 0)
 
 version = "%s.%s.%s" % __version__
 
-__all__ = ["cli", "todo", "screen", "terminal_operations", "completer"]
+__all__ = ["cli", "todo", "colorscheme", "urwid_ui", "terminal_operations"]
