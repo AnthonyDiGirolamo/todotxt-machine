@@ -764,8 +764,12 @@ L            - clear search
                 self.active_contexts.remove(data[1])
             else:
                 self.active_projects.remove(data[1])
-        self.filter_todo_list()
-        self.view.set_focus(0)
+
+        if self.active_projects or self.active_contexts:
+            self.filter_todo_list()
+            self.view.set_focus(0)
+        else:
+            self.clear_filters()
 
     def filter_todo_list(self):
         self.delete_todo_widgets()
@@ -782,7 +786,6 @@ L            - clear search
         if self.active_projects:
             for p in new_projects:
                 self.active_projects.append(p)
-
         self.update_filter_panel()
 
     def update_filter_panel(self):
