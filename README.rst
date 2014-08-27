@@ -10,8 +10,8 @@ and stores todo items in plain text.
 In Action
 ---------
 
-.. image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/anmiation1.gif
-   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/anmiation1.gif
+.. image:: https://raw.githubusercontent.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/animation1.gif
+   :target: https://raw.githubusercontent.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/animation1.gif
 
 Features
 --------
@@ -255,6 +255,15 @@ OSX
    Terminal. I would recommend using `iTerm2 <http://iterm2.com/>`__ or
    rxvt / xterm in `XQuartz <http://xquartz.macosforge.org/landing/>`__.
 
+Tmux
+~~~~
+
+-  With tmux the background color in todotxt-machine can sometimes be
+   lost at the end of a line. If this is happening to you set your
+   ``$TERM`` variable to ``screen`` or ``screen-256color``
+
+   export TERM=screen-256color
+
 Planned Features
 ----------------
 
@@ -271,5 +280,3 @@ Updates
 See the `log
 here <https://github.com/AnthonyDiGirolamo/todotxt-machine/commits/master>`__
 
-.. |animation1.gif| image:: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/animation1.gif
-   :target: https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/animation1.gif

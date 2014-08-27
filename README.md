@@ -7,7 +7,7 @@ format](https://github.com/ginatrapani/todo.txt-cli/wiki/The-Todo.txt-Format) an
 In Action
 ---------
 
-[![animation1.gif](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/animation1.gif)](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/animation1.gif)
+[![animation1.gif](https://raw.githubusercontent.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/animation1.gif)](https://raw.githubusercontent.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/animation1.gif)
 
 Features
 --------
@@ -203,6 +203,13 @@ Known Issues
 - Mouse interaction doesn't seem to work properly in the Apple Terminal. I would
   recommend using [iTerm2](http://iterm2.com/) or rxvt / xterm in
   [XQuartz](http://xquartz.macosforge.org/landing/).
+
+### Tmux
+
+- With tmux the background color in todotxt-machine can sometimes be lost at the end of a line. If this is
+  happening to you set your `$TERM` variable to `screen` or `screen-256color`
+
+    export TERM=screen-256color
 
 Planned Features
 ----------------
