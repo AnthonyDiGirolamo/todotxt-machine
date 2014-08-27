@@ -36,7 +36,6 @@ from docopt import docopt
 
 import todotxt_machine
 from todotxt_machine.todo import Todos
-from todotxt_machine.screen import Screen
 from todotxt_machine.urwid_ui import UrwidUI
 from todotxt_machine.colorscheme import ColorScheme
 

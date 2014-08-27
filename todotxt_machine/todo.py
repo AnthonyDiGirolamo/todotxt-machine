@@ -10,24 +10,6 @@ from todotxt_machine.terminal_operations import TerminalOperations
 class Todo:
     """Single Todo item"""
 
-    colors = {
-        "foreground":    TerminalOperations.foreground_color(250),
-        "completed":     TerminalOperations.foreground_color(59),
-        "context":       TerminalOperations.foreground_color(118),
-        "project":       TerminalOperations.foreground_color(161),
-        "creation_date": TerminalOperations.foreground_color(135),
-        "due_date":      TerminalOperations.foreground_color(208),
-        "priority": {
-            "A": TerminalOperations.foreground_color(int("0xa7",16)),
-            "B": TerminalOperations.foreground_color(int("0xad",16)),
-            "C": TerminalOperations.foreground_color(int("0xb9",16)),
-            "D": TerminalOperations.foreground_color(int("0x4d",16)),
-            "E": TerminalOperations.foreground_color(int("0x50",16)),
-            "F": TerminalOperations.foreground_color(int("0x3e",16)),
-        },
-        "search_match": TerminalOperations.foreground_color(222),
-    }
-
     def __init__(self, item, index,
             colored="", priority="", contexts=[], projects=[],
             creation_date="", due_date="", completed_date=""):
