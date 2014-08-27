@@ -251,7 +251,7 @@ class UrwidUI:
         self.wrapping    = collections.deque(['clip', 'space'])
         self.border      = collections.deque(['no border', 'bordered'])
         self.sorting     = collections.deque(["Unsorted", "Descending", "Ascending"])
-        self.sorting_display = {"Unsorted": "none", "Descending": "v", "Ascending": "^"}
+        self.sorting_display = {"Unsorted": "-", "Descending": "v", "Ascending": "^"}
 
         self.todos       = todos
 
@@ -532,7 +532,7 @@ class UrwidUI:
 
             urwid.Padding(
             urwid.AttrMap(
-            urwid.Button([('header_file', 'f'), 'iltering'], on_press=self.toggle_filter_panel),
+            urwid.Button([('header_file', 'f'), 'ilter'], on_press=self.toggle_filter_panel),
             'header', 'plain_selected'), right=2 )
         ] ), 'header')
 

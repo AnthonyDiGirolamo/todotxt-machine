@@ -4,38 +4,21 @@ todotxt-machine
 todotxt-machine is an interactive terminal based [todo.txt](http://todotxt.com/) file editor with an interface similar to [mutt](http://www.mutt.org/). It follows [the todo.txt
 format](https://github.com/ginatrapani/todo.txt-cli/wiki/The-Todo.txt-Format) and stores todo items in plain text.
 
-Screenshots
------------
+In Action
+---------
 
-View your todos in a list with helpful syntax highlighting:
+[![animation1.gif](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/animation1.gif)](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/animation1.gif)
 
-[![screenshot1.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot1.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot1.png)
+Features
+--------
 
-Sort in ascending or descending order, or keep things unsorted:
-
-[![screenshot3.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot3.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot3.png)
-
-Filter contexts and projects:
-
-[![screenshot2.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot2.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot2.png)
-
-Search for the todos you want to edit:
-
-[![screenshot4.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot4.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot4.png)
-
-Search with fuzzy matching:
-
-[![screenshot5.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot5.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot5.png)
-
-Tab completion of contexts and projects:
-
-[![screenshot5.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot6.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot6.png)
-
-And some quotes for when you have nothing left to do:
-
-[![screenshot_quote1.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote1.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote1.png)
-
-[![screenshot_quote2.png](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote2.png)](https://raw.github.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/screenshot_quote2.png)
+- View your todos in a list with helpful syntax highlighting
+- Define your own colorschemes
+- Tab completion of contexts and projects
+- Filter contexts and projects
+- Search for the todos you want with fuzzy matching
+- Sort in ascending or descending order, or keep things unsorted
+- Clickable UI elements
 
 Requirements
 ------------
@@ -54,7 +37,6 @@ Installation
 ### Using [pip](https://pypi.python.org/pypi/pip)
 
     pip install todotxt-machine
-
 
 ### Manually
 
