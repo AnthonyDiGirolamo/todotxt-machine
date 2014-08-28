@@ -153,6 +153,8 @@ Key Bindings
     g, page up   - move selection to the top item
     G, page down - move selection to the bottom item
     left, right  - move selection between todos and filter panel
+    H, L
+    tab          - toggle focus between todos, filter panel, and toolbar
 
 ### Manipulating Todo Items
 
