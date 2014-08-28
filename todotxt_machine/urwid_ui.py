@@ -265,6 +265,13 @@ class ViColumns(urwid.Columns):
         command_map['H'] = urwid.CURSOR_LEFT
         self._command_map = command_map
 
+class ViListBox(urwid.ListBox):
+    def __init__(self, *args, **kwargs):
+        super(ViListBox, self).__init__(*args, **kwargs)
+        command_map = urwid.command_map.copy()
+        command_map['j'] = urwid.CURSOR_DOWN
+        command_map['k'] = urwid.CURSOR_UP
+        self._command_map = command_map
 
 class UrwidUI:
     def __init__(self, todos, colorscheme):
@@ -316,7 +323,7 @@ class UrwidUI:
             self.view.contents.pop()
             self.help_panel_is_open = False
             # set header line to word-wrap contents
-            # for header_column in self.view[0].header.original_widget.contents:
+            # for header_column in self.frame.header.original_widget.contents:
             #     header_column[0].set_wrap_mode('space')
         else:
             self.help_panel = self.create_help_panel()
@@ -324,7 +331,7 @@ class UrwidUI:
             self.view.set_focus(1)
             self.help_panel_is_open = True
             # set header line to clip contents
-            # for header_column in self.view[0].header.original_widget.contents:
+            # for header_column in self.frame.header.original_widget.contents:
             #     header_column[0].set_wrap_mode('clip')
 
     def toggle_sorting(self, button=None):
@@ -398,8 +405,7 @@ class UrwidUI:
         self.update_header("Saved")
 
     def reload_todos_from_file(self, button=None):
-        for i in range(len(self.listbox.body)-1, -1, -1):
-            self.listbox.body.pop(i)
+        self.delete_todo_widgets()
 
         self.todos.reload_from_file()
 
@@ -419,14 +425,33 @@ class UrwidUI:
             self.move_selection_top()
         elif input is 'G':
             self.move_selection_bottom()
-        elif input is 'k':
-            self.move_selection_up()
-        elif input is 'j':
-            self.move_selection_down()
         elif input is 'J':
             self.swap_down()
         elif input is 'K':
             self.swap_up()
+        elif input is 'tab':
+            current_focus = self.frame.get_focus()
+            if current_focus == 'body':
+
+                if self.filter_panel_is_open and self.toolbar_is_open:
+
+                    if self.view.focus_position == 1:
+                        self.view.focus_position = 0
+                        self.frame.focus_position = 'header'
+                    elif self.view.focus_position == 0:
+                        self.view.focus_position = 1
+
+                elif self.toolbar_is_open:
+                    self.frame.focus_position = 'header'
+
+                elif self.filter_panel_is_open:
+                    if self.view.focus_position == 1:
+                        self.view.focus_position = 0
+                    elif self.view.focus_position == 0:
+                        self.view.focus_position = 1
+
+            elif current_focus == 'header':
+                self.frame.focus_position = 'body'
 
         # View options
         elif input in ['h', '?']:
@@ -527,7 +552,7 @@ class UrwidUI:
         return urwid.AttrMap(urwid.Columns( [
             urwid.Padding(
             urwid.AttrMap(
-            urwid.CheckBox([('header_file', 'W'), 'ord Wrap'], state=(self.wrapping[0] == 'space'), on_state_change=self.toggle_wrapping),
+            urwid.CheckBox([('header_file', 'w'), 'ord wrap'], state=(self.wrapping[0] == 'space'), on_state_change=self.toggle_wrapping),
             'header', 'plain_selected'), right=2 ),
 
             urwid.Padding(
@@ -547,7 +572,7 @@ class UrwidUI:
 
             urwid.Padding(
             urwid.AttrMap(
-            urwid.Button(['o', ('header_file', 'r'), 'der: '+self.sorting_display[self.sorting[0]]], on_press=self.toggle_sorting),
+            urwid.Button(['so', ('header_file', 'r'), 't: '+self.sorting_display[self.sorting[0]]], on_press=self.toggle_sorting),
             'header', 'plain_selected'), right=2 ),
 
             urwid.Padding(
@@ -573,11 +598,11 @@ class UrwidUI:
     def start_search(self):
         self.searching = True
         self.update_footer()
-        self.view[0].set_focus('footer')
+        self.frame.set_focus('footer')
 
     def finalize_search(self):
         self.search_string = ''
-        self.view[0].set_focus('body')
+        self.frame.set_focus('body')
         for widget in self.listbox.body:
             widget.update_todo()
 
@@ -608,7 +633,7 @@ class UrwidUI:
         return urwid.AttrMap(
             urwid.LineBox(
             urwid.Padding(
-            urwid.ListBox(
+            ViListBox(
                 [ urwid.Divider() ] +
 
                 [ urwid.AttrWrap(urwid.Text("""
@@ -816,22 +841,25 @@ L            - clear search
 
     def update_header(self, message=""):
         if self.toolbar_is_open:
-            self.view[0].header = urwid.Pile([self.create_header(message), self.create_toolbar()])
+            self.frame.header = urwid.Pile([self.create_header(message), self.create_toolbar()])
         else:
-            self.view[0].header = self.create_header(message)
+            self.frame.header = self.create_header(message)
 
     def update_footer(self, message=""):
-        self.view[0].footer = self.create_footer()
+        self.frame.footer = self.create_footer()
 
     def main(self):
         self.header = self.create_header()
         self.footer = self.create_footer()
 
-        self.listbox = urwid.ListBox(urwid.SimpleListWalker(
+        self.listbox = ViListBox(urwid.SimpleListWalker(
             [TodoWidget(t, self.colorscheme, self) for t in self.todos.todo_items]
         ))
+
+        self.frame  = urwid.Frame(urwid.AttrMap(self.listbox, 'plain'), header=self.header, footer=self.footer)
+
         self.view = ViColumns([
-            ('weight', 2, urwid.Frame(urwid.AttrMap(self.listbox, 'plain'), header=self.header, footer=self.footer) )
+            ('weight', 2, self.frame )
          ])
 
         self.loop = urwid.MainLoop(self.view, self.palette, unhandled_input=self.keystroke)
