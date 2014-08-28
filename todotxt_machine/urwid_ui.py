@@ -246,6 +246,26 @@ class TodoLineBox(urwid.WidgetDecoration, urwid.WidgetWrap):
         urwid.WidgetDecoration.__init__(self, original_widget)
         urwid.WidgetWrap.__init__(self, pile)
 
+
+class ViPile(urwid.Pile):
+    def __init__(self, widget_list, focus_item=None):
+        """Pile with Vi-like navigation."""
+        super(ViPile, self).__init__(widget_list, focus_item)
+        command_map = urwid.command_map.copy()
+        command_map['j'] = urwid.CURSOR_DOWN
+        command_map['k'] = urwid.CURSOR_UP
+        self._command_map = command_map
+
+
+class ViColumns(urwid.Columns):
+    def __init__(self, widget_list, dividechars=0, focus_column=None, min_width=1, box_columns=None):
+        super(ViColumns, self).__init__(widget_list, dividechars, focus_column, min_width, box_columns)
+        command_map = urwid.command_map.copy()
+        command_map['L'] = urwid.CURSOR_RIGHT
+        command_map['H'] = urwid.CURSOR_LEFT
+        self._command_map = command_map
+
+
 class UrwidUI:
     def __init__(self, todos, colorscheme):
         self.wrapping    = collections.deque(['clip', 'space'])
@@ -693,7 +713,7 @@ L            - clear search
                 # [ urwid.Divider() ] +
                 [
                     # urwid.LineBox(
-                    urwid.Pile(
+                    ViPile(
                         [ urwid.Text('Contexts & Projects', align='center') ] +
                         [ urwid.Divider(u'─') ] +
                         [urwid.AttrWrap(urwid.CheckBox(c, state=(c in self.active_contexts), on_state_change=self.checkbox_clicked, user_data=['context', c]), 'context_dialog_color', 'context_selected') for c in self.todos.all_contexts()] +
@@ -810,7 +830,7 @@ L            - clear search
         self.listbox = urwid.ListBox(urwid.SimpleListWalker(
             [TodoWidget(t, self.colorscheme, self) for t in self.todos.todo_items]
         ))
-        self.view = urwid.Columns([
+        self.view = ViColumns([
             ('weight', 2, urwid.Frame(urwid.AttrMap(self.listbox, 'plain'), header=self.header, footer=self.footer) )
          ])
 
