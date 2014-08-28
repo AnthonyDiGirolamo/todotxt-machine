@@ -83,9 +83,7 @@ Here is an example config file with a complete colorscheme definition:
     header_todo_count=h39,h235
     header_todo_pending_count=h228,h235
     header_todo_done_count=h156,h235
-    header_sorting=h235,h39
     header_file=h48,h235
-    dialog_button=h255,h242
     dialog_background=,h248
     dialog_color=,h240
     dialog_shadow=,h238

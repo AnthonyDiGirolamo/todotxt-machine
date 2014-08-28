@@ -729,12 +729,9 @@ L            - clear search
 
     def create_filter_panel(self):
         w = urwid.AttrMap(
-            # urwid.LineBox(
             urwid.Padding(
             urwid.ListBox(
-                # [ urwid.Divider() ] +
                 [
-                    # urwid.LineBox(
                     ViPile(
                         [ urwid.Text('Contexts & Projects', align='center') ] +
                         [ urwid.Divider(u'─') ] +
@@ -743,23 +740,8 @@ L            - clear search
                         [urwid.AttrWrap(urwid.CheckBox(p, state=(p in self.active_projects), on_state_change=self.checkbox_clicked, user_data=['project', p]), 'project_dialog_color', 'project_selected') for p in self.todos.all_projects()] +
                         [ urwid.Divider(u'─') ] +
                         [ urwid.AttrMap(urwid.Button(['Clear ', ('header_file_dialog_color','F'), 'ilters'], on_press=self.clear_filters), 'dialog_color', 'plain_selected') ]
-                    )#, title='Contexts & Projects')
+                    )
                 ] +
-                # [ urwid.Divider() ] +
-                # [
-                #     # urwid.LineBox(
-                #     urwid.Pile(
-                #         [ urwid.Text('Options', align='center') ] +
-                #         [ urwid.AttrMap(urwid.CheckBox('[w] Word Wrap', state=(self.wrapping[0] == 'space'), on_state_change=self.toggle_wrapping), 'dialog_button', 'plain_selected') ] +
-                #         [ urwid.AttrMap(urwid.CheckBox('[b] Borders', state=(self.border[0] == 'bordered'), on_state_change=self.toggle_border), 'dialog_button', 'plain_selected') ] +
-                #         [ urwid.Divider() ] +
-                #         [ urwid.AttrMap(urwid.Button('[R] Reload Todo.txt File', on_press=self.reload_todos_from_file), 'dialog_button', 'plain_selected') ] +
-                #         [ urwid.Divider() ] +
-                #         [ urwid.AttrMap(urwid.Button('[S] Save Todo.txt File', on_press=self.save_todos), 'dialog_button', 'plain_selected') ]
-                #     )#, title='Options')
-                # ] +
-                # [ urwid.Divider() ] +
-                # [ urwid.AttrMap(urwid.Button('[f] Close', on_press=self.toggle_filter_panel), 'dialog_button', 'plain_selected') ] +
                 [ urwid.Divider() ],
             ),
             left=1, right=1, min_width=10 )
