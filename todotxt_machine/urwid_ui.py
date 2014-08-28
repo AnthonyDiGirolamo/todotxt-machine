@@ -471,7 +471,7 @@ class UrwidUI:
 
         elif input is '/':
             self.start_search()
-        elif input is 'L':
+        elif input is 'C':
             if self.searching:
                 self.clear_search_term()
 
@@ -615,7 +615,7 @@ class UrwidUI:
                 (1, urwid.Text('/')),
                 self.search_box,
                 (16, urwid.AttrMap(
-                    urwid.Button(['C', ('header_file', 'L'), 'ear Search'], on_press=self.clear_search_term),
+                    urwid.Button([('header_file', 'C'), 'lear Search'], on_press=self.clear_search_term),
                     'header', 'plain_selected') )
             ]), 'footer')
             urwid.connect_signal(self.search_box, 'change', self.search_box_updated)
@@ -722,7 +722,7 @@ Searching
                 [ urwid.Text("""
 /            - start search
 enter        - finalize search
-L            - clear search
+C            - clear search
 """)]
             ),
             left=1, right=1, min_width=10 ), title='Key Bindings'), 'default')

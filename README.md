@@ -192,7 +192,7 @@ Key Bindings
 
     /            - start search
     enter        - finalize search
-    L            - clear search
+    C            - clear search
 
 Known Issues
 ------------
