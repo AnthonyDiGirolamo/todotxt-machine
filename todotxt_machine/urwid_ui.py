@@ -466,7 +466,7 @@ class UrwidUI:
             self.toggle_wrapping()
         elif input is 'b':
             self.toggle_border()
-        elif input is 'r':
+        elif input is 's':
             self.toggle_sorting()
 
         elif input is '/':
@@ -477,15 +477,10 @@ class UrwidUI:
 
         # Editing
         elif input is 'x':
-            i = focus.todo.raw_index
-
-            # if self.sorting > 0:
-            #     i = self.selected_item
-
-            if self.todos[i].is_complete():
-                self.todos[i].incomplete()
+            if focus.todo.is_complete():
+                focus.todo.incomplete()
             else:
-                self.todos[i].complete()
+                focus.todo.complete()
             focus.update_todo()
             self.update_header()
         elif input is 'D':
@@ -572,7 +567,7 @@ class UrwidUI:
 
             urwid.Padding(
             urwid.AttrMap(
-            urwid.Button(['so', ('header_file', 'r'), 't: '+self.sorting_display[self.sorting[0]]], on_press=self.toggle_sorting),
+            urwid.Button([('header_file', 's'), 'ort: '+self.sorting_display[self.sorting[0]]], on_press=self.toggle_sorting),
             'header', 'plain_selected'), right=2 ),
 
             urwid.Padding(
@@ -707,7 +702,7 @@ Sorting
                 # [ urwid.Divider(u'─') ] +
 
                 [ urwid.Text("""
-r            - toggle sort order (Unsorted, Ascending, Descending)
+s            - toggle sort order (Unsorted, Ascending, Descending)
                sort order is saved on quit
 """)] +
                 [ urwid.AttrWrap(urwid.Text("""

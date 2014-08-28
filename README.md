@@ -187,7 +187,7 @@ Key Bindings
 
 ### Sorting
 
-    r            - toggle sort order (Unsorted, Ascending, Descending)
+    s            - toggle sort order (Unsorted, Ascending, Descending)
                    sort order is saved on quit
 
 ### Searching
