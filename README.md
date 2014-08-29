@@ -88,7 +88,7 @@ Pictured above are the following themes from left to right:
 - `solarized-light`
 - `solarized-dark`
 
-Here is the same config file with a complete colorscheme definition:
+Here is a config file with a complete colorscheme definition:
 
     [settings]
     file = ~/todo.txt
@@ -235,7 +235,6 @@ Planned Features
 - ~~User defined color themes~~
 - ~~Manual reordering of todo items~~
 - ~~Config file for setting colors and todo.txt file location~~
-
 - Custom keybindings
 - Add vi readline keybindings. urwid doesn't support readline currently. The
   emacs style bindings currently available are emulated.
