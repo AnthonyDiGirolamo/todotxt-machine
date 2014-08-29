@@ -68,9 +68,27 @@ Config File
 
 You can tell todotxt-machine to use the same todo.txt file whenever it starts
 up by adding a `file` entry to the ~/.todotxt-machinerc file.  You can also set
-you preferred colorscheme or even define new themes.
+you preferred colorscheme or even define new themes. Here is a short example:
 
-Here is an example config file with a complete colorscheme definition:
+    [settings]
+    file = ~/todo.txt
+    colorscheme = myawesometheme
+
+Color Schemes
+-------------
+
+todotxt-machine currently supports [solarized](http://ethanschoonover.com/solarized) and [base16](https://github.com/chriskempson/base16) colors.
+
+[![todo_colors.png](https://raw.githubusercontent.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/todo_colors.png)](https://raw.githubusercontent.com/AnthonyDiGirolamo/todotxt-machine/master/screenshots/todo_colors.png)
+
+Pictured above are the following themes from left to right:
+
+- `base16-light`
+- `base16-dark`
+- `solarized-light`
+- `solarized-dark`
+
+Here is the same config file with a complete colorscheme definition:
 
     [settings]
     file = ~/todo.txt
@@ -217,6 +235,8 @@ Planned Features
 - ~~User defined color themes~~
 - ~~Manual reordering of todo items~~
 - ~~Config file for setting colors and todo.txt file location~~
+
+- Custom keybindings
 - Add vi readline keybindings. urwid doesn't support readline currently. The
   emacs style bindings currently available are emulated.
 - Support for archiving todos in done.txt
