@@ -57,8 +57,9 @@ setup(name=NAME,
       url="https://github.com/AnthonyDiGirolamo/todotxt-machine",
       description="An interactive terminal based todo.txt file editor with an interface similar to mutt",
       long_description=long_description,
-      keywords="todotxt, todo.txt, todo, terminal, curses, console",
+      keywords="todotxt, todo.txt, todo, terminal, urwid, curses, console",
       packages=find_packages(exclude=["todotxt_machine/test*"]),
+      include_package_data=True,
       entry_points={
           'console_scripts':
             ['todotxt-machine = todotxt_machine.cli:main']
@@ -75,8 +76,7 @@ setup(name=NAME,
           "Programming Language :: Python :: 3.3",
           "Topic :: Office/Business :: Scheduling",
       ],
-      install_requires=['setuptools', 'docopt>=0.6.2'],
+      install_requires=['setuptools', 'docopt>=0.6.2', 'urwid>=1.2.1'],
       tests_require=['pytest'],
       cmdclass = {'test': PyTest},
       )
-

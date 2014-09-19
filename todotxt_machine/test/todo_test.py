@@ -173,7 +173,7 @@ def test_todos_filter_project(todos):
 
 def test_todo_highlight(todos):
     todos.parse_raw_entries(["2013-10-25 This is a +Very @cool test"])
-    assert "\x1b[m" + todos.todo_items[0].colored == "\x1b[m" + "\x1b[38;5;135m2013-10-25\x1b[38;5;250m This is a \x1b[38;5;161m+Very\x1b[38;5;250m \x1b[38;5;118m@cool\x1b[38;5;250m test"
+    assert todos.todo_items[0].colored == ('plain', ['', ('creation_date', '2013-10-25'), ' This is a ', ('project', '+Very'), ' ', ('context', '@cool'), ' test'])
 
 def test_todos_filter_context_and_project(todos):
     assert [t.raw for t in todos.filter_context_and_project("@phone", "+GarageSale")] == [
@@ -397,3 +397,13 @@ def test_todos_search(todos):
     assert [t.search_matches for t in todos.search(".*")]  == [('.dinner*',)]
     assert [t.raw for t in todos.search("{b}")]            == [ "Unpack the guest {bedroom} +Unpacking due:2013-10-20" ]
     assert [t.search_matches for t in todos.search("{b}")] == [('{bedroom}',)]
+
+def test_todos_swap(todos):
+    todos.swap(0, 1)
+    assert [todo.raw_index for todo in todos.todo_items] == [1, 0, 2, 3, 4]
+    todos.swap(3, 2)
+    assert [todo.raw_index for todo in todos.todo_items] == [1, 0, 3, 2, 4]
+    todos.swap(0, -1)
+    assert [todo.raw_index for todo in todos.todo_items] == [4, 0, 3, 2, 1]
+    todos.swap(4, 5)
+    assert [todo.raw_index for todo in todos.todo_items] == [1, 0, 3, 2, 4]

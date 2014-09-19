@@ -2,30 +2,13 @@
 # coding=utf-8
 import re
 import random
+import urwid
 from datetime import date
 
 from todotxt_machine.terminal_operations import TerminalOperations
 
 class Todo:
     """Single Todo item"""
-
-    colors = {
-        "foreground":    TerminalOperations.foreground_color(250),
-        "completed":     TerminalOperations.foreground_color(59),
-        "context":       TerminalOperations.foreground_color(118),
-        "project":       TerminalOperations.foreground_color(161),
-        "creation_date": TerminalOperations.foreground_color(135),
-        "due_date":      TerminalOperations.foreground_color(208),
-        "priority": {
-            "A": TerminalOperations.foreground_color(int("0xa7",16)),
-            "B": TerminalOperations.foreground_color(int("0xad",16)),
-            "C": TerminalOperations.foreground_color(int("0xb9",16)),
-            "D": TerminalOperations.foreground_color(int("0x4d",16)),
-            "E": TerminalOperations.foreground_color(int("0x50",16)),
-            "F": TerminalOperations.foreground_color(int("0x3e",16)),
-        },
-        "search_match": TerminalOperations.foreground_color(222),
-    }
 
     def __init__(self, item, index,
             colored="", priority="", contexts=[], projects=[],
@@ -65,43 +48,47 @@ class Todo:
             "completed_date": self.completed_date
         })
 
-    def highlight(self, line=""):
-        colors = Todo.colors
+    def highlight(self, line="", show_due_date=True, show_contexts=True, show_projects=True):
         colored = self.raw if line == "" else line
+        color_list = [colored]
 
         if colored[:2] == "x ":
-            colored = colors['completed'] + colored
+            color_list = ('completed', color_list)
         else:
-            line_color = colors["foreground"]
-            if self.priority:
-                line_color = colors["priority"][self.priority] if self.priority in "ABCDEF" else colors["foreground"]
-                colored = line_color + colored
+            words_to_be_highlighted = self.contexts + self.projects
+            if self.due_date:
+                words_to_be_highlighted.append("due:"+self.due_date)
+            if self.creation_date:
+                words_to_be_highlighted.append(self.creation_date)
 
-            for context in self.contexts:
-                colored = colored.replace(context, "{0}{1}{2}".format(
-                    colors["context"], context, line_color ))
+            if words_to_be_highlighted:
+                color_list = re.split("(" + "|".join([re.escape(w) for w in words_to_be_highlighted]) + ")", self.raw)
+                for index, w in enumerate(color_list):
+                   if w in self.contexts:
+                       color_list[index] = ('context', w) if show_contexts else ''
+                   elif w in self.projects:
+                       color_list[index] = ('project', w) if show_projects else ''
+                   elif w == "due:"+self.due_date:
+                       color_list[index] = ('due_date', w) if show_due_date else ''
+                   elif w == self.creation_date:
+                       color_list[index] = ('creation_date', w)
 
-            for project in self.projects:
-                colored = colored.replace(project, "{0}{1}{2}".format(
-                    colors["project"], project, line_color ))
+            if self.priority and self.priority in "ABCDEF":
+                color_list = ("priority_{0}".format(self.priority.lower()), color_list)
+            else:
+                color_list = ("plain", color_list)
 
-            colored = colored.replace(self.creation_date, "{0}{1}{2}".format(
-                colors["creation_date"], self.creation_date, line_color), 1)
-
-            colored = colored.replace("due:"+self.due_date, "{0}{1}{2}".format(
-                colors["due_date"], "due:"+self.due_date, line_color), 1)
-
-        return colored
+        return color_list
 
     def highlight_search_matches(self, line=""):
-        colors = Todo.colors
         colored = self.raw if line == "" else line
-        line_color = colors["foreground"]
+        color_list = [colored]
         if self.search_matches:
-            for match in self.search_matches:
-                colored = colored.replace(match, "{0}{1}{2}".format(
-                    colors["search_match"], match, line_color))
-        return colored
+            color_list = re.split("(" + "|".join([re.escape(match) for match in self.search_matches]) + ")", self.raw)
+            for index, w in enumerate(color_list):
+                if w in self.search_matches:
+                    color_list[index] = ('search_match', w)
+        return color_list
 
     def is_complete(self):
         if self.raw[0:2] == "x ":
@@ -144,6 +131,10 @@ class Todos:
         self.file_path = file_path
         self.update(todo_items)
 
+    def reload_from_file(self):
+        with open(self.file_path, "r") as todotxt_file:
+            self.update(todotxt_file.readlines())
+
     def save(self):
         with open(self.file_path, "w") as todotxt_file:
             todotxt_file.write( "\n".join([t.raw for t in self.todo_items]) )
@@ -153,6 +144,7 @@ class Todos:
 
     def append(self, item, add_creation_date=True):
         self.insert(len(self.todo_items), item, add_creation_date)
+        return len(self.todo_items)-1
 
     def insert(self, index, item, add_creation_date=True):
         self.todo_items.insert(index, self.create_todo(item, index) )
@@ -160,6 +152,7 @@ class Todos:
         newtodo = self.todo_items[index]
         if add_creation_date and newtodo.creation_date == "":
             newtodo.add_creation_date()
+        return index
 
     def delete(self, index):
         del self.todo_items[index]
@@ -183,6 +176,18 @@ class Todos:
 
     def __len__(self):
         return len(self.todo_items)
+
+    def pending_items(self):
+        return [t for t in self.todo_items if not t.is_complete()]
+
+    def done_items(self):
+        return [t for t in self.todo_items if t.is_complete()]
+
+    def pending_items_count(self):
+        return len(self.pending_items())
+
+    def done_items_count(self):
+        return len(self.done_items())
 
     def __getitem__(self, index):
         return self.todo_items[index]
@@ -271,6 +276,25 @@ class Todos:
     def sorted_raw(self):
         self.todo_items.sort( key=lambda todo: todo.raw_index )
 
+    def swap(self, first, second):
+        """
+        Swap items indexed by *first* and *second*.
+
+        Out-of-bounds situations are handled by wrapping.
+        """
+        if second < first:
+            second, first = first, second
+
+        n_items = len(self.todo_items)
+
+        if first < 0:
+            first += n_items
+
+        if second >= n_items:
+            second = n_items - second
+
+        self.todo_items[first], self.todo_items[second] = self.todo_items[second], self.todo_items[first]
+
     def filter_context(self, context):
         return [item for item in self.todo_items if context in item.contexts]
 
@@ -279,6 +303,9 @@ class Todos:
 
     def filter_context_and_project(self, context, project):
         return [item for item in self.todo_items if project in item.projects and context in item.contexts]
+
+    def filter_contexts_and_projects(self, contexts, projects):
+        return [item for item in self.todo_items if set(projects) & set(item.projects) or set(contexts) & set(item.contexts)]
 
     def search(self, search_string):
         search_string = re.escape(search_string)
@@ -459,4 +486,3 @@ class Todos:
     @staticmethod
     def quote():
         return Todos.quotes[ random.randrange(len(Todos.quotes)) ]
-
