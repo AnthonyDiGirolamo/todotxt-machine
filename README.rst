@@ -17,6 +17,7 @@ Features
 --------
 
 -  View your todos in a list with helpful syntax highlighting
+-  Archive completed todos
 -  Define your own colorschemes
 -  Tab completion of contexts and projects
 -  Filter contexts and projects
@@ -65,7 +66,7 @@ Command Line Options
 
     Usage:
       todotxt-machine
-      todotxt-machine TODOFILE
+      todotxt-machine TODOFILE [DONEFILE]
       todotxt-machine [--config FILE]
       todotxt-machine (-h | --help)
       todotxt-machine --version
@@ -297,10 +298,10 @@ Planned Features
 -  [STRIKEOUT:User defined color themes]
 -  [STRIKEOUT:Manual reordering of todo items]
 -  [STRIKEOUT:Config file for setting colors and todo.txt file location]
+-  [STRIKEOUT:Support for archiving todos in done.txt]
 -  Custom keybindings
 -  Add vi readline keybindings. urwid doesn't support readline
    currently. The emacs style bindings currently available are emulated.
--  Support for archiving todos in done.txt
 
 Updates
 -------
