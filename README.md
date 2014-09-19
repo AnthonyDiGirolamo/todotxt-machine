@@ -175,6 +175,7 @@ Key Bindings
 ### Manipulating Todo Items
 
     x            - complete / un-complete selected todo item
+    X            - archive completed todo items to done.txt (if specified)
     n            - add a new todo to the end of the list
     o            - add a todo after the selected todo (when not filtering)
     O            - add a todo before the selected todo (when not filtering)
