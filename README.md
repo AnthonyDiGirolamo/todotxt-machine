@@ -66,9 +66,11 @@ Command Line Options
 Config File
 -----------
 
-You can tell todotxt-machine to use the same todo.txt file whenever it starts
-up by adding a `file` entry to the ~/.todotxt-machinerc file.  You can also set
-you preferred colorscheme or even define new themes. Here is a short example:
+You can tell todotxt-machine to use the same todo.txt file whenever it
+starts up by adding a ``file`` entry to the ~/.todotxt-machinerc file.
+If you want to archive completed tasks, you can specify a done.txt file
+using an ``archive`` entry. You can also set you preferred colorscheme or even
+define new themes.  Here is a short example:
 
     [settings]
     file = ~/todo.txt
