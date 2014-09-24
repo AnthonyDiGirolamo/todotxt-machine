@@ -127,8 +127,9 @@ class Todos:
     _priority_regex      = re.compile(r'\(([A-Z])\) ')
     _completed_regex     = re.compile(r'^x (\d\d\d\d-\d\d-\d\d) ')
 
-    def __init__(self, todo_items, file_path):
+    def __init__(self, todo_items, file_path, archive_path):
         self.file_path = file_path
+        self.archive_path = archive_path
         self.update(todo_items)
 
     def reload_from_file(self):
@@ -138,6 +139,19 @@ class Todos:
     def save(self):
         with open(self.file_path, "w") as todotxt_file:
             todotxt_file.write( "\n".join([t.raw for t in self.todo_items]) )
+
+    def archive_done(self):
+        if self.archive_path is not None:
+            with open(self.archive_path, "a") as donetxt_file:
+                done = self.done_items()
+                for t in done:
+                    donetxt_file.write(t.raw + '\n')
+                    self.todo_items.remove(t)
+
+            self.save()
+            return True
+
+        return False
 
     def update(self, todo_items):
         self.parse_raw_entries(todo_items)

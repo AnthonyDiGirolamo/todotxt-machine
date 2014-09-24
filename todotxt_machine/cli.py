@@ -5,7 +5,7 @@
 
 Usage:
   todotxt-machine
-  todotxt-machine TODOFILE
+  todotxt-machine TODOFILE [DONEFILE]
   todotxt-machine [--config FILE]
   todotxt-machine (-h | --help)
   todotxt-machine --version
@@ -44,6 +44,23 @@ def exit_with_error(message):
     print(__doc__.split('\n\n')[1])
     exit(1)
 
+def get_real_path(filename, description):
+    # expand enviroment variables and username, get canonical path
+    file_path = os.path.realpath(os.path.expanduser(os.path.expandvars(filename)))
+
+    if os.path.isdir(file_path):
+        exit_with_error("ERROR: Specified {0} file is a directory.".format(description))
+
+    if not os.path.exists(file_path):
+        directory = os.path.dirname(file_path)
+        if os.path.isdir(directory):
+            # directory exists, but no todo.txt file - create an empty one
+            open(file_path, 'a').close()
+        else:
+            exit_with_error("ERROR: The directory: '{0}' does not exist\n\nPlease create the directory or specify a different\n{0} file on the command line.".format(directory, description))
+
+    return file_path
+
 def main():
     random.seed()
 
@@ -71,28 +88,26 @@ def main():
     if todotxt_file is None:
         exit_with_error("ERROR: No todo file specified. Either specify one as an argument on the command line or set it in your configuration file ({0}).".format(arguments['--config']))
 
-    # expand enviroment variables and username, get canonical path
-    todotxt_file_path = os.path.realpath(os.path.expanduser(os.path.expandvars(todotxt_file)))
+    # Load the done.txt file specified in the [settings] section of the config file
+    # a done.txt file on the command line takes precedence
+    donetxt_file = dict( cfg.items('settings') ).get('archive', arguments['DONEFILE'])
+    if arguments['DONEFILE']:
+        donetxt_file = arguments['DONEFILE']
 
-    # print("Opening: {0}".format(todotxt_file_path))
 
-    if os.path.isdir(todotxt_file_path):
-        exit_with_error("ERROR: Specified todo file is a directory.")
+    todotxt_file_path = get_real_path(todotxt_file, 'todo.txt')
 
-    if not os.path.exists(todotxt_file_path):
-        directory = os.path.dirname(todotxt_file_path)
-        if os.path.isdir(directory):
-            # directory exists, but no todo.txt file - create an empty one
-            open(todotxt_file_path, 'a').close()
-        else:
-            exit_with_error("ERROR: The directory: '{0}' does not exist\n\nPlease create the directory or specify a different\ntodo.txt file on the command line.".format(directory))
+    if donetxt_file is not None:
+        donetxt_file_path = get_real_path(donetxt_file, 'done.txt')
+    else:
+        donetxt_file_path = None
 
     try:
         with open(todotxt_file_path, "r") as todotxt_file:
-            todos = Todos(todotxt_file.readlines(), todotxt_file_path)
+            todos = Todos(todotxt_file.readlines(), todotxt_file_path, donetxt_file_path)
     except:
         exit_with_error("ERROR: unable to open {0}\n\nEither specify one as an argument on the command line or set it in your configuration file ({0}).".format(todotxt_file_path, arguments['--config']))
-        todos = Todos([], todotxt_file_path)
+        todos = Todos([], todotxt_file_path, donetxt_file_path)
 
     view = UrwidUI(todos, colorscheme)
     view.main()

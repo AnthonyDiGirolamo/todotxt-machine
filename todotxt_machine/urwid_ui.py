@@ -404,6 +404,13 @@ class UrwidUI:
         self.todos.save()
         self.update_header("Saved")
 
+    def archive_done_todos(self):
+        if self.todos.archive_done():
+            self.delete_todo_widgets()
+            self.reload_todos_from_memory()
+            self.move_selection_top()
+            self.update_header()
+
     def reload_todos_from_file(self, button=None):
         self.delete_todo_widgets()
 
@@ -483,6 +490,10 @@ class UrwidUI:
                 focus.todo.complete()
             focus.update_todo()
             self.update_header()
+
+        elif input is 'X':
+            self.archive_done_todos()
+
         elif input is 'D':
             if self.todos.todo_items:
                 i = focus.todo.raw_index
@@ -669,6 +680,7 @@ Manipulating Todo Items
 
                 [ urwid.Text("""
 x            - complete / un-complete selected todo item
+X            - archive completed todo items to done.txt (if specified)
 n            - add a new todo to the end of the list
 o            - add a todo after the selected todo (when not filtering)
 O            - add a todo before the selected todo (when not filtering)
