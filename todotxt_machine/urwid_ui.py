@@ -36,6 +36,18 @@ class AdvancedEdit(urwid.Edit):
             key = 'home'
         elif key == 'ctrl e':
             key = 'end'
+        elif key == 'ctrl left':
+            before = self.edit_text[:self.edit_pos]
+            pos = before.rstrip().rfind(" ") + 1
+            self.set_edit_pos(pos)
+        elif key == 'ctrl right':
+            before = self.edit_text[self.edit_pos:]
+            next_word = before.lstrip().find(" ")
+            if next_word != -1:
+                pos = self.edit_pos + before.lstrip().find(" ") + 1
+            else:
+                pos = len(self.edit_text)
+            self.set_edit_pos(pos)
         elif key == 'ctrl k':
             self.parent_ui.yanked_text = self.edit_text[self.edit_pos:]
             self._delete_highlighted()
@@ -52,6 +64,11 @@ class AdvancedEdit(urwid.Edit):
             self.parent_ui.yanked_text = self.edit_text[pos:self.edit_pos]
             self.set_edit_text(before[:pos] + self.edit_text[self.edit_pos:])
             self.set_edit_pos(pos)
+        elif key == 'ctrl u':
+            before = self.edit_text[:self.edit_pos]
+            self.parent_ui.yanked_text = self.edit_text[:self.edit_pos]
+            self.set_edit_text(self.edit_text[self.edit_pos:])
+            self.set_edit_pos(0)
         elif key in ['meta b', 'ctrl b']:
             before = self.edit_text[:self.edit_pos]
             pos = before.rstrip().rfind(" ")+1
