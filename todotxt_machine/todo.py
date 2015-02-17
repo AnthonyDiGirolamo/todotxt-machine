@@ -138,7 +138,8 @@ class Todos:
 
     def save(self):
         with open(self.file_path, "w") as todotxt_file:
-            todotxt_file.write( "\n".join([t.raw for t in self.todo_items]) )
+            for t in self.todo_items:
+                todotxt_file.write(t.raw + '\n')
 
     def archive_done(self):
         if self.archive_path is not None:
