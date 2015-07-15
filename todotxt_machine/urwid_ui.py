@@ -517,7 +517,11 @@ class UrwidUI:
             self.reload_todos_from_file()
 
     def add_new_todo(self, position=False):
-        focus_index = self.listbox.get_focus()[1]
+        if len(self.listbox.body) == 0:
+            position = 'append'
+        else:
+            focus_index = self.listbox.get_focus()[1]
+
         if self.filtering:
             position = 'append'
 
