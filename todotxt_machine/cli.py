@@ -75,12 +75,15 @@ def main():
     # Parse config file
     cfg = config_parser_module.ConfigParser(allow_no_value=True)
     cfg.add_section('settings') # make sure we have a setting section so we can call items('settings') and get an empty dict
+    cfg.add_section('keys')
     cfg.read(os.path.expanduser(arguments['--config']))
 
     # load the colorscheme defined in the user config, else load the default scheme
     colorscheme = ColorScheme(dict( cfg.items('settings') ).get('colorscheme', 'default'), cfg)
 
     keyBindings = KeyBindings()
+    # Load keybindings specified in the [keys] section of the config file
+    userKeys = dict( cfg.items('keys') )
 
 
 
