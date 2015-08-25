@@ -38,6 +38,7 @@ import todotxt_machine
 from todotxt_machine.todo import Todos
 from todotxt_machine.urwid_ui import UrwidUI
 from todotxt_machine.colorscheme import ColorScheme
+from todotxt_machine.keys import KeyBindings
 
 def exit_with_error(message):
     sys.stderr.write(message.strip(' \n')+'\n')
@@ -79,6 +80,10 @@ def main():
     # load the colorscheme defined in the user config, else load the default scheme
     colorscheme = ColorScheme(dict( cfg.items('settings') ).get('colorscheme', 'default'), cfg)
 
+    keyBindings = KeyBindings()
+
+
+
     # Load the todo.txt file specified in the [settings] section of the config file
     # a todo.txt file on the command line takes precedence
     todotxt_file = dict( cfg.items('settings') ).get('file', arguments['TODOFILE'])
@@ -109,7 +114,7 @@ def main():
         exit_with_error("ERROR: unable to open {0}\n\nEither specify one as an argument on the command line or set it in your configuration file ({0}).".format(todotxt_file_path, arguments['--config']))
         todos = Todos([], todotxt_file_path, donetxt_file_path)
 
-    view = UrwidUI(todos, colorscheme)
+    view = UrwidUI(todos, keyBindings, colorscheme)
     view.main()
 
     # print("Writing: {0}".format(todotxt_file_path))
