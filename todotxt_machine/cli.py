@@ -81,9 +81,9 @@ def main():
     # load the colorscheme defined in the user config, else load the default scheme
     colorscheme = ColorScheme(dict( cfg.items('settings') ).get('colorscheme', 'default'), cfg)
 
-    keyBindings = KeyBindings()
     # Load keybindings specified in the [keys] section of the config file
     userKeys = dict( cfg.items('keys') )
+    keyBindings = KeyBindings(userKeys)
 
 
 

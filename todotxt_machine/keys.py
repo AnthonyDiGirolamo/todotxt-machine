@@ -2,9 +2,11 @@
 
 class KeyBindings:
 
+    user_keys = []
     key_bindings = {}
 
-    def __init__(self):
+    def __init__(self, user_keys):
+        self.user_keys = user_keys
         self.fillWithDefault();
 
 
