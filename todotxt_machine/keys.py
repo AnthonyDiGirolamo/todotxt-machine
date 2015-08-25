@@ -9,6 +9,19 @@ class KeyBindings:
         self.user_keys = user_keys
         self.fillWithDefault();
 
+        self.fillWithUserKeys(user_keys)
+
+
+    def fillWithUserKeys(self, users_keys):
+        for bind in users_keys:
+            key = self.userKeysToList(users_keys[bind])
+
+            try:
+                default = self.key_bindings[bind]
+                self.key_bindings[bind] = key
+            except KeyError:
+                print("KeyBind \""+bind+"\" not found")
+
 
     def fillWithDefault(self):
         self.key_bindings['toggle-help'] = ['h', '?']
