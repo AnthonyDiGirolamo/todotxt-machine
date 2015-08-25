@@ -50,3 +50,8 @@ class KeyBindings:
         self.key_bindings['search'] = ['/']
         self.key_bindings['search-end'] = ['enter']
         self.key_bindings['search-clear'] = ['C']
+    def getKeyBinding(self, bind):
+        try:
+            return self.key_bindings[bind]
+        except KeyError:
+            return []
