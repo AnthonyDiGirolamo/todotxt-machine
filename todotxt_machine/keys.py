@@ -55,3 +55,6 @@ class KeyBindings:
             return self.key_bindings[bind]
         except KeyError:
             return []
+
+    def is_binded_to(self, key, bind):
+        return key in self.getKeyBinding(bind)
