@@ -52,6 +52,12 @@ class KeyBindings:
         self.key_bindings['search'] = ['/']
         self.key_bindings['search-end'] = ['enter']
         self.key_bindings['search-clear'] = ['C']
+
+
+    def userKeysToList(self, userKey):
+        return (userKey.replace(' ', '')).split(',')
+
+
     def getKeyBinding(self, bind):
         try:
             return self.key_bindings[bind]
