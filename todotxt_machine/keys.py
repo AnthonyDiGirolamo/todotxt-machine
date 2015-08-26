@@ -68,7 +68,8 @@ class KeyBindings:
 
 
     def userKeysToList(self, userKey):
-        return (userKey.replace(' ', '')).split(',')
+        keys = userKey.split(',')
+        return [key.strip() for key in keys]
 
 
     def getKeyBinding(self, bind):
