@@ -511,7 +511,7 @@ class UrwidUI:
             self.clear_filters()
         elif self.key_bindings.is_binded_to(input, 'toggle-wrapping'):
             self.toggle_wrapping()
-        elif self.key_bindings.is_binded_to(input, 'toggle-toolbar'):
+        elif self.key_bindings.is_binded_to(input, 'toggle-border'):
             self.toggle_border()
         elif self.key_bindings.is_binded_to(input, 'toggle-sorting'):
             self.toggle_sorting()
