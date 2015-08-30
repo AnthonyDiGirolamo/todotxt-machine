@@ -667,6 +667,7 @@ class UrwidUI:
         return w
 
     def create_help_panel(self):
+        key_column_width = 12
         header_highlight = 'plain_selected'
         return urwid.AttrMap(
             urwid.LineBox(
@@ -680,14 +681,22 @@ General
                 # [ urwid.Divider(u'─') ] +
 
                 [ urwid.Text("""
-h, ?         - show / hide this help message
-q            - quit and save
-t            - show / hide toolbar
-w            - toggle word wrap
-b            - toggle borders on todo items
-S            - save current todo file
-R            - reload the todo file (discarding changes)
-""")] +
+{0} - show / hide this help message
+{1} - quit and save
+{2} - show / hide toolbar
+{3} - toggle word wrap
+{4} - toggle borders on todo items
+{5} - save current todo file
+{6} - reload the todo file (discarding changes)
+""".format(
+    self.key_bindings["toggle-help"     ].ljust(key_column_width),
+    self.key_bindings["quit"            ].ljust(key_column_width),
+    self.key_bindings["toggle-toolbar"  ].ljust(key_column_width),
+    self.key_bindings["toggle-wrapping" ].ljust(key_column_width),
+    self.key_bindings["toggle-borders"  ].ljust(key_column_width),
+    self.key_bindings["save"            ].ljust(key_column_width),
+    self.key_bindings["reload"          ].ljust(key_column_width),
+))] +
 
                 [ urwid.AttrWrap(urwid.Text("""
 Movement
@@ -695,15 +704,24 @@ Movement
                 # [ urwid.Divider(u'─') ] +
 
                 [ urwid.Text("""
-mouse click  - select any todo, checkbox or button
-j, down      - move selection down
-k, up        - move selection up
-g, page up   - move selection to the top item
-G, page down - move selection to the bottom item
-left, right  - move selection between todos and filter panel
-H, L
-tab          - toggle focus between todos, filter panel, and toolbar
-""")] +
+{0} - select any todo, checkbox or button
+{1} - move selection down
+{2} - move selection up
+{3} - move selection to the top item
+{4} - move selection to the bottom item
+{5} - move selection between todos and filter panel
+{6}
+{7} - toggle focus between todos, filter panel, and toolbar
+""".format(
+    "mouse click".ljust(key_column_width),
+    self.key_bindings["down"         ].ljust(key_column_width),
+    self.key_bindings["up"           ].ljust(key_column_width),
+    self.key_bindings["top"          ].ljust(key_column_width),
+    self.key_bindings["bottom"       ].ljust(key_column_width),
+    self.key_bindings["left"         ].ljust(key_column_width),
+    self.key_bindings["right"        ].ljust(key_column_width),
+    self.key_bindings["change-focus" ].ljust(key_column_width),
+))] +
 
                 [ urwid.AttrWrap(urwid.Text("""
 Manipulating Todo Items
@@ -711,16 +729,26 @@ Manipulating Todo Items
                 # [ urwid.Divider(u'─') ] +
 
                 [ urwid.Text("""
-x            - complete / un-complete selected todo item
-X            - archive completed todo items to done.txt (if specified)
-n            - add a new todo to the end of the list
-o            - add a todo after the selected todo (when not filtering)
-O            - add a todo before the selected todo (when not filtering)
-enter, A, e  - edit the selected todo
-D            - delete the selected todo
-J            - swap with item below
-K            - swap with item above
-""")] +
+{0} - complete / un-complete selected todo item
+{1} - archive completed todo items to done.txt (if specified)
+{2} - add a new todo to the end of the list
+{3} - add a todo after the selected todo (when not filtering)
+{4} - add a todo before the selected todo (when not filtering)
+{5} - edit the selected todo
+{6} - delete the selected todo
+{7} - swap with item below
+{8} - swap with item above
+""".format(
+    self.key_bindings["toggle-complete" ].ljust(key_column_width),
+    self.key_bindings["archive"         ].ljust(key_column_width),
+    self.key_bindings["append"          ].ljust(key_column_width),
+    self.key_bindings["insert-after"    ].ljust(key_column_width),
+    self.key_bindings["insert-before"   ].ljust(key_column_width),
+    self.key_bindings["edit"            ].ljust(key_column_width),
+    self.key_bindings["delete"          ].ljust(key_column_width),
+    self.key_bindings["swap-down"       ].ljust(key_column_width),
+    self.key_bindings["swap-up"         ].ljust(key_column_width),
+))] +
 
                 [ urwid.AttrWrap(urwid.Text("""
 While Editing a Todo
@@ -728,17 +756,32 @@ While Editing a Todo
                 # [ urwid.Divider(u'─') ] +
 
                 [ urwid.Text("""
-tab          - tab complete contexts and projects
-return       - save todo item
-left, right  - move cursor left and right
-ctrl-b       - move cursor backwards (left) by one word
-ctrl-f       - move cursor forwards (right) by one word
-home, end    - move cursor the beginning or end of the line
-ctrl-a, ctrl-e
-ctrl-w       - delete one word backwards
-ctrl-k       - delete from the cursor to the end of the line
-ctrl-y       - paste last deleted text
-""")] +
+{0} - tab complete contexts and projects
+{1} - save todo item
+{2} - move cursor left and right
+{3}
+{4} - move cursor backwards (left) by one word
+{5} - move cursor forwards (right) by one word
+{6} - move cursor the beginning or end of the line
+{7}
+{8} - delete one word backwards
+{9} - delete from the cursor to the end of the line
+{10} - delete from the cursor to the end of the line
+{11} - paste last deleted text
+""".format(
+    self.key_bindings["edit-complete"         ].ljust(key_column_width),
+    self.key_bindings["edit-save"             ].ljust(key_column_width),
+    self.key_bindings["edit-move-left"        ].ljust(key_column_width),
+    self.key_bindings["edit-move-right"       ].ljust(key_column_width),
+    self.key_bindings["edit-word-left"        ].ljust(key_column_width),
+    self.key_bindings["edit-word-right"       ].ljust(key_column_width),
+    self.key_bindings["edit-home"             ].ljust(key_column_width),
+    self.key_bindings["edit-end"              ].ljust(key_column_width),
+    self.key_bindings["edit-delete-word"      ].ljust(key_column_width),
+    self.key_bindings["edit-delete-end"       ].ljust(key_column_width),
+    self.key_bindings["edit-delete-beginning" ].ljust(key_column_width),
+    self.key_bindings["edit-paste"            ].ljust(key_column_width),
+))] +
 
                 [ urwid.AttrWrap(urwid.Text("""
 Sorting
@@ -746,28 +789,37 @@ Sorting
                 # [ urwid.Divider(u'─') ] +
 
                 [ urwid.Text("""
-s            - toggle sort order (Unsorted, Ascending, Descending)
+{0} - toggle sort order (Unsorted, Ascending, Descending)
                sort order is saved on quit
-""")] +
+""".format(
+    self.key_bindings["toggle-sorting"].ljust(key_column_width),
+))] +
                 [ urwid.AttrWrap(urwid.Text("""
 Filtering
 """.strip()), header_highlight) ] +
                 # [ urwid.Divider(u'─') ] +
 
                 [ urwid.Text("""
-f            - open / close the filtering panel
-F            - clear any active filters
-""")] +
+{0} - open / close the filtering panel
+{1} - clear any active filters
+""".format(
+    self.key_bindings["toggle-filter" ].ljust(key_column_width),
+    self.key_bindings["clear-filter"  ].ljust(key_column_width),
+))] +
                 [ urwid.AttrWrap(urwid.Text("""
 Searching
 """.strip()), header_highlight) ] +
                 # [ urwid.Divider(u'─') ] +
 
                 [ urwid.Text("""
-/            - start search
-enter        - finalize search
-C            - clear search
-""")]
+{0} - start search
+{1} - finalize search
+{2} - clear search
+""".format(
+    self.key_bindings["search"       ].ljust(key_column_width),
+    self.key_bindings["search-end"   ].ljust(key_column_width),
+    self.key_bindings["search-clear" ].ljust(key_column_width),
+))]
             ),
             left=1, right=1, min_width=10 ), title='Key Bindings'), 'default')
 
@@ -890,4 +942,3 @@ C            - clear search
         self.loop = urwid.MainLoop(self.view, self.palette, unhandled_input=self.keystroke)
         self.loop.screen.set_terminal_properties(colors=256)
         self.loop.run()
-
