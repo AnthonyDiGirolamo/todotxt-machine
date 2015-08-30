@@ -13,8 +13,9 @@ class AdvancedEdit(urwid.Edit):
               - C-k: remove everything on the right of the cursor
               - C-w: remove the word on the back"""
 
-    def __init__(self, parent_ui, *args, **kwargs):
+    def __init__(self, parent_ui, key_bindings, *args, **kwargs):
         self.parent_ui = parent_ui
+        self.key_bindings = key_bindings
         super(AdvancedEdit, self).__init__(*args, **kwargs)
 
     def setCompletionMethod(self, callback):
@@ -32,21 +33,21 @@ class AdvancedEdit(urwid.Edit):
 
     def keypress(self, size, key):
         # import ipdb; ipdb.set_trace()
-        if key == 'ctrl a':
+        if self.key_bindings.is_binded_to(key, 'edit-home'):
             key = 'home'
-        elif key == 'ctrl e':
+        elif self.key_bindings.is_binded_to(key, 'edit-end'):
             key = 'end'
-        elif key == 'ctrl k':
+        elif self.key_bindings.is_binded_to(key, 'edit-delete-end'):
             self.parent_ui.yanked_text = self.edit_text[self.edit_pos:]
             self._delete_highlighted()
             self.set_edit_text(self.edit_text[:self.edit_pos])
-        elif key == 'ctrl y':
+        elif self.key_bindings.is_binded_to(key, 'edit-paste'):
             self.set_edit_text(
                 self.edit_text[:self.edit_pos] +
                 self.parent_ui.yanked_text +
                 self.edit_text[self.edit_pos:])
             self.set_edit_pos(self.edit_pos + len(self.parent_ui.yanked_text))
-        elif key == 'ctrl w':
+        elif self.key_bindings.is_binded_to(key, 'edit-delete-word'):
             before = self.edit_text[:self.edit_pos]
             pos = before.rstrip().rfind(" ")+1
             self.parent_ui.yanked_text = self.edit_text[pos:self.edit_pos]
@@ -57,15 +58,15 @@ class AdvancedEdit(urwid.Edit):
             self.parent_ui.yanked_text = self.edit_text[:self.edit_pos]
             self.set_edit_text(self.edit_text[self.edit_pos:])
             self.set_edit_pos(0)
-        elif key in ['meta b', 'ctrl b']:
+        elif self.key_bindings.is_binded_to(key, 'edit-word-left'):
             before = self.edit_text[:self.edit_pos]
             pos = before.rstrip().rfind(" ")+1
             self.set_edit_pos(pos)
-        elif key in ['meta f', 'ctrl f']:
+        elif self.key_bindings.is_binded_to(key, 'edit-word-right'):
             after = self.edit_text[self.edit_pos:]
             pos = after.rstrip().find(" ")+1
             self.set_edit_pos(self.edit_pos+pos)
-        elif key == 'tab':
+        elif self.key_bindings.is_binded_to(key, 'edit-complete'):
             try:
                 before = self.edit_text[:self.edit_pos]
                 if self.completion_data:
@@ -87,19 +88,21 @@ class AdvancedEdit(urwid.Edit):
         return super(AdvancedEdit, self).keypress(size, key)
 
 class SearchWidget(urwid.Edit):
-    def __init__(self, parent_ui, edit_text=""):
+    def __init__(self, parent_ui, key_bindings, edit_text=""):
         self.parent_ui = parent_ui
+        self.key_bindings = key_bindings
         super(SearchWidget, self).__init__(edit_text=edit_text)
 
     def keypress(self, size, key):
-        if key == 'enter':
+        if self.key_bindings.is_binded_to(key, 'search-end'):
             self.parent_ui.finalize_search()
         return super(SearchWidget, self).keypress(size, key)
 
 class TodoWidget(urwid.Button):
-    def __init__(self, todo, colorscheme, parent_ui, editing=False, wrapping='clip', border='no border'):
+    def __init__(self, todo, key_bindings, colorscheme, parent_ui, editing=False, wrapping='clip', border='no border'):
         super(TodoWidget, self).__init__("")
         self.todo        = todo
+        self.key_bindings = key_bindings
         self.wrapping    = wrapping
         self.border      = border
         self.colorscheme = colorscheme
@@ -143,7 +146,7 @@ class TodoWidget(urwid.Button):
 
     def edit_item(self):
         self.editing = True
-        self.edit_widget = AdvancedEdit(self.parent_ui, caption="", edit_text=self.todo.raw)
+        self.edit_widget = AdvancedEdit(self.parent_ui, self.key_bindings, caption="", edit_text=self.todo.raw)
         self.edit_widget.setCompletionMethod(self.completions)
         self._w = urwid.AttrMap(self.edit_widget, 'plain_selected')
 
@@ -174,13 +177,13 @@ class TodoWidget(urwid.Button):
         if self.editing:
             if key in ['down', 'up']:
                 return None # don't pass up or down to the ListBox
-            elif key is 'enter':
+            elif self.key_bindings.is_binded_to(key, 'save-item'):
                 self.save_item()
                 return key
             else:
                 return self._w.keypress(size, key)
         else:
-            if key in ['enter', 'e', 'A']:
+            if self.key_bindings.is_binded_to(key, 'edit'):
                 self.edit_item()
                 return key
             else:
@@ -253,39 +256,59 @@ class TodoLineBox(urwid.WidgetDecoration, urwid.WidgetWrap):
 
 
 class ViPile(urwid.Pile):
-    def __init__(self, widget_list, focus_item=None):
+    def __init__(self, key_bindings, widget_list, focus_item=None):
         """Pile with Vi-like navigation."""
         super(ViPile, self).__init__(widget_list, focus_item)
+
         command_map = urwid.command_map.copy()
-        command_map['j'] = urwid.CURSOR_DOWN
-        command_map['k'] = urwid.CURSOR_UP
+
+        keys = key_bindings.getKeyBinding('up')
+        for key in keys:
+            command_map[key] = urwid.CURSOR_UP
+        keys = key_bindings.getKeyBinding('down')
+        for key in keys:
+            command_map[key] = urwid.CURSOR_DOWN
+
         self._command_map = command_map
 
 
 class ViColumns(urwid.Columns):
-    def __init__(self, widget_list, dividechars=0, focus_column=None, min_width=1, box_columns=None):
+    def __init__(self, key_bindings, widget_list, dividechars=0, focus_column=None, min_width=1, box_columns=None):
         super(ViColumns, self).__init__(widget_list, dividechars, focus_column, min_width, box_columns)
         command_map = urwid.command_map.copy()
-        command_map['L'] = urwid.CURSOR_RIGHT
-        command_map['H'] = urwid.CURSOR_LEFT
+
+        keys = key_bindings.getKeyBinding('right')
+        for key in keys:
+            command_map[key] = urwid.CURSOR_RIGHT
+        keys = key_bindings.getKeyBinding('left')
+        for key in keys:
+            command_map[key] = urwid.CURSOR_LEFT
+
         self._command_map = command_map
 
 class ViListBox(urwid.ListBox):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, key_bindings, *args, **kwargs):
         super(ViListBox, self).__init__(*args, **kwargs)
         command_map = urwid.command_map.copy()
-        command_map['j'] = urwid.CURSOR_DOWN
-        command_map['k'] = urwid.CURSOR_UP
+
+        keys = key_bindings.getKeyBinding('down')
+        for key in keys:
+            command_map[key] = urwid.CURSOR_DOWN
+        keys = key_bindings.getKeyBinding('up')
+        for key in keys:
+            command_map[key] = urwid.CURSOR_UP
+
         self._command_map = command_map
 
 class UrwidUI:
-    def __init__(self, todos, colorscheme):
+    def __init__(self, todos, key_bindings, colorscheme):
         self.wrapping    = collections.deque(['clip', 'space'])
         self.border      = collections.deque(['no border', 'bordered'])
         self.sorting     = collections.deque(["Unsorted", "Descending", "Ascending"])
         self.sorting_display = {"Unsorted": "-", "Descending": "v", "Ascending": "^"}
 
         self.todos       = todos
+        self.key_bindings = key_bindings
 
         self.colorscheme = colorscheme
         self.palette     = [ (key, '', '', '', value['fg'], value['bg']) for key, value in self.colorscheme.colors.items() ]
@@ -422,26 +445,26 @@ class UrwidUI:
         self.todos.reload_from_file()
 
         for t in self.todos.todo_items:
-            self.listbox.body.append( TodoWidget(t, self.colorscheme, self, wrapping=self.wrapping[0], border=self.border[0]) )
+            self.listbox.body.append( TodoWidget(t, self.key_bindings, self.colorscheme, self, wrapping=self.wrapping[0], border=self.border[0]) )
 
         self.update_header("Reloaded")
 
     def keystroke(self, input):
         focus, focus_index = self.listbox.get_focus()
 
-        if input in ('q', 'Q'):
+        if self.key_bindings.is_binded_to(input, 'quit'):
             raise urwid.ExitMainLoop()
 
         # Movement
-        elif input is 'g':
+        elif self.key_bindings.is_binded_to(input, 'top'):
             self.move_selection_top()
-        elif input is 'G':
+        elif self.key_bindings.is_binded_to(input, 'bottom'):
             self.move_selection_bottom()
-        elif input is 'J':
+        elif self.key_bindings.is_binded_to(input, 'swap-down'):
             self.swap_down()
-        elif input is 'K':
+        elif self.key_bindings.is_binded_to(input, 'swap-up'):
             self.swap_up()
-        elif input is 'tab':
+        elif self.key_bindings.is_binded_to(input, 'change-focus'):
             current_focus = self.frame.get_focus()
             if current_focus == 'body':
 
@@ -466,29 +489,29 @@ class UrwidUI:
                 self.frame.focus_position = 'body'
 
         # View options
-        elif input in ['h', '?']:
+        elif self.key_bindings.is_binded_to(input, 'toggle-help'):
             self.toggle_help_panel()
-        elif input is 't':
+        elif self.key_bindings.is_binded_to(input, 'toggle-toolbar'):
             self.toggle_toolbar()
-        elif input is 'f':
+        elif self.key_bindings.is_binded_to(input, 'toggle-filter'):
             self.toggle_filter_panel()
-        elif input is 'F':
+        elif self.key_bindings.is_binded_to(input, 'clear-filter'):
             self.clear_filters()
-        elif input is 'w':
+        elif self.key_bindings.is_binded_to(input, 'toggle-wrapping'):
             self.toggle_wrapping()
-        elif input is 'b':
+        elif self.key_bindings.is_binded_to(input, 'toggle-borders'):
             self.toggle_border()
-        elif input is 's':
+        elif self.key_bindings.is_binded_to(input, 'toggle-sorting'):
             self.toggle_sorting()
 
-        elif input is '/':
+        elif self.key_bindings.is_binded_to(input, 'search'):
             self.start_search()
-        elif input is 'C':
+        elif self.key_bindings.is_binded_to(input, 'search-clear'):
             if self.searching:
                 self.clear_search_term()
 
         # Editing
-        elif input is 'x':
+        elif self.key_bindings.is_binded_to(input, 'toggle-complete'):
             if focus.todo.is_complete():
                 focus.todo.incomplete()
             else:
@@ -496,29 +519,29 @@ class UrwidUI:
             focus.update_todo()
             self.update_header()
 
-        elif input is 'X':
+        elif self.key_bindings.is_binded_to(input, 'archive'):
             self.archive_done_todos()
 
-        elif input is 'D':
+        elif self.key_bindings.is_binded_to(input, 'delete'):
             if self.todos.todo_items:
                 i = focus.todo.raw_index
                 self.todos.delete(i)
                 del self.listbox.body[focus_index]
                 self.update_header()
 
-        elif input is 'n':
+        elif self.key_bindings.is_binded_to(input, 'append'):
             self.add_new_todo(position='append')
-        elif input is 'O':
+        elif self.key_bindings.is_binded_to(input, 'insert-before'):
             self.add_new_todo(position='insert_before')
-        elif input is 'o':
+        elif self.key_bindings.is_binded_to(input, 'insert-after'):
             self.add_new_todo(position='insert_after')
 
         # Save current file
-        elif input is 'S':
+        elif self.key_bindings.is_binded_to(input, 'save'):
             self.save_todos()
 
         # Reload original file
-        elif input is 'R':
+        elif self.key_bindings.is_binded_to(input, 'reload'):
             self.reload_todos_from_file()
 
     def add_new_todo(self, position=False):
@@ -532,14 +555,14 @@ class UrwidUI:
 
         if position is 'append':
             new_index = self.todos.append('', add_creation_date=False)
-            self.listbox.body.append(TodoWidget(self.todos[new_index], self.colorscheme, self, editing=True, wrapping=self.wrapping[0], border=self.border[0]))
+            self.listbox.body.append(TodoWidget(self.todos[new_index], self.key_bindings, self.colorscheme, self, editing=True, wrapping=self.wrapping[0], border=self.border[0]))
         else:
             if position is 'insert_after':
                 new_index = self.todos.insert(focus_index+1, '', add_creation_date=False)
             elif position is 'insert_before':
                 new_index = self.todos.insert(focus_index, '', add_creation_date=False)
 
-            self.listbox.body.insert(new_index, TodoWidget(self.todos[new_index], self.colorscheme, self, editing=True, wrapping=self.wrapping[0], border=self.border[0]))
+            self.listbox.body.insert(new_index, TodoWidget(self.todos[new_index], self.key_bindings, self.colorscheme, self, editing=True, wrapping=self.wrapping[0], border=self.border[0]))
 
         if position:
             if self.filtering:
@@ -608,7 +631,7 @@ class UrwidUI:
             self.searching = True
 
             for t in self.todos.search(search_string):
-                self.listbox.body.append( TodoWidget(t, self.colorscheme, self, wrapping=self.wrapping[0], border=self.border[0]) )
+                self.listbox.body.append( TodoWidget(t, self.key_bindings, self.colorscheme, self, wrapping=self.wrapping[0], border=self.border[0]) )
 
     def start_search(self):
         self.searching = True
@@ -630,7 +653,7 @@ class UrwidUI:
 
     def create_footer(self):
         if self.searching:
-            self.search_box = SearchWidget(self, edit_text=self.search_string)
+            self.search_box = SearchWidget(self, self.key_bindings, edit_text=self.search_string)
             w = urwid.AttrMap(urwid.Columns([
                 (1, urwid.Text('/')),
                 self.search_box,
@@ -648,7 +671,7 @@ class UrwidUI:
         return urwid.AttrMap(
             urwid.LineBox(
             urwid.Padding(
-            ViListBox(
+            ViListBox(self.key_bindings,
                 [ urwid.Divider() ] +
 
                 [ urwid.AttrWrap(urwid.Text("""
@@ -754,6 +777,7 @@ C            - clear search
             urwid.ListBox(
                 [
                     ViPile(
+                        self.key_bindings,
                         [ urwid.Text('Contexts & Projects', align='center') ] +
                         [ urwid.Divider(u'─') ] +
                         [urwid.AttrWrap(urwid.CheckBox(c, state=(c in self.active_contexts), on_state_change=self.checkbox_clicked, user_data=['context', c]), 'context_dialog_color', 'context_selected') for c in self.todos.all_contexts()] +
@@ -786,7 +810,7 @@ C            - clear search
 
     def reload_todos_from_memory(self):
         for t in self.todos.todo_items:
-            self.listbox.body.append( TodoWidget(t, self.colorscheme, self, wrapping=self.wrapping[0], border=self.border[0]) )
+            self.listbox.body.append( TodoWidget(t, self.key_bindings, self.colorscheme, self, wrapping=self.wrapping[0], border=self.border[0]) )
 
     def clear_filters(self, button=None):
         self.delete_todo_widgets()
@@ -820,7 +844,7 @@ C            - clear search
         self.delete_todo_widgets()
 
         for t in self.todos.filter_contexts_and_projects(self.active_contexts, self.active_projects):
-            self.listbox.body.append( TodoWidget(t, self.colorscheme, self, wrapping=self.wrapping[0], border=self.border[0]) )
+            self.listbox.body.append( TodoWidget(t, self.key_bindings, self.colorscheme, self, wrapping=self.wrapping[0], border=self.border[0]) )
 
         self.filtering = True
 
@@ -852,13 +876,14 @@ C            - clear search
         self.header = self.create_header()
         self.footer = self.create_footer()
 
-        self.listbox = ViListBox(urwid.SimpleListWalker(
-            [TodoWidget(t, self.colorscheme, self) for t in self.todos.todo_items]
+        self.listbox = ViListBox(self.key_bindings, urwid.SimpleListWalker(
+            [TodoWidget(t, self.key_bindings, self.colorscheme, self) for t in self.todos.todo_items]
         ))
 
         self.frame  = urwid.Frame(urwid.AttrMap(self.listbox, 'plain'), header=self.header, footer=self.footer)
 
-        self.view = ViColumns([
+        self.view = ViColumns(self.key_bindings,
+        [
             ('weight', 2, self.frame )
          ])
 
