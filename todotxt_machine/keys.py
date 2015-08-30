@@ -1,27 +1,20 @@
-
-
 class KeyBindings:
-
-    user_keys = []
+    user_keys    = []
     key_bindings = {}
 
     def __init__(self, user_keys):
         self.user_keys = user_keys
         self.fillWithDefault();
-
         self.fillWithUserKeys(user_keys)
-
 
     def fillWithUserKeys(self, users_keys):
         for bind in users_keys:
             key = self.userKeysToList(users_keys[bind])
-
             try:
                 default = self.key_bindings[bind]
                 self.key_bindings[bind] = key
             except KeyError:
                 print("KeyBind \""+bind+"\" not found")
-
 
     def fillWithDefault(self):
         self.key_bindings['toggle-help']      = ['h', '?']
@@ -73,7 +66,6 @@ class KeyBindings:
     def userKeysToList(self, userKey):
         keys = userKey.split(',')
         return [key.strip() for key in keys]
-
 
     def getKeyBinding(self, bind):
         try:

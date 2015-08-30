@@ -53,7 +53,7 @@ class AdvancedEdit(urwid.Edit):
             self.parent_ui.yanked_text = self.edit_text[pos:self.edit_pos]
             self.set_edit_text(before[:pos] + self.edit_text[self.edit_pos:])
             self.set_edit_pos(pos)
-        elif key == 'ctrl u':
+        elif self.key_bindings.is_binded_to(key, 'edit-delete-beginning'):
             before = self.edit_text[:self.edit_pos]
             self.parent_ui.yanked_text = self.edit_text[:self.edit_pos]
             self.set_edit_text(self.edit_text[self.edit_pos:])
@@ -766,7 +766,7 @@ While Editing a Todo
 {7}
 {8} - delete one word backwards
 {9} - delete from the cursor to the end of the line
-{10} - delete from the cursor to the end of the line
+{10} - delete from the cursor to the beginning of the line
 {11} - paste last deleted text
 """.format(
     self.key_bindings["edit-complete"         ].ljust(key_column_width),

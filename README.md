@@ -58,17 +58,22 @@ Command Line Options
       todotxt-machine [--config FILE]
       todotxt-machine (-h | --help)
       todotxt-machine --version
+      todotxt-machine --show-default-bindings
 
     Options:
-      -c FILE --config=FILE  Path to your todotxt-machine configuraton file [default: ~/.todotxt-machinerc]
-      -h --help              Show this screen.
-      --version              Show version.
+      -c FILE --config=FILE               Path to your todotxt-machine configuraton file [default: ~/.todotxt-machinerc]
+      -h --help                           Show this screen.
+      --version                           Show version.
+      --show-default-bindings             Show default keybindings in config parser format
+                                          Add this to your config file and edit to customize
+
+
 
 Config File
 -----------
 
 You can tell todotxt-machine to use the same todo.txt file whenever it
-starts up by adding a ``file`` entry to the ~/.todotxt-machinerc file.
+starts up by adding a ``file`` entry to the `~/.todotxt-machinerc` file.
 If you want to archive completed tasks, you can specify a done.txt file
 using an ``archive`` entry. You can also set you preferred colorscheme or even
 define new themes.  Here is a short example:
@@ -155,67 +160,18 @@ Let me know if you make any good colorschemes and I'll add it to the default col
 Key Bindings
 ------------
 
-### General
+You can customize any key binding by adding a setting to the `[keys]` section of
+your config file `~/.todotxt-machinerc`.
 
-    h, ?         - show / hide this help message
-    q            - quit and save
-    t            - show / hide toolbar
-    w            - toggle word wrap
-    b            - toggle borders on todo items
-    S            - save current todo file
-    R            - reload the todo file (discarding changes)
+For a list of the default key bindings run:
 
-### Movement
+    todotxt-machine --show-default-bindings
 
-    mouse click  - select any todo, checkbox or button
-    j, down      - move selection down
-    k, up        - move selection up
-    g, page up   - move selection to the top item
-    G, page down - move selection to the bottom item
-    left, right  - move selection between todos and filter panel
-    H, L
-    tab          - toggle focus between todos, filter panel, and toolbar
+You can easily append this to your config file by running:
 
-### Manipulating Todo Items
+    todotxt-machine --show-default-bindings >> ~/.todotxt-machinerc
 
-    x            - complete / un-complete selected todo item
-    X            - archive completed todo items to done.txt (if specified)
-    n            - add a new todo to the end of the list
-    o            - add a todo after the selected todo (when not filtering)
-    O            - add a todo before the selected todo (when not filtering)
-    enter, A, e  - edit the selected todo
-    D            - delete the selected todo
-    J            - swap with item below
-    K            - swap with item above
-
-### While Editing a Todo
-
-    tab          - tab complete contexts and projects
-    return       - save todo item
-    left, right  - move cursor left and right
-    ctrl-b       - move cursor backwards (left) by one word
-    ctrl-f       - move cursor forwards (right) by one word
-    home, end    - move cursor the beginning or end of the line
-    ctrl-a, ctrl-e
-    ctrl-w       - delete one word backwards
-    ctrl-k       - delete from the cursor to the end of the line
-    ctrl-y       - paste last deleted text
-
-### Filtering
-
-    f            - open the filtering panel
-    F            - clear any active filters
-
-### Sorting
-
-    s            - toggle sort order (Unsorted, Ascending, Descending)
-                   sort order is saved on quit
-
-### Searching
-
-    /            - start search
-    enter        - finalize search
-    C            - clear search
+When you edit a key binding the in app help will reflect it. Hit `h` or `?` to view the help.
 
 Known Issues
 ------------
@@ -241,7 +197,7 @@ Planned Features
 - ~~Manual reordering of todo items~~
 - ~~Config file for setting colors and todo.txt file location~~
 - ~~Support for archiving todos in done.txt~~
-- Custom keybindings
+- ~~Custom keybindings~~
 - Add vi readline keybindings. urwid doesn't support readline currently. The
   emacs style bindings currently available are emulated.
 

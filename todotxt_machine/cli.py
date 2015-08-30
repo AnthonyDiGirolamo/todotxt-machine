@@ -9,11 +9,14 @@ Usage:
   todotxt-machine [--config FILE]
   todotxt-machine (-h | --help)
   todotxt-machine --version
+  todotxt-machine --show-default-bindings
 
 Options:
   -c FILE --config=FILE               Path to your todotxt-machine configuraton file [default: ~/.todotxt-machinerc]
   -h --help                           Show this screen.
   --version                           Show version.
+  --show-default-bindings             Show default keybindings in config parser format
+                                      Add this to your config file and edit to customize
 """
 
 import sys
@@ -74,18 +77,22 @@ def main():
 
     # Parse config file
     cfg = config_parser_module.ConfigParser(allow_no_value=True)
-    cfg.add_section('settings') # make sure we have a setting section so we can call items('settings') and get an empty dict
     cfg.add_section('keys')
-    cfg.read(os.path.expanduser(arguments['--config']))
 
-    # load the colorscheme defined in the user config, else load the default scheme
-    colorscheme = ColorScheme(dict( cfg.items('settings') ).get('colorscheme', 'default'), cfg)
+    if arguments['--show-default-bindings']:
+        cfg._sections['keys'] = KeyBindings({}).key_bindings
+        cfg.write(sys.stdout)
+        exit(0)
+
+    cfg.add_section('settings')
+    cfg.read(os.path.expanduser(arguments['--config']))
 
     # Load keybindings specified in the [keys] section of the config file
     userKeys = dict( cfg.items('keys') )
     keyBindings = KeyBindings(userKeys)
 
-
+    # load the colorscheme defined in the user config, else load the default scheme
+    colorscheme = ColorScheme(dict( cfg.items('settings') ).get('colorscheme', 'default'), cfg)
 
     # Load the todo.txt file specified in the [settings] section of the config file
     # a todo.txt file on the command line takes precedence
