@@ -22,6 +22,7 @@ Options:
 import sys
 import os
 import random
+from collections import OrderedDict
 
 # import ipdb; # ipdb.set_trace()
 # import pprint
@@ -80,7 +81,8 @@ def main():
     cfg.add_section('keys')
 
     if arguments['--show-default-bindings']:
-        cfg._sections['keys'] = KeyBindings({}).key_bindings
+        d = {k: ", ".join(v) for k,v in KeyBindings({}).key_bindings.iteritems()}
+        cfg._sections['keys'] = OrderedDict(sorted(d.items(), key=lambda t: t[0]))
         cfg.write(sys.stdout)
         exit(0)
 
@@ -88,8 +90,7 @@ def main():
     cfg.read(os.path.expanduser(arguments['--config']))
 
     # Load keybindings specified in the [keys] section of the config file
-    userKeys = dict( cfg.items('keys') )
-    keyBindings = KeyBindings(userKeys)
+    keyBindings = KeyBindings(dict( cfg.items('keys') ))
 
     # load the colorscheme defined in the user config, else load the default scheme
     colorscheme = ColorScheme(dict( cfg.items('settings') ).get('colorscheme', 'default'), cfg)
