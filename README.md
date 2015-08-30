@@ -28,7 +28,7 @@ Python 2.7 or Python 3.4 on Linux or Mac OS X.
 
 todotxt-machine 1.1.8 and earlier drew its user interface using only raw
 terminal escape sequences. While this was very educational it was difficult to
-extend with new features. Version 2 and up used
+extend with new features. Version 2 and up uses
 [urwid](http://excess.org/urwid/) to draw its interface and is much more easily
 extendable.
 
