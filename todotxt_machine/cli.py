@@ -81,7 +81,7 @@ def main():
     cfg.add_section('keys')
 
     if arguments['--show-default-bindings']:
-        d = {k: ", ".join(v) for k,v in KeyBindings({}).key_bindings.iteritems()}
+        d = {k: ", ".join(v) for k,v in KeyBindings({}).key_bindings.items()}
         cfg._sections['keys'] = OrderedDict(sorted(d.items(), key=lambda t: t[0]))
         cfg.write(sys.stdout)
         exit(0)
