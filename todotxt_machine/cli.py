@@ -22,7 +22,9 @@ Options:
 import sys
 import os
 import random
+import threading
 from collections import OrderedDict
+from time import sleep
 
 # import ipdb; # ipdb.set_trace()
 # import pprint
@@ -43,6 +45,25 @@ from todotxt_machine.todo import Todos
 from todotxt_machine.urwid_ui import UrwidUI
 from todotxt_machine.colorscheme import ColorScheme
 from todotxt_machine.keys import KeyBindings
+
+lock = threading.Lock()
+
+def autosave():
+    if (disable_autosave):
+        return
+
+    # print "autosaving..."
+    with lock:
+        view.todos.save()
+
+    # Check the flag once again, as the flag may have been set
+    # after the last check but before this statement is executed.
+    if (disable_autosave == False):
+        global timer
+        timer = threading.Timer(30.0, autosave)
+        timer.start()
+
+timer = threading.Timer(30.0, autosave)
 
 def exit_with_error(message):
     sys.stderr.write(message.strip(' \n')+'\n')
@@ -125,11 +146,23 @@ def main():
         exit_with_error("ERROR: unable to open {0}\n\nEither specify one as an argument on the command line or set it in your configuration file ({0}).".format(todotxt_file_path, arguments['--config']))
         todos = Todos([], todotxt_file_path, donetxt_file_path)
 
+    global view
     view = UrwidUI(todos, keyBindings, colorscheme)
+
+    global disable_autosave
+    disable_autosave = False
+    timer.start()
+
     view.main()
 
-    # print("Writing: {0}".format(todotxt_file_path))
-    view.todos.save()
+    # Shut down the auto-saving thread.
+    disable_autosave = True
+    timer.cancel()
+
+    with lock:
+        # print("Writing: {0}".format(todotxt_file_path))
+        view.todos.save()
+
     exit(0)
 
 if __name__ == '__main__':
