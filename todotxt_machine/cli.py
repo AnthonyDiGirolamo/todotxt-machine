@@ -4,9 +4,7 @@
 """todotxt-machine
 
 Usage:
-  todotxt-machine
-  todotxt-machine TODOFILE [DONEFILE]
-  todotxt-machine [--config FILE]
+  todotxt-machine [--config FILE] [TODOFILE] [DONEFILE]
   todotxt-machine (-h | --help)
   todotxt-machine --version
   todotxt-machine --show-default-bindings
@@ -27,6 +25,7 @@ from collections import OrderedDict
 from time import sleep
 
 # import ipdb; # ipdb.set_trace()
+
 # import pprint
 # pp = pprint.PrettyPrinter(indent=4).pprint
 
@@ -46,19 +45,20 @@ from todotxt_machine.urwid_ui import UrwidUI
 from todotxt_machine.colorscheme import ColorScheme
 from todotxt_machine.keys import KeyBindings
 
-lock = threading.Lock()
+autosave_lock = threading.Lock()
 
 def autosave():
-    if (disable_autosave):
+    if not enable_autosave:
         return
 
     # print "autosaving..."
-    with lock:
+    with autosave_lock:
+        # view.save_todos() # TODO: Saved message isn't displayed, need to force redraw urwid ui?
         view.todos.save()
 
     # Check the flag once again, as the flag may have been set
     # after the last check but before this statement is executed.
-    if (disable_autosave == False):
+    if enable_autosave:
         global timer
         timer = threading.Timer(30.0, autosave)
         timer.start()
@@ -92,6 +92,7 @@ def main():
 
     # Parse command line
     arguments = docopt(__doc__, version=todotxt_machine.version)
+    # pp(arguments) ; exit(0)
 
     # Validate readline editing mode option (docopt doesn't handle this)
     # if arguments['--readline-editing-mode'] not in ['vi', 'emacs']:
@@ -115,6 +116,16 @@ def main():
 
     # load the colorscheme defined in the user config, else load the default scheme
     colorscheme = ColorScheme(dict( cfg.items('settings') ).get('colorscheme', 'default'), cfg)
+
+    # Get auto-saving setting (defaults to False)
+    global enable_autosave
+    enable_autosave = dict( cfg.items('settings')).get('auto-save', False)
+    if (type(enable_autosave) != bool and
+        (str(enable_autosave).lower() == 'true' or
+         str(enable_autosave).lower() == '1')):
+        enable_autosave = True
+    else:
+        enable_autosave = False
 
     # Load the todo.txt file specified in the [settings] section of the config file
     # a todo.txt file on the command line takes precedence
@@ -149,17 +160,18 @@ def main():
     global view
     view = UrwidUI(todos, keyBindings, colorscheme)
 
-    global disable_autosave
-    disable_autosave = False
     timer.start()
 
-    view.main()
+    view.main() # start up the urwid UI event loop
+
+    # UI is now shut down
 
     # Shut down the auto-saving thread.
-    disable_autosave = True
+    enable_autosave = False
     timer.cancel()
 
-    with lock:
+    # Final save
+    with autosave_lock:
         # print("Writing: {0}".format(todotxt_file_path))
         view.todos.save()
 

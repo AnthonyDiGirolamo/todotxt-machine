@@ -93,6 +93,7 @@ colorscheme or even define new themes. Here is a short example:
     [settings]
     file = ~/todo.txt
     archive = ~/done.txt
+    auto-save = True
     colorscheme = myawesometheme
 
 Color Schemes
