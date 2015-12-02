@@ -34,9 +34,9 @@ class AdvancedEdit(urwid.Edit):
     def keypress(self, size, key):
         # import ipdb; ipdb.set_trace()
         if self.key_bindings.is_binded_to(key, 'edit-home'):
-            self.set_edit_pos(0)
+            self.set_edit_pos(0) # move to the beginning of the line
         elif self.key_bindings.is_binded_to(key, 'edit-end'):
-            sef.set_edit_pos(len(self.edit_text) - 1)
+            self.set_edit_pos(len(self.edit_text) - 1) # move to the end of the line
         elif self.key_bindings.is_binded_to(key, 'edit-delete-end'):
             self.parent_ui.yanked_text = self.edit_text[self.edit_pos:]
             self._delete_highlighted()
