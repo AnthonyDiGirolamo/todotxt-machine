@@ -94,6 +94,10 @@ colorscheme or even define new themes. Here is a short example:
     file = ~/todo.txt
     archive = ~/done.txt
     auto-save = True
+    show-toolbar = False
+    show-filter-panel = False
+    enable-borders = False
+    enable-word-wrap = True
     colorscheme = myawesometheme
 
 Color Schemes

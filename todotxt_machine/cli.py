@@ -162,12 +162,21 @@ def main():
         exit_with_error("ERROR: unable to open {0}\n\nEither specify one as an argument on the command line or set it in your configuration file ({0}).".format(todotxt_file_path, arguments['--config']))
         todos = Todos([], todotxt_file_path, donetxt_file_path)
 
+    show_toolbar      = get_boolean_config_option(cfg, 'settings', 'show-toolbar')
+    show_filter_panel = get_boolean_config_option(cfg, 'settings', 'show-filter-panel')
+    enable_borders    = get_boolean_config_option(cfg, 'settings', 'enable-borders')
+    enable_word_wrap  = get_boolean_config_option(cfg, 'settings', 'enable-word-wrap')
+
     global view
     view = UrwidUI(todos, keyBindings, colorscheme)
 
     timer.start()
 
-    view.main() # start up the urwid UI event loop
+    view.main( # start up the urwid UI event loop
+        enable_borders,
+        enable_word_wrap,
+        show_toolbar,
+        show_filter_panel)
 
     # UI is now shut down
 

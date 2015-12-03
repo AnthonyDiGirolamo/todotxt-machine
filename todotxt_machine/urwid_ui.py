@@ -924,7 +924,12 @@ Searching
     def update_footer(self, message=""):
         self.frame.footer = self.create_footer()
 
-    def main(self):
+    def main(self,
+             enable_borders=False,
+             enable_word_wrap=False,
+             show_toolbar=False,
+             show_filter_panel=False):
+
         self.header = self.create_header()
         self.footer = self.create_footer()
 
@@ -941,4 +946,14 @@ Searching
 
         self.loop = urwid.MainLoop(self.view, self.palette, unhandled_input=self.keystroke)
         self.loop.screen.set_terminal_properties(colors=256)
+
+        if enable_borders:
+            self.toggle_border()
+        if enable_word_wrap:
+            self.toggle_wrapping()
+        if show_toolbar:
+            self.toggle_toolbar()
+        if show_filter_panel:
+            self.toggle_filter_panel()
+
         self.loop.run()
