@@ -87,6 +87,17 @@ def get_real_path(filename, description):
 
     return file_path
 
+def get_boolean_config_option(cfg, section, option, default=False):
+    value = dict(cfg.items(section)).get(option, default)
+    if (type(value) != bool and
+        (str(value).lower() == 'true' or
+         str(value).lower() == '1')):
+        value = True
+    else:
+        # If present but is not True or 1
+        value = False
+    return value
+
 def main():
     random.seed()
 
@@ -119,13 +130,7 @@ def main():
 
     # Get auto-saving setting (defaults to False)
     global enable_autosave
-    enable_autosave = dict( cfg.items('settings')).get('auto-save', False)
-    if (type(enable_autosave) != bool and
-        (str(enable_autosave).lower() == 'true' or
-         str(enable_autosave).lower() == '1')):
-        enable_autosave = True
-    else:
-        enable_autosave = False
+    enable_autosave = get_boolean_config_option(cfg, 'settings', 'auto-save', default=False)
 
     # Load the todo.txt file specified in the [settings] section of the config file
     # a todo.txt file on the command line takes precedence
