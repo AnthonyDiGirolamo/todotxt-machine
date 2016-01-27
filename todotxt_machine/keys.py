@@ -36,6 +36,8 @@ class KeyBindings:
         self.key_bindings['append']           = ['n']
         self.key_bindings['insert-after']     = ['o']
         self.key_bindings['insert-before']    = ['O']
+        self.key_bindings['priority-up']      = ['p']
+        self.key_bindings['priority-down']    = ['P']
         self.key_bindings['save-item']        = ['enter']
         self.key_bindings['edit']             = ['enter', 'A', 'e']
         self.key_bindings['delete']           = ['D']
