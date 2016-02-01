@@ -7,45 +7,46 @@ from datetime import date
 
 from todotxt_machine.terminal_operations import TerminalOperations
 
+
 class Todo:
     """Single Todo item"""
     _priority_regex         = re.compile(r'\(([A-Z])\) ')
 
     def __init__(self, item, index,
-            colored="", priority="", contexts=[], projects=[],
-            creation_date="", due_date="", completed_date=""):
-        self.raw            = item.strip()
-        self.raw_index      = index
-        self.creation_date  = creation_date
-        self.priority       = priority
-        self.contexts       = contexts
-        self.projects       = projects
-        self.due_date       = due_date
+                 colored="", priority="", contexts=[], projects=[],
+                 creation_date="", due_date="", completed_date=""):
+        self.raw = item.strip()
+        self.raw_index = index
+        self.creation_date = creation_date
+        self.priority = priority
+        self.contexts = contexts
+        self.projects = projects
+        self.due_date = due_date
         self.completed_date = completed_date
-        self.colored        = self.highlight()
+        self.colored = self.highlight()
         # self.colored_length = TerminalOperations.length_ignoring_escapes(self.colored)
 
     def update(self, item):
-        self.raw            = item.strip()
-        self.priority       = Todos.priority(item)
-        self.contexts       = Todos.contexts(item)
-        self.projects       = Todos.projects(item)
-        self.creation_date  = Todos.creation_date(item)
-        self.due_date       = Todos.due_date(item)
+        self.raw = item.strip()
+        self.priority = Todos.priority(item)
+        self.contexts = Todos.contexts(item)
+        self.projects = Todos.projects(item)
+        self.creation_date = Todos.creation_date(item)
+        self.due_date = Todos.due_date(item)
         self.completed_date = Todos.completed_date(item)
-        self.colored        = self.highlight()
+        self.colored = self.highlight()
         # self.colored_length = TerminalOperations.length_ignoring_escapes(self.colored)
 
     def __repr__(self):
         return repr({
-            "raw":            self.raw,
-            "colored":        self.colored,
-            "raw_index":      self.raw_index,
-            "priority":       self.priority,
-            "contexts":       self.contexts,
-            "projects":       self.projects,
-            "creation_date":  self.creation_date,
-            "due_date":       self.due_date,
+            "raw": self.raw,
+            "colored": self.colored,
+            "raw_index": self.raw_index,
+            "priority": self.priority,
+            "contexts": self.contexts,
+            "projects": self.projects,
+            "creation_date": self.creation_date,
+            "due_date": self.due_date,
             "completed_date": self.completed_date
         })
 
@@ -58,7 +59,7 @@ class Todo:
         else:
             words_to_be_highlighted = self.contexts + self.projects
             if self.due_date:
-                words_to_be_highlighted.append("due:"+self.due_date)
+                words_to_be_highlighted.append("due:" + self.due_date)
             if self.creation_date:
                 words_to_be_highlighted.append(self.creation_date)
 
@@ -69,7 +70,7 @@ class Todo:
                         color_list[index] = ('context', w) if show_contexts else ''
                     elif w in self.projects:
                         color_list[index] = ('project', w) if show_projects else ''
-                    elif w == "due:"+self.due_date:
+                    elif w == "due:" + self.due_date:
                         color_list[index] = ('due_date', w) if show_due_date else ''
                     elif w == self.creation_date:
                         color_list[index] = ('creation_date', w)
@@ -131,15 +132,15 @@ class Todo:
 
 class Todos:
     """Todo items"""
-    _context_regex       = re.compile(r'(?:^|\s+)(@\S+)')
-    _project_regex       = re.compile(r'(?:^|\s+)(\+\S+)')
+    _context_regex = re.compile(r'(?:^|\s+)(@\S+)')
+    _project_regex = re.compile(r'(?:^|\s+)(\+\S+)')
     _creation_date_regex = re.compile(r'^'
                                       r'(?:x \d\d\d\d-\d\d-\d\d )?'
                                       r'(?:\(\w\) )?'
                                       r'(\d\d\d\d-\d\d-\d\d)\s*')
-    _due_date_regex      = re.compile(r'\s*due:(\d\d\d\d-\d\d-\d\d)\s*')
-    _priority_regex      = re.compile(r'\(([A-Z])\) ')
-    _completed_regex     = re.compile(r'^x (\d\d\d\d-\d\d-\d\d) ')
+    _due_date_regex = re.compile(r'\s*due:(\d\d\d\d-\d\d-\d\d)\s*')
+    _priority_regex = re.compile(r'\(([A-Z])\) ')
+    _completed_regex = re.compile(r'^x (\d\d\d\d-\d\d-\d\d) ')
 
     def __init__(self, todo_items, file_path, archive_path):
         self.file_path = file_path
@@ -173,10 +174,10 @@ class Todos:
 
     def append(self, item, add_creation_date=True):
         self.insert(len(self.todo_items), item, add_creation_date)
-        return len(self.todo_items)-1
+        return len(self.todo_items) - 1
 
     def insert(self, index, item, add_creation_date=True):
-        self.todo_items.insert(index, self.create_todo(item, index) )
+        self.todo_items.insert(index, self.create_todo(item, index))
         self.update_raw_indices()
         newtodo = self.todo_items[index]
         if add_creation_date and newtodo.creation_date == "":
@@ -222,16 +223,16 @@ class Todos:
         return self.todo_items[index]
 
     def __repr__(self):
-        return repr( [i for i in self.todo_items] )
+        return repr([i for i in self.todo_items])
 
     def create_todo(self, todo, index):
         return Todo(todo, index,
-            contexts       = Todos.contexts(todo),
-            projects       = Todos.projects(todo),
-            priority       = Todos.priority(todo),
-            creation_date  = Todos.creation_date(todo),
-            due_date       = Todos.due_date(todo),
-            completed_date = Todos.completed_date(todo))
+                    contexts=Todos.contexts(todo),
+                    projects=Todos.projects(todo),
+                    priority=Todos.priority(todo),
+                    creation_date=Todos.creation_date(todo),
+                    due_date=Todos.due_date(todo),
+                    completed_date=Todos.completed_date(todo))
 
     def parse_raw_entries(self, raw_items):
         self.todo_items = [
@@ -244,11 +245,11 @@ class Todos:
 
     @staticmethod
     def contexts(item):
-        return sorted( Todos._context_regex.findall(item) )
+        return sorted(Todos._context_regex.findall(item))
 
     @staticmethod
     def projects(item):
-        return sorted( Todos._project_regex.findall(item) )
+        return sorted(Todos._project_regex.findall(item))
 
     @staticmethod
     def creation_date(item):
@@ -285,7 +286,7 @@ class Todos:
         # Join all items and use one regex.findall
         # return sorted(set( Todos._context_regex.findall(" ".join(self.raw_items))))
 
-        return sorted(set( [context for todo in self.todo_items for context in todo.contexts] ))
+        return sorted(set([context for todo in self.todo_items for context in todo.contexts]))
 
     def all_projects(self):
         # List comprehension
@@ -294,16 +295,16 @@ class Todos:
         # Join all items and use one regex.findall
         # return sorted(set( Todos._project_regex.findall(" ".join(self.raw_items))))
 
-        return sorted(set([project for todo in self.todo_items for project in todo.projects] ))
+        return sorted(set([project for todo in self.todo_items for project in todo.projects]))
 
     def sorted(self, reversed_sort=False):
-        self.todo_items.sort( key=lambda todo: todo.raw, reverse=reversed_sort )
+        self.todo_items.sort(key=lambda todo: todo.raw, reverse=reversed_sort)
 
     def sorted_reverse(self):
         self.sorted(reversed_sort=True)
 
     def sorted_raw(self):
-        self.todo_items.sort( key=lambda todo: todo.raw_index )
+        self.todo_items.sort(key=lambda todo: todo.raw_index)
 
     def swap(self, first, second):
         """
@@ -344,11 +345,11 @@ class Todos:
         for index, substring in enumerate(substrings):
             s = ".*?".join(substring)
             # s.replace(" .*?", " ")
-            if 0 < index < len(substrings)-1:
+            if 0 < index < len(substrings) - 1:
                 s += ".*?"
             ss.append(s)
         # print(repr(ss))
-        search_string_regex  = '^.*('
+        search_string_regex = '^.*('
         search_string_regex += "\\".join(ss)
         search_string_regex += ').*'
         # print(search_string_regex)
@@ -514,4 +515,4 @@ class Todos:
 
     @staticmethod
     def quote():
-        return Todos.quotes[ random.randrange(len(Todos.quotes)) ]
+        return Todos.quotes[random.randrange(len(Todos.quotes))]

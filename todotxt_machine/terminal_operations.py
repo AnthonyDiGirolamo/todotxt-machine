@@ -10,11 +10,12 @@ import re
 import fcntl
 import struct
 
+
 class TerminalOperations:
     """For interacting with the terminal"""
 
     _escape_sequence_regex = re.compile(r'\x1b\[[0-9;]*m')
-    _screen_size_regex     = re.compile(r'\[8;(.*);(.*)t')
+    _screen_size_regex = re.compile(r'\[8;(.*);(.*)t')
 
     @staticmethod
     def foreground_color(index):
@@ -52,10 +53,10 @@ class TerminalOperations:
     def screen_size(self, use_tput=False):
         # Method: Usint tput
         if use_tput:
-            return ( int(subprocess.check_output(["tput", "cols"])), int(subprocess.check_output(["tput", "lines"])) )
+            return (int(subprocess.check_output(["tput", "cols"])), int(subprocess.check_output(["tput", "lines"])))
         else:
             # this is how urwid does it in raw_terminal display mode
-            buf = fcntl.ioctl(0, termios.TIOCGWINSZ, ' '*4)
+            buf = fcntl.ioctl(0, termios.TIOCGWINSZ, ' ' * 4)
             y, x = struct.unpack('hh', buf)
             return x, y
 
@@ -84,7 +85,6 @@ class TerminalOperations:
 
         # Method using curses module
         # return self.window.getmaxyx()
-
 
     def move_cursor(self, row, column):
         self.output("\x1B[{0};{1}H".format(row, column))
@@ -158,4 +158,3 @@ class TerminalOperations:
 # ensure
 #   `stty #{state}`
 # end
-
