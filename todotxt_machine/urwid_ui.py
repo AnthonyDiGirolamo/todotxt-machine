@@ -72,9 +72,9 @@ class AdvancedEdit(urwid.Edit):
             try:
                 before = self.edit_text[:self.edit_pos]
                 if self.completion_data:
-                    if (not self.completion_data['completed']
-                            or self.completion_data['position'] != self.edit_pos
-                            or not before.endswith(self.completion_data['completed'])):
+                    if (not self.completion_data['completed'] or
+                            self.completion_data['position'] != self.edit_pos or
+                            not before.endswith(self.completion_data['completed'])):
                         self.completion_data.clear()
                     else:
                         before = before[:-len(self.completion_data['completed'])]
@@ -655,7 +655,6 @@ class UrwidUI:
         ]), 'header')
 
     def search_box_updated(self, edit_widget, new_contents):
-        old_contents = edit_widget.edit_text
         self.search_string = new_contents
         self.search_todo_list(self.search_string)
 
@@ -710,12 +709,12 @@ class UrwidUI:
                     ViListBox(self.key_bindings,
                               [urwid.Divider()] +
 
-                              [ urwid.AttrWrap(urwid.Text("""
+                              [urwid.AttrWrap(urwid.Text("""
 General
-""".strip()), header_highlight) ] +
+""".strip()), header_highlight)] +
                         # [ urwid.Divider(u'─') ] +
 
-                        [ urwid.Text("""
+                        [urwid.Text("""
 {0} - show / hide this help message
 {1} - quit and save
 {2} - show / hide toolbar
@@ -733,12 +732,12 @@ General
                             self.key_bindings["reload"].ljust(key_column_width),
                         ))] +
 
-                        [ urwid.AttrWrap(urwid.Text("""
+                        [urwid.AttrWrap(urwid.Text("""
 Movement
-""".strip()), header_highlight) ] +
+""".strip()), header_highlight)] +
                         # [ urwid.Divider(u'─') ] +
 
-                        [ urwid.Text("""
+                        [urwid.Text("""
 {0} - select any todo, checkbox or button
 {1} - move selection down
 {2} - move selection up
@@ -758,12 +757,12 @@ Movement
                             self.key_bindings["change-focus"].ljust(key_column_width),
                         ))] +
 
-                        [ urwid.AttrWrap(urwid.Text("""
+                        [urwid.AttrWrap(urwid.Text("""
 Manipulating Todo Items
-""".strip()), header_highlight) ] +
+""".strip()), header_highlight)] +
                         # [ urwid.Divider(u'─') ] +
 
-                        [ urwid.Text("""
+                        [urwid.Text("""
 {0} - complete / un-complete selected todo item
 {1} - archive completed todo items to done.txt (if specified)
 {2} - add a new todo to the end of the list
@@ -785,12 +784,12 @@ Manipulating Todo Items
                             self.key_bindings["swap-up"].ljust(key_column_width),
                         ))] +
 
-                        [ urwid.AttrWrap(urwid.Text("""
+                        [urwid.AttrWrap(urwid.Text("""
 While Editing a Todo
-""".strip()), header_highlight) ] +
+""".strip()), header_highlight)] +
                         # [ urwid.Divider(u'─') ] +
 
-                        [ urwid.Text("""
+                        [urwid.Text("""
 {0} - tab complete contexts and projects
 {1} - save todo item
 {2} - move cursor left and right
@@ -818,35 +817,35 @@ While Editing a Todo
                             self.key_bindings["edit-paste"].ljust(key_column_width),
                         ))] +
 
-                        [ urwid.AttrWrap(urwid.Text("""
+                        [urwid.AttrWrap(urwid.Text("""
 Sorting
-""".strip()), header_highlight) ] +
+""".strip()), header_highlight)] +
                         # [ urwid.Divider(u'─') ] +
 
-                        [ urwid.Text("""
+                        [urwid.Text("""
 {0} - toggle sort order (Unsorted, Ascending, Descending)
                sort order is saved on quit
 """.format(
                             self.key_bindings["toggle-sorting"].ljust(key_column_width),
                         ))] +
-                        [ urwid.AttrWrap(urwid.Text("""
+                        [urwid.AttrWrap(urwid.Text("""
 Filtering
-""".strip()), header_highlight) ] +
+""".strip()), header_highlight)] +
                         # [ urwid.Divider(u'─') ] +
 
-                        [ urwid.Text("""
+                        [urwid.Text("""
 {0} - open / close the filtering panel
 {1} - clear any active filters
 """.format(
                             self.key_bindings["toggle-filter"].ljust(key_column_width),
                             self.key_bindings["clear-filter"].ljust(key_column_width),
                         ))] +
-                        [ urwid.AttrWrap(urwid.Text("""
+                        [urwid.AttrWrap(urwid.Text("""
 Searching
-""".strip()), header_highlight) ] +
+""".strip()), header_highlight)] +
                         # [ urwid.Divider(u'─') ] +
 
-                        [ urwid.Text("""
+                        [urwid.Text("""
 {0} - start search
 {1} - finalize search
 {2} - clear search

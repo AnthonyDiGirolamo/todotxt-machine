@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 # coding=utf-8
 import sys
-# import os
 import subprocess
-import tty
 import termios
 import re
-# import curses
 import fcntl
 import struct
 

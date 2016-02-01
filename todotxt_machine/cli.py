@@ -22,12 +22,14 @@ import os
 import random
 import threading
 from collections import OrderedDict
-from time import sleep
+from docopt import docopt
 
-# import ipdb; # ipdb.set_trace()
+import todotxt_machine
+from todotxt_machine.todo import Todos
+from todotxt_machine.urwid_ui import UrwidUI
+from todotxt_machine.colorscheme import ColorScheme
+from todotxt_machine.keys import KeyBindings
 
-# import pprint
-# pp = pprint.PrettyPrinter(indent=4).pprint
 
 # Import the correct version of configparser
 if sys.version_info[0] >= 3:
@@ -37,13 +39,6 @@ elif sys.version_info[0] < 3:
     import ConfigParser
     config_parser_module = ConfigParser
 
-from docopt import docopt
-
-import todotxt_machine
-from todotxt_machine.todo import Todos
-from todotxt_machine.urwid_ui import UrwidUI
-from todotxt_machine.colorscheme import ColorScheme
-from todotxt_machine.keys import KeyBindings
 
 autosave_lock = threading.Lock()
 

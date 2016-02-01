@@ -2,10 +2,7 @@
 # coding=utf-8
 import re
 import random
-import urwid
 from datetime import date
-
-from todotxt_machine.terminal_operations import TerminalOperations
 
 
 class Todo:

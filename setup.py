@@ -24,12 +24,24 @@ License
 """
 
 from setuptools import setup, find_packages
-from sys import version_info
 
 from setuptools.command.test import test as TestCommand
+import todotxt_machine
 import sys
 
-import todotxt_machine
+
+class PyTest(TestCommand):
+
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        # import here, cause outside the eggs aren't loaded
+        import pytest
+        errno = pytest.main(self.test_args)
+        sys.exit(errno)
 
 NAME = "todotxt-machine"
 
@@ -50,8 +62,7 @@ setup(name=NAME,
       packages=find_packages(exclude=["todotxt_machine/test*"]),
       include_package_data=True,
       entry_points={
-          'console_scripts':
-          ['todotxt-machine = todotxt_machine.cli:main']
+          'console_scripts': ['todotxt-machine = todotxt_machine.cli:main']
       },
       classifiers=[
           "Development Status :: 4 - Beta",
@@ -67,4 +78,4 @@ setup(name=NAME,
       ],
       install_requires=['setuptools', 'docopt>=0.6.2', 'urwid>=1.2.1'],
       tests_require=['pytest'],
-      )
+      cmdclass={'test': PyTest})

@@ -11,7 +11,6 @@ class KeyBindings:
         for bind in users_keys:
             key = self.userKeysToList(users_keys[bind])
             try:
-                default = self.key_bindings[bind]
                 self.key_bindings[bind] = key
             except KeyError:
                 print("KeyBind \"" + bind + "\" not found")
