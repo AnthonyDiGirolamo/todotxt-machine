@@ -407,3 +407,20 @@ def test_todos_swap(todos):
     assert [todo.raw_index for todo in todos.todo_items] == [4, 0, 3, 2, 1]
     todos.swap(4, 5)
     assert [todo.raw_index for todo in todos.todo_items] == [1, 0, 3, 2, 4]
+
+
+def test_change_priority(todos):
+    todos[0].change_priority('F')
+    assert todos[0].raw == "(F) Thank Mom for the dinner @phone"
+    todos[1].change_priority('')
+    assert todos[1].raw == "Schedule Goodwill pickup +GarageSale @phone"
+    todos[2].change_priority('C')
+    assert todos[2].raw == "(C) Unpack the guest bedroom +Unpacking due:2013-10-20"
+    todos[3].change_priority('A')
+    assert todos[3].raw == "(A) 2013-10-19 Post signs around the neighborhood +GarageSale"
+    todos[4].change_priority('B')
+    assert todos[4].raw == "x 2013-10-01 (B) @GroceryStore Eskimo pies"
+    todos[4].change_priority('C')
+    assert todos[4].raw == "x 2013-10-01 (C) @GroceryStore Eskimo pies"
+    todos[4].change_priority('')
+    assert todos[4].raw == "x 2013-10-01 @GroceryStore Eskimo pies"

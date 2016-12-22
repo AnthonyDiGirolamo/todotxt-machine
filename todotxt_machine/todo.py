@@ -9,6 +9,7 @@ from todotxt_machine.terminal_operations import TerminalOperations
 
 class Todo:
     """Single Todo item"""
+    _priority_regex         = re.compile(r'\(([A-Z])\) ')
 
     def __init__(self, item, index,
             colored="", priority="", contexts=[], projects=[],
@@ -64,14 +65,14 @@ class Todo:
             if words_to_be_highlighted:
                 color_list = re.split("(" + "|".join([re.escape(w) for w in words_to_be_highlighted]) + ")", self.raw)
                 for index, w in enumerate(color_list):
-                   if w in self.contexts:
-                       color_list[index] = ('context', w) if show_contexts else ''
-                   elif w in self.projects:
-                       color_list[index] = ('project', w) if show_projects else ''
-                   elif w == "due:"+self.due_date:
-                       color_list[index] = ('due_date', w) if show_due_date else ''
-                   elif w == self.creation_date:
-                       color_list[index] = ('creation_date', w)
+                    if w in self.contexts:
+                        color_list[index] = ('context', w) if show_contexts else ''
+                    elif w in self.projects:
+                        color_list[index] = ('project', w) if show_projects else ''
+                    elif w == "due:"+self.due_date:
+                        color_list[index] = ('due_date', w) if show_due_date else ''
+                    elif w == self.creation_date:
+                        color_list[index] = ('creation_date', w)
 
             if self.priority and self.priority in "ABCDEF":
                 color_list = ("priority_{0}".format(self.priority.lower()), color_list)
@@ -89,6 +90,19 @@ class Todo:
                 if w in self.search_matches:
                     color_list[index] = ('search_match', w)
         return color_list
+
+    def change_priority(self, new_priority):
+        self.priority = new_priority
+        if new_priority:
+            new_priority = '({}) '.format(new_priority)
+
+        if re.search(self._priority_regex, self.raw):
+            self.raw = re.sub(self._priority_regex, '{}'.format(new_priority), self.raw)
+        elif re.search(r'^x \d{4}-\d{2}-\d{2}', self.raw):
+            self.raw = re.sub(r'^(x \d{4}-\d{2}-\d{2}) ', r'\1 {}'.format(new_priority), self.raw)
+        else:
+            self.raw = '{}{}'.format(new_priority, self.raw)
+        self.update(self.raw)
 
     def is_complete(self):
         if self.raw[0:2] == "x ":
