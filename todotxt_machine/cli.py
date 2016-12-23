@@ -22,12 +22,14 @@ import os
 import random
 import threading
 from collections import OrderedDict
-from time import sleep
+from docopt import docopt
 
-# import ipdb; # ipdb.set_trace()
+import todotxt_machine
+from todotxt_machine.todo import Todos
+from todotxt_machine.urwid_ui import UrwidUI
+from todotxt_machine.colorscheme import ColorScheme
+from todotxt_machine.keys import KeyBindings
 
-# import pprint
-# pp = pprint.PrettyPrinter(indent=4).pprint
 
 # Import the correct version of configparser
 if sys.version_info[0] >= 3:
@@ -37,15 +39,9 @@ elif sys.version_info[0] < 3:
     import ConfigParser
     config_parser_module = ConfigParser
 
-from docopt import docopt
-
-import todotxt_machine
-from todotxt_machine.todo import Todos
-from todotxt_machine.urwid_ui import UrwidUI
-from todotxt_machine.colorscheme import ColorScheme
-from todotxt_machine.keys import KeyBindings
 
 autosave_lock = threading.Lock()
+
 
 def autosave():
     if not enable_autosave:
@@ -63,12 +59,15 @@ def autosave():
         timer = threading.Timer(30.0, autosave)
         timer.start()
 
+
 timer = threading.Timer(30.0, autosave)
 
+
 def exit_with_error(message):
-    sys.stderr.write(message.strip(' \n')+'\n')
+    sys.stderr.write(message.strip(' \n') + '\n')
     print(__doc__.split('\n\n')[1])
     exit(1)
+
 
 def get_real_path(filename, description):
     # expand enviroment variables and username, get canonical path
@@ -87,6 +86,7 @@ def get_real_path(filename, description):
 
     return file_path
 
+
 def get_boolean_config_option(cfg, section, option, default=False):
     value = dict(cfg.items(section)).get(option, default)
     if (type(value) != bool and
@@ -97,6 +97,7 @@ def get_boolean_config_option(cfg, section, option, default=False):
         # If present but is not True or 1
         value = False
     return value
+
 
 def main():
     random.seed()
@@ -114,7 +115,7 @@ def main():
     cfg.add_section('keys')
 
     if arguments['--show-default-bindings']:
-        d = {k: ", ".join(v) for k,v in KeyBindings({}).key_bindings.items()}
+        d = {k: ", ".join(v) for k, v in KeyBindings({}).key_bindings.items()}
         cfg._sections['keys'] = OrderedDict(sorted(d.items(), key=lambda t: t[0]))
         cfg.write(sys.stdout)
         exit(0)
@@ -123,10 +124,10 @@ def main():
     cfg.read(os.path.expanduser(arguments['--config']))
 
     # Load keybindings specified in the [keys] section of the config file
-    keyBindings = KeyBindings(dict( cfg.items('keys') ))
+    keyBindings = KeyBindings(dict(cfg.items('keys')))
 
     # load the colorscheme defined in the user config, else load the default scheme
-    colorscheme = ColorScheme(dict( cfg.items('settings') ).get('colorscheme', 'default'), cfg)
+    colorscheme = ColorScheme(dict(cfg.items('settings')).get('colorscheme', 'default'), cfg)
 
     # Get auto-saving setting (defaults to False)
     global enable_autosave
@@ -134,7 +135,7 @@ def main():
 
     # Load the todo.txt file specified in the [settings] section of the config file
     # a todo.txt file on the command line takes precedence
-    todotxt_file = dict( cfg.items('settings') ).get('file', arguments['TODOFILE'])
+    todotxt_file = dict(cfg.items('settings')).get('file', arguments['TODOFILE'])
     if arguments['TODOFILE']:
         todotxt_file = arguments['TODOFILE']
 
@@ -143,10 +144,9 @@ def main():
 
     # Load the done.txt file specified in the [settings] section of the config file
     # a done.txt file on the command line takes precedence
-    donetxt_file = dict( cfg.items('settings') ).get('archive', arguments['DONEFILE'])
+    donetxt_file = dict(cfg.items('settings')).get('archive', arguments['DONEFILE'])
     if arguments['DONEFILE']:
         donetxt_file = arguments['DONEFILE']
-
 
     todotxt_file_path = get_real_path(todotxt_file, 'todo.txt')
 
@@ -162,17 +162,17 @@ def main():
         exit_with_error("ERROR: unable to open {0}\n\nEither specify one as an argument on the command line or set it in your configuration file ({0}).".format(todotxt_file_path, arguments['--config']))
         todos = Todos([], todotxt_file_path, donetxt_file_path)
 
-    show_toolbar      = get_boolean_config_option(cfg, 'settings', 'show-toolbar')
+    show_toolbar = get_boolean_config_option(cfg, 'settings', 'show-toolbar')
     show_filter_panel = get_boolean_config_option(cfg, 'settings', 'show-filter-panel')
-    enable_borders    = get_boolean_config_option(cfg, 'settings', 'enable-borders')
-    enable_word_wrap  = get_boolean_config_option(cfg, 'settings', 'enable-word-wrap')
+    enable_borders = get_boolean_config_option(cfg, 'settings', 'enable-borders')
+    enable_word_wrap = get_boolean_config_option(cfg, 'settings', 'enable-word-wrap')
 
     global view
     view = UrwidUI(todos, keyBindings, colorscheme)
 
     timer.start()
 
-    view.main( # start up the urwid UI event loop
+    view.main(  # start up the urwid UI event loop
         enable_borders,
         enable_word_wrap,
         show_toolbar,
@@ -190,6 +190,7 @@ def main():
         view.todos.save()
 
     exit(0)
+
 
 if __name__ == '__main__':
     main()
