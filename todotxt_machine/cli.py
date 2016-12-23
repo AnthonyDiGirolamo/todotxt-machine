@@ -59,6 +59,7 @@ def autosave():
         timer = threading.Timer(30.0, autosave)
         timer.start()
 
+
 timer = threading.Timer(30.0, autosave)
 
 
@@ -189,6 +190,7 @@ def main():
         view.todos.save()
 
     exit(0)
+
 
 if __name__ == '__main__':
     main()
