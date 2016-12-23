@@ -7,7 +7,7 @@ from datetime import date
 
 class Todo:
     """Single Todo item"""
-    _priority_regex         = re.compile(r'\(([A-Z])\) ')
+    _priority_regex = re.compile(r'\(([A-Z])\) ')
 
     def __init__(self, item, index,
                  colored="", priority="", contexts=[], projects=[],
