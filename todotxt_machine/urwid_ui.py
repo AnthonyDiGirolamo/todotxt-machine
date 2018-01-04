@@ -523,7 +523,27 @@ class UrwidUI:
             if self.searching:
                 self.clear_search_term()
 
-        # Editing
+        # Save current file
+        elif self.key_bindings.is_binded_to(input, 'save'):
+            self.save_todos()
+
+        # Reload original file
+        elif self.key_bindings.is_binded_to(input, 'reload'):
+            self.reload_todos_from_file()
+
+        # Adding new item
+        elif self.key_bindings.is_binded_to(input, 'append'):
+            self.add_new_todo(position='append')
+        elif self.key_bindings.is_binded_to(input, 'insert-before'):
+            self.add_new_todo(position='insert_before')
+        elif self.key_bindings.is_binded_to(input, 'insert-after'):
+            self.add_new_todo(position='insert_after')
+
+        # Before editing, check if list is empty
+        elif focus is None:
+            pass
+
+        # Editing selected item
         elif self.key_bindings.is_binded_to(input, 'toggle-complete'):
             if focus.todo.is_complete():
                 focus.todo.incomplete()
@@ -542,42 +562,27 @@ class UrwidUI:
                 del self.listbox.body[focus_index]
                 self.update_header()
 
-        elif self.key_bindings.is_binded_to(input, 'append'):
-            self.add_new_todo(position='append')
-        elif self.key_bindings.is_binded_to(input, 'insert-before'):
-            self.add_new_todo(position='insert_before')
-        elif self.key_bindings.is_binded_to(input, 'insert-after'):
-            self.add_new_todo(position='insert_after')
-
         elif self.key_bindings.is_binded_to(input, 'priority-up'):
             self.adjust_priority(focus, up=True)
 
         elif self.key_bindings.is_binded_to(input, 'priority-down'):
             self.adjust_priority(focus, up=False)
 
-        # Save current file
-        elif self.key_bindings.is_binded_to(input, 'save'):
-            self.save_todos()
-
-        # Reload original file
-        elif self.key_bindings.is_binded_to(input, 'reload'):
-            self.reload_todos_from_file()
-
     def adjust_priority(self, focus, up=True):
-            priorities = ['', 'A', 'B', 'C', 'D', 'E', 'F']
-            if up:
-                new_priority = priorities.index(focus.todo.priority) + 1
-            else:
-                new_priority = priorities.index(focus.todo.priority) - 1
+        priorities = ['', 'A', 'B', 'C', 'D', 'E', 'F']
+        if up:
+            new_priority = priorities.index(focus.todo.priority) + 1
+        else:
+            new_priority = priorities.index(focus.todo.priority) - 1
 
-            if new_priority < 0:
-                focus.todo.change_priority(priorities[len(priorities) - 1])
-            elif new_priority < len(priorities):
-                focus.todo.change_priority(priorities[new_priority])
-            else:
-                focus.todo.change_priority(priorities[0])
+        if new_priority < 0:
+            focus.todo.change_priority(priorities[len(priorities) - 1])
+        elif new_priority < len(priorities):
+            focus.todo.change_priority(priorities[new_priority])
+        else:
+            focus.todo.change_priority(priorities[0])
 
-            focus.update_todo()
+        focus.update_todo()
 
     def add_new_todo(self, position=False):
         if len(self.listbox.body) == 0:
