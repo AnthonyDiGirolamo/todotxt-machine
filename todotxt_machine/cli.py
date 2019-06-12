@@ -129,6 +129,9 @@ def main():
     # load the colorscheme defined in the user config, else load the default scheme
     colorscheme = ColorScheme(dict(cfg.items('settings')).get('colorscheme', 'default'), cfg)
 
+    # load external editor if any
+    external_editor = dict(cfg.items('settings')).get('external-editor', None)
+
     # Get auto-saving setting (defaults to False)
     global enable_autosave
     enable_autosave = get_boolean_config_option(cfg, 'settings', 'auto-save', default=False)
@@ -175,6 +178,7 @@ def main():
     view.main(  # start up the urwid UI event loop
         enable_borders,
         enable_word_wrap,
+        external_editor,
         show_toolbar,
         show_filter_panel)
 

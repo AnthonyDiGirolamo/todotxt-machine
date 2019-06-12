@@ -86,6 +86,7 @@ define new themes.  Here is a short example:
     show-filter-panel = False
     enable-borders = False
     enable-word-wrap = True
+    ; external-editor = editor
     colorscheme = myawesometheme
 
 Color Schemes
