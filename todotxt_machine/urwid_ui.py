@@ -3,6 +3,8 @@
 
 import urwid
 import collections
+import subprocess
+import tempfile
 
 # Modified from http://wiki.goffi.org/wiki/Urwid-satext/en
 
@@ -151,10 +153,23 @@ class TodoWidget(urwid.Button):
             None, self.colorscheme.focus_map)
 
     def edit_item(self):
-        self.editing = True
-        self.edit_widget = AdvancedEdit(self.parent_ui, self.key_bindings, caption="", edit_text=self.todo.raw)
-        self.edit_widget.setCompletionMethod(self.completions)
-        self._w = urwid.AttrMap(self.edit_widget, 'plain_selected')
+        if self.parent_ui.external_editor:
+            with tempfile.NamedTemporaryFile(mode='w', suffix='todo') as temp:
+                temp.write(self.todo.raw)
+                temp.flush()
+
+                self.parent_ui.loop.stop()
+                subprocess.call([self.parent_ui.external_editor, temp.name])
+                self.parent_ui.loop.start()
+
+                self.edit_widget = urwid.Edit(caption="", edit_text=open(temp.name, 'r').read())
+                self._w = urwid.AttrMap(self.edit_widget, None)
+                self.save_item()
+        else:
+            self.editing = True
+            self.edit_widget = AdvancedEdit(self.parent_ui, self.key_bindings, caption="", edit_text=self.todo.raw)
+            self.edit_widget.setCompletionMethod(self.completions)
+            self._w = urwid.AttrMap(self.edit_widget, 'plain_selected')
 
     def completions(self, text, completion_data={}):
         space = text.rfind(" ")
@@ -960,6 +975,7 @@ Searching
     def main(self,
              enable_borders=False,
              enable_word_wrap=False,
+             external_editor=None,
              show_toolbar=False,
              show_filter_panel=False):
 
@@ -980,6 +996,7 @@ Searching
         self.loop = urwid.MainLoop(self.view, self.palette, unhandled_input=self.keystroke)
         self.loop.screen.set_terminal_properties(colors=256)
 
+        self.external_editor = external_editor
         if enable_borders:
             self.toggle_border()
         if enable_word_wrap:
