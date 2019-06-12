@@ -3,6 +3,8 @@
 
 import urwid
 import collections
+import subprocess
+import tempfile
 
 # Modified from http://wiki.goffi.org/wiki/Urwid-satext/en
 
@@ -151,10 +153,24 @@ class TodoWidget(urwid.Button):
             None, self.colorscheme.focus_map)
 
     def edit_item(self):
-        self.editing = True
-        self.edit_widget = AdvancedEdit(self.parent_ui, self.key_bindings, caption="", edit_text=self.todo.raw)
-        self.edit_widget.setCompletionMethod(self.completions)
-        self._w = urwid.AttrMap(self.edit_widget, 'plain_selected')
+        external_editor = True
+        if external_editor:
+            with tempfile.NamedTemporaryFile(mode='w', suffix='todo') as temp:
+                temp.write(self.todo.raw)
+                temp.flush()
+
+                self.parent_ui.loop.stop()
+                subprocess.call(['editor', temp.name])
+                self.parent_ui.loop.start()
+
+                self.edit_widget = urwid.Edit(caption="", edit_text=open(temp.name, 'r').read())
+                self._w = urwid.AttrMap(self.edit_widget, None)
+                self.save_item()
+        else:
+            self.editing = True
+            self.edit_widget = AdvancedEdit(self.parent_ui, self.key_bindings, caption="", edit_text=self.todo.raw)
+            self.edit_widget.setCompletionMethod(self.completions)
+            self._w = urwid.AttrMap(self.edit_widget, 'plain_selected')
 
     def completions(self, text, completion_data={}):
         space = text.rfind(" ")
