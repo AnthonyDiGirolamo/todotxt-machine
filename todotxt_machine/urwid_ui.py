@@ -440,6 +440,18 @@ class UrwidUI:
                 self.listbox.body[focus_index].update_todo()
                 self.listbox.body[focus_index - 1].update_todo()
                 self.move_selection_up()
+    
+    def swap_to_top_or_bottom(self):
+        focus, focus_index = self.listbox.get_focus()
+        if not self.filtering and not self.searching:
+            if focus_index>= len(self.listbox.body)-1:
+                while focus_index>=0:
+                    self.swap_up()
+                    focus_index-=1
+            else:
+                while focus_index<=len(self.listbox.body)-1:
+                    self.swap_down()
+                    focus_index+=1
 
     def save_todos(self, button=None):
         self.todos.save()
@@ -477,6 +489,8 @@ class UrwidUI:
             self.swap_down()
         elif self.key_bindings.is_binded_to(input, 'swap-up'):
             self.swap_up()
+        elif self.key_bindings.is_binded_to(input, 'swap-to-top-bottom'):
+            self.swap_to_top_or_bottom()
         elif self.key_bindings.is_binded_to(input, 'change-focus'):
             current_focus = self.frame.get_focus()
             if current_focus == 'body':
