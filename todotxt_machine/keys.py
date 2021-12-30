@@ -42,6 +42,7 @@ class KeyBindings:
         self.key_bindings['delete'] = ['D']
         self.key_bindings['swap-down'] = ['J']
         self.key_bindings['swap-up'] = ['K']
+        self.key_bindings['swap-to-top-bottom'] = ['M']
         self.key_bindings['edit-complete'] = ['tab']
         self.key_bindings['edit-save'] = ['return']
         self.key_bindings['edit-move-left'] = ['left']
