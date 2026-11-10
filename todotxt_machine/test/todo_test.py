@@ -455,3 +455,9 @@ def test_change_priority(todos):
     assert todos[4].raw == "x 2013-10-01 (C) @GroceryStore Eskimo pies"
     todos[4].change_priority('')
     assert todos[4].raw == "x 2013-10-01 @GroceryStore Eskimo pies"
+
+
+def test_due_date_ignores_overdue(todos):
+    assert todo.Todos.due_date("Unpack the guest bedroom +Unpacking due:2013-10-20") == "2013-10-20"
+    assert todo.Todos.due_date("Call mom overdue:2020-01-01") == ""
+    assert todo.Todos.due_date("Read the overdue:2020-01-01 report due:2021-02-03") == "2021-02-03"
