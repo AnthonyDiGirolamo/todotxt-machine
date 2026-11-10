@@ -135,7 +135,7 @@ class Todos:
                                       r'(?:x \d\d\d\d-\d\d-\d\d )?'
                                       r'(?:\(\w\) )?'
                                       r'(\d\d\d\d-\d\d-\d\d)\s*')
-    _due_date_regex = re.compile(r'\s*due:(\d\d\d\d-\d\d-\d\d)\s*')
+    _due_date_regex = re.compile(r'(?:^|\s+)due:(\d\d\d\d-\d\d-\d\d)')
     _priority_regex = re.compile(r'\(([A-Z])\) ')
     _completed_regex = re.compile(r'^x (\d\d\d\d-\d\d-\d\d) ')
 
